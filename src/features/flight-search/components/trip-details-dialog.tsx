@@ -52,13 +52,21 @@ export function TripDetailsDialog({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="mt-2 w-full text-center text-xs text-airway underline underline-offset-2 hover:no-underline"
+      {/* A real link that the dialog intercepts.
+          Without JavaScript this navigates straight to the booking page, which
+          works — the dialog is an enhancement, not the only route through. A
+          plain <button> here would have made Select do nothing at all when the
+          script failed to load. */}
+      <Link
+        href={`/book/${offer.id}`}
+        onClick={(event) => {
+          event.preventDefault();
+          setOpen(true);
+        }}
+        className="mt-4 block w-full rounded-control bg-ink px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-ink-muted"
       >
-        Full details
-      </button>
+        Select
+      </Link>
 
       <dialog
         ref={ref}
@@ -167,12 +175,21 @@ export function TripDetailsDialog({
           <span className="font-mono text-xl font-semibold tracking-tight text-chart">
             {formatMoney(offer.totalAmount, offer.currency)}
           </span>
-          <Link
-            href={`/book/${offer.id}`}
-            className="rounded-control bg-ink px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink-muted"
-          >
-            Select this flight
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-control border border-hairline-strong px-4 py-2.5 text-sm font-medium text-ink"
+            >
+              Back to results
+            </button>
+            <Link
+              href={`/book/${offer.id}`}
+              className="rounded-control bg-chart px-6 py-2.5 text-sm font-medium text-white transition-colors hover:brightness-110"
+            >
+              Continue with this flight
+            </Link>
+          </div>
         </div>
       </dialog>
     </>

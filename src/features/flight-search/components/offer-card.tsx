@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { RouteLine } from '@/components/route-line';
 import { cn } from '@/lib/cn';
 import { dayOffset, formatDuration, formatLocalTime, formatMoney } from '@/lib/format';
@@ -100,15 +99,10 @@ export function OfferCard({
             </div>
           </dl>
 
-          <Link
-            href={`/book/${offer.id}`}
-            className="mt-4 block w-full rounded-control bg-ink px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-ink-muted"
-          >
-            Select
-          </Link>
-
-          {/* The card stays scannable; the detail sits one click away without
-              leaving the results. */}
+          {/* Select opens the full itinerary rather than jumping straight to
+              checkout. Nobody should commit to a flight from a summary — the
+              terminals, layover times and operating carrier are all things worth
+              seeing before the page changes underneath you. */}
           <TripDetailsDialog offer={offer} travellers={travellers} />
           <p className="mt-2 text-center text-[11px] text-ink-faint">
             {travellers === 1 ? 'Total price' : `Total for ${travellers} travellers`}
