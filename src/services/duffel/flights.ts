@@ -118,7 +118,10 @@ export async function getRawOffer(offerId: string): Promise<unknown> {
 export async function searchPlaces(query: string): Promise<DuffelPlace[]> {
   return duffelRequest<DuffelPlace[]>({
     path: '/places/suggestions',
-    query: { name: query },
+    // `query`, not `name`. Duffel deprecated `name` and it now returns a
+    // deprecation warning rather than results — which is why airport search was
+    // silently falling back to the bundled list for everything outside it.
+    query: { query },
     timeoutMs: 5_000,
   });
 }
