@@ -76,8 +76,18 @@ if (uncredited.length > 0) {
 console.log(
   entries.length === 0
     ? 'No destination images found (cards will use the no-photo layout).'
-    : `Destination manifest: ${entries.length} image${entries.length === 1 ? '' : 's'}.`,
+    : `Destination manifest: ${entries.length} image${entries.length === 1 ? '' : 's'} — ${entries.map((e) => e.code).join(', ')}.`,
 );
+
+/* The generated file is committed, so it can drift from the folder it describes —
+   which is exactly how four images ended up in the repo alongside an empty
+   manifest. Say so loudly rather than letting the next person wonder why their
+   photographs aren't showing. */
+if (entries.length > 0) {
+  console.log(
+    '  If this changed, commit src/features/destinations/image-manifest.generated.ts too.',
+  );
+}
 
 /* ---- Payment marks -------------------------------------------------------
  * Same drop-a-file pattern. Card brand marks are trademarks and must come from

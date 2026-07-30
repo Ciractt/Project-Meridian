@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
+    "pretypecheck": "node scripts/build-destination-manifest.mjs",
     "test": "vitest run",
     "manifest": "node scripts/build-destination-manifest.mjs",
     "test:watch": "vitest"

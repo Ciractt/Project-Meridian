@@ -7,5 +7,8 @@
  */
 
 export const DESTINATION_IMAGES: Readonly<Record<string, string>> = {
-
+  FAO: '/destinations/FAO.jpg',
+  LHR: '/destinations/LHR.jpg',
+  NCE: '/destinations/NCE.webp',
+  OPO: '/destinations/OPO.jpeg',
 };
