@@ -97,18 +97,76 @@ export async function sendOrderConfirmationEmail(orderId: string): Promise<void>
       link,
     });
 
-    await sendEmail({
-      to: order.contact_email,
-      from: env.EMAIL_FROM!,
-      subject: content.subject,
-      html: content.html,
-      text: content.text,
-    });
+    try {
+      await sendEmail({
+        to: order.contact_email,
+        from: env.EMAIL_FROM!,
+        subject: content.subject,
+        html: content.html,
+        text: content.text,
+      });
+    } catch (sendError) {
+      /* The claim is deliberately NOT released — at-most-once still holds, and a
+         duplicate confirmation is worse than a late one. But the flag alone would
+         mean this traveller silently never receives their reference, which is the
+         exact failure this feature exists to prevent. Record it so the admin queue
+         can surface it and a human can resend. */
+      await recordSendFailure(orderId, sendError);
+      throw sendError;
+    }
   } catch (err) {
     // The booking is ticketed. An email problem is ours to notice, never the
     // traveller's to suffer — log and carry on.
     console.error('Confirmation email failed for order %s:', orderId, err);
   }
+}
+
+/**
+ * Marks a claimed-but-failed send.
+ *
+ * Best-effort by necessity: it runs inside the handler for a failure we've
+ * already decided cannot propagate, so if this write fails too there is nothing
+ * further to do but log.
+ */
+async function recordSendFailure(orderId: string, cause: unknown): Promise<void> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return;
+
+  const message = cause instanceof Error ? cause.message : String(cause);
+
+  const { error } = await supabase
+    .from('orders')
+    .update({
+      confirmation_email_failed_at: new Date().toISOString(),
+      confirmation_email_error: message.slice(0, 500),
+    })
+    .eq('id', orderId);
+
+  if (error) {
+    console.error('Could not record email failure for order %s:', orderId, error.message);
+  }
+}
+
+/**
+ * Clears the claim so a confirmation can be sent again.
+ *
+ * Admin-triggered only. Goes back through `sendOrderConfirmationEmail`, so the
+ * resend is subject to the same at-most-once claim as the original rather than
+ * bypassing it.
+ */
+export async function resendOrderConfirmationEmail(orderId: string): Promise<void> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return;
+
+  const { error } = await supabase.rpc('reset_confirmation_email', {
+    p_order_id: orderId,
+  });
+  if (error) {
+    console.error('Could not reset confirmation email for order %s:', orderId, error.message);
+    return;
+  }
+
+  await sendOrderConfirmationEmail(orderId);
 }
 
 interface ConfirmationContent {

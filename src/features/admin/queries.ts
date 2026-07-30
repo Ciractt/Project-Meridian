@@ -221,3 +221,51 @@ export async function getPendingAirlineChanges(): Promise<AirlineChangeRow[]> {
       : null,
   }));
 }
+
+
+export interface FailedConfirmation {
+  id: string;
+  bookingReference: string | null;
+  origin: string;
+  destination: string;
+  contactEmail: string;
+  failedAt: string;
+  error: string | null;
+}
+
+/**
+ * Bookings where the confirmation email was claimed and then failed.
+ *
+ * The send is at-most-once and never retries itself, so nothing will fix these
+ * without a person. Each one is a paying traveller who — if they booked as a
+ * guest and closed the tab — currently has no copy of their booking reference at
+ * all.
+ */
+export async function getFailedConfirmations(): Promise<FailedConfirmation[]> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select(
+      'id, booking_reference, origin, destination, contact_email, confirmation_email_failed_at, confirmation_email_error',
+    )
+    .not('confirmation_email_failed_at', 'is', null)
+    .order('confirmation_email_failed_at', { ascending: true })
+    .limit(50);
+
+  if (error) {
+    console.error('Could not load failed confirmations:', error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    id: String(row.id),
+    bookingReference: row.booking_reference ? String(row.booking_reference) : null,
+    origin: String(row.origin),
+    destination: String(row.destination),
+    contactEmail: String(row.contact_email),
+    failedAt: String(row.confirmation_email_failed_at),
+    error: row.confirmation_email_error ? String(row.confirmation_email_error) : null,
+  }));
+}

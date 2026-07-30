@@ -1,11 +1,14 @@
 import {
   getAttentionAttempts,
+  getFailedConfirmations,
   getPendingAirlineChanges,
   getRecentOrders,
   getSearchStats,
   getTopRoutes,
 } from '@/features/admin/queries';
 import { formatMoney } from '@/lib/format';
+import { resendConfirmation } from '@/features/admin/actions';
+import { Button } from '@/components/ui/button';
 
 export const metadata = { title: 'Admin' };
 
@@ -18,12 +21,14 @@ export const metadata = { title: 'Admin' };
  * nobody opens.
  */
 export default async function AdminPage() {
-  const [stats, routes, attention, orders, airlineChanges] = await Promise.all([
+  const [stats, routes, attention, orders, airlineChanges, failedEmails] =
+    await Promise.all([
     getSearchStats(),
     getTopRoutes(),
     getAttentionAttempts(),
     getRecentOrders(),
     getPendingAirlineChanges(),
+    getFailedConfirmations(),
   ]);
 
   if (!stats) {
@@ -47,6 +52,51 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-8">
+      {/* Claimed, failed, and nothing will retry. Each is a paying traveller who
+          may have no copy of their booking reference at all. */}
+      {failedEmails.length > 0 ? (
+        <section className="rounded-card border-2 border-danger bg-surface p-5">
+          <h2 className="font-display text-base font-bold tracking-tight text-danger">
+            {failedEmails.length} confirmation
+            {failedEmails.length === 1 ? '' : 's'} didn’t send
+          </h2>
+          <p className="mt-1 mb-4 max-w-2xl text-sm text-ink-muted">
+            The booking is fine — the email isn’t. Sends are at-most-once and never
+            retry themselves, so nothing will fix these without you. A guest who
+            closed the tab has no other copy of their reference.
+          </p>
+          <ul className="space-y-2">
+            {failedEmails.map((row) => (
+              <li
+                key={row.id}
+                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-hairline pt-2 text-sm"
+              >
+                <span className="font-mono">
+                  {row.bookingReference ?? row.id.slice(0, 8)} · {row.origin} →{' '}
+                  {row.destination}
+                </span>
+                <span className="max-w-56 truncate text-xs text-ink-muted">
+                  {row.contactEmail}
+                </span>
+                <span className="max-w-64 truncate text-xs text-danger">
+                  {row.error ?? 'unknown error'}
+                </span>
+                <form
+                  action={async () => {
+                    'use server';
+                    await resendConfirmation(row.id);
+                  }}
+                >
+                  <Button type="submit" variant="secondary">
+                    Resend
+                  </Button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {/* Airlines have moved these flights and the travellers don't know. Above
           even the payment queue: someone who isn't told turns up at the airport. */}
       {airlineChanges.length > 0 ? (

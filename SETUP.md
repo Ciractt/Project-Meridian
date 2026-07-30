@@ -65,7 +65,8 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    `0002_search_cache.sql`, `0003_orders.sql`, `0004_payments.sql`,
    `0005_order_documents_flag.sql`, `0006_ancillaries.sql`,
    `0007_promotions.sql`, `0008_route_prices.sql`, then
-   `0009_webhooks_and_pending_orders.sql`.
+   `0009_webhooks_and_pending_orders.sql`, `0010_confirmation_email.sql`, then
+   `0011_confirmation_email_failures.sql`.
 
 7. **Add the secret key.** Settings → API Keys → Secret keys (or the
    `service_role` key under Legacy API Keys). This one bypasses row-level
@@ -176,3 +177,37 @@ Test it with the ping endpoint from the dashboard. A successful ping returns
 
 The endpoint rejects unsigned and mis-signed requests with a 400 and logs the
 reason. If it returns 500 with "not configured", the secret is missing.
+
+---
+
+## Confirmation emails
+
+Without these, a guest who closes the tab loses their booking reference — the
+`/booking/[orderId]` page is only durable if they were sent the link.
+
+1. Create a Resend account and **verify a sending domain**. Resend's shared
+   testing domain only delivers to your own address, which will look like it works
+   and then silently won't for customers.
+2. Add to `.env.local`:
+
+```bash
+RESEND_API_KEY=re_...
+EMAIL_FROM="Meridian <bookings@yourdomain.com>"
+SITE_URL=https://your-deployed-host
+```
+
+`EMAIL_FROM` must be on the verified domain. `SITE_URL` is what the link in the
+email points at — on Vercel it falls back to `VERCEL_URL`, and in development to
+localhost, but set it explicitly for anything customers see.
+
+All three are optional. With any missing, the send is skipped and logged rather
+than failing a booking.
+
+### If a send fails
+
+Sends are **at-most-once**: the flag is claimed before sending and never cleared
+automatically, so a duplicate confirmation is impossible and a failed one will not
+retry itself. Failures appear at the top of `/admin` with a **Resend** button.
+
+That queue should normally be empty. Anything sitting in it is a paying traveller
+who may have no copy of their booking reference.
