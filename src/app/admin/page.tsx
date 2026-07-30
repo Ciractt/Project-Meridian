@@ -3,6 +3,7 @@ import {
   getFailedConfirmations,
   getPendingAirlineChanges,
   getStrandedRefunds,
+  getUndeliveredBags,
   getRecentOrders,
   getSearchStats,
   getTopRoutes,
@@ -30,6 +31,7 @@ export default async function AdminPage() {
     airlineChanges,
     failedEmails,
     strandedRefunds,
+    undeliveredBags,
   ] = await Promise.all([
     getSearchStats(),
     getTopRoutes(),
@@ -38,6 +40,7 @@ export default async function AdminPage() {
     getPendingAirlineChanges(),
     getFailedConfirmations(),
     getStrandedRefunds(),
+    getUndeliveredBags(),
   ]);
 
   if (!stats) {
@@ -97,6 +100,37 @@ export default async function AdminPage() {
                 </span>
                 <span className="max-w-64 truncate text-xs text-danger">
                   {row.error ?? 'unknown error'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {undeliveredBags.length > 0 ? (
+        <section className="rounded-card border-2 border-danger bg-surface p-5">
+          <h2 className="font-display text-base font-bold tracking-tight text-danger">
+            {undeliveredBags.length} bag purchase
+            {undeliveredBags.length === 1 ? '' : 's'} paid but not delivered
+          </h2>
+          <p className="mt-1 mb-4 max-w-2xl text-sm text-ink-muted">
+            Charged, the airline didn’t add the bag, and the automatic refund also
+            failed. Refund manually in the Duffel dashboard.
+          </p>
+          <ul className="space-y-2">
+            {undeliveredBags.map((row) => (
+              <li
+                key={row.token}
+                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-hairline pt-2 text-sm"
+              >
+                <span className="font-mono text-xs">{row.token}</span>
+                <span className="font-mono text-xs">
+                  {row.chargeAmount && row.currency
+                    ? formatMoney(row.chargeAmount, row.currency)
+                    : '—'}
+                </span>
+                <span className="max-w-64 truncate text-xs text-danger">
+                  {row.failureReason ?? 'unknown'}
                 </span>
               </li>
             ))}

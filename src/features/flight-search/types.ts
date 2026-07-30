@@ -22,12 +22,19 @@ export interface Place {
   isCity?: boolean;
 }
 
-export interface PassengerCounts {
+/**
+ * Who is travelling.
+ *
+ * Adults as a count, everyone under 18 as an age. Airlines disagree about where
+ * childhood ends — one treats a 14-year-old as an adult, another as a young adult
+ * — so sending a band makes that judgement on their behalf, and getting it wrong
+ * produces an order rejected after the card has been charged. The age lets each
+ * airline apply its own rules.
+ */
+export interface PassengerSelection {
   adults: number;
-  /** Aged 2–11 on the date of travel. */
-  children: number;
-  /** Under 2 and travelling on an adult's lap. */
-  infants: number;
+  /** Age on the date of travel. Under 2 travels on a lap. */
+  childAges: number[];
 }
 
 export interface FlightSearchCriteria {
@@ -38,7 +45,7 @@ export interface FlightSearchCriteria {
    *  dates in the airport's local time, not instants. */
   departureDate: string;
   returnDate?: string;
-  passengers: PassengerCounts;
+  passengers: PassengerSelection;
   cabin: CabinClass;
 }
 

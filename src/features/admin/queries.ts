@@ -320,3 +320,41 @@ export async function getStrandedRefunds(): Promise<StrandedRefund[]> {
     failedAt: String(row.customer_refund_failed_at),
   }));
 }
+
+
+export interface UndeliveredBags {
+  token: string;
+  orderId: string;
+  chargeAmount: string | null;
+  currency: string | null;
+  failureReason: string | null;
+  createdAt: string;
+}
+
+/** Bags paid for and not added, where the refund also failed. Money held for
+ *  something the traveller did not receive. */
+export async function getUndeliveredBags(): Promise<UndeliveredBags[]> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('service_purchases')
+    .select('token, order_id, charge_amount, currency, failure_reason, created_at')
+    .eq('status', 'paid_not_delivered')
+    .order('created_at', { ascending: true })
+    .limit(50);
+
+  if (error) {
+    console.error('Could not load undelivered bags:', error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    token: String(row.token),
+    orderId: String(row.order_id),
+    chargeAmount: row.charge_amount ? String(row.charge_amount) : null,
+    currency: row.currency ? String(row.currency) : null,
+    failureReason: row.failure_reason ? String(row.failure_reason) : null,
+    createdAt: String(row.created_at),
+  }));
+}

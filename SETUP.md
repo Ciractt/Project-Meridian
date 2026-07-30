@@ -66,7 +66,8 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    `0005_order_documents_flag.sql`, `0006_ancillaries.sql`,
    `0007_promotions.sql`, `0008_route_prices.sql`, then
    `0009_webhooks_and_pending_orders.sql`, `0010_confirmation_email.sql`, then
-   `0011_confirmation_email_failures.sql`, then `0012_cancellations.sql`.
+   `0011_confirmation_email_failures.sql`, `0012_cancellations.sql`, then
+   `0013_post_booking_services.sql`.
 
 7. **Add the secret key.** Settings → API Keys → Secret keys (or the
    `service_role` key under Legacy API Keys). This one bypasses row-level
@@ -256,3 +257,25 @@ problem.
 
 Guests must type the booking's contact email to cancel. The URL alone is enough to
 *view* a booking; it should not be enough for a stranger to destroy a flight.
+
+---
+
+## What travellers can do after booking
+
+On their booking page:
+
+- **Add bags.** Only where the airline sells them for that order — Duffel's
+  post-booking catalogue is baggage only, and returns nothing for fares that
+  already include it. An empty result is normal, not an error.
+- **Cancel**, with the airline's refund quoted before anything is committed.
+
+Both take payment or issue refunds, so both use the same claim-before-charge
+discipline as checkout, and both surface a paid-but-undelivered state in `/admin`
+rather than logging it.
+
+Guests need the booking's contact email for either. The URL is enough to view a
+booking; it should not be enough for a stranger to spend money on it or cancel it.
+
+**Not available, because Duffel doesn't offer it:** post-booking seat selection,
+meals, and other special service requests. Changing flights is possible through
+the order-change API and isn't built yet.

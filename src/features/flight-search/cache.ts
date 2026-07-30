@@ -52,8 +52,7 @@ function cacheKey(criteria: FlightSearchParams): string {
     criteria.departureDate,
     criteria.returnDate ?? null,
     criteria.adults,
-    criteria.children,
-    criteria.infants,
+    criteria.childAges.join(','),
     criteria.cabin,
     criteria.direct,
   ]);
@@ -119,7 +118,7 @@ export async function writeCachedSearch(
       departure_date: criteria.departureDate,
       return_date: criteria.returnDate ?? null,
       cabin: criteria.cabin,
-      passenger_count: criteria.adults + criteria.children + criteria.infants,
+      passenger_count: criteria.adults + criteria.childAges.length,
       direct_only: criteria.direct === 'true',
       offers,
       offer_count: offers.length,

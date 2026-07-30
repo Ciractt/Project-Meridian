@@ -40,8 +40,30 @@ export const flightSearchSchema = z
     departureDate: isoDate,
     returnDate: isoDate.optional(),
     adults: z.coerce.number().int().min(1).max(9),
-    children: z.coerce.number().int().min(0).max(8),
-    infants: z.coerce.number().int().min(0).max(8),
+    /**
+     * Ages of accompanying children, as a comma-separated list — "4,9,1".
+     *
+     * Ages rather than adult/child/infant counts because airlines disagree about
+     * the bands: one carrier treats a 14-year-old as an adult, another as a young
+     * adult. Sending a band makes that judgement on the airline's behalf, and
+     * getting it wrong produces a rejected order AFTER the card has been charged.
+     * Sending the age lets each airline apply its own rules.
+     */
+    childAges: z
+      .string()
+      .default('')
+      .transform((value) =>
+        value
+          .split(',')
+          .map((part) => part.trim())
+          .filter((part) => part.length > 0)
+          .map(Number),
+      )
+      .refine(
+        (ages) => ages.every((age) => Number.isInteger(age) && age >= 0 && age <= 17),
+        'Children must be aged 0 to 17.',
+      )
+      .refine((ages) => ages.length <= 8, 'Up to 8 children per search.'),
     cabin: z.enum(cabinClasses).default('economy'),
     // Kept as a string rather than z.coerce.boolean(), which would turn the
     // string "false" into true. URL params are always strings.
@@ -86,9 +108,13 @@ export const flightSearchSchema = z
       }
     }
 
-    // Airline booking engines cap a single itinerary at nine seats. Infants on
-    // laps are not seats, but each needs an accompanying adult.
-    if (v.adults + v.children > 9) {
+    /* Airline booking engines cap a single itinerary at nine seats. Under-2s
+       travel on a lap and don't occupy one, so they're excluded from the count —
+       but each still needs an adult to sit with. */
+    const lapInfants = v.childAges.filter((age) => age < 2).length;
+    const seated = v.adults + v.childAges.length - lapInfants;
+
+    if (seated > 9) {
       ctx.issues.push({
         code: 'custom',
         message: 'Up to 9 travellers per search, not counting lap infants.',
@@ -97,12 +123,12 @@ export const flightSearchSchema = z
       });
     }
 
-    if (v.infants > v.adults) {
+    if (lapInfants > v.adults) {
       ctx.issues.push({
         code: 'custom',
-        message: 'Each infant must travel with an adult.',
-        path: ['infants'],
-        input: v.infants,
+        message: 'Each infant under 2 must travel with an adult.',
+        path: ['childAges'],
+        input: v.childAges,
       });
     }
   });
@@ -118,8 +144,7 @@ export function toSearchParams(params: FlightSearchParams): URLSearchParams {
     destination: params.destination,
     departureDate: params.departureDate,
     adults: String(params.adults),
-    children: String(params.children),
-    infants: String(params.infants),
+    childAges: params.childAges.join(','),
     cabin: params.cabin,
     direct: params.direct,
   });
@@ -127,4 +152,10 @@ export function toSearchParams(params: FlightSearchParams): URLSearchParams {
     sp.set('returnDate', params.returnDate);
   }
   return sp;
+}
+
+
+/** Total travellers, including lap infants. */
+export function travellerCount(params: FlightSearchParams): number {
+  return params.adults + params.childAges.length;
 }

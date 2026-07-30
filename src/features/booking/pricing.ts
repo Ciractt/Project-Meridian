@@ -97,6 +97,35 @@ export function calculateCharge(
   };
 }
 
+/**
+ * Charge for extras bought on their own, after a booking exists.
+ *
+ * No fare involved, so only the ancillary margin applies — charging the fare
+ * margin again on a post-booking bag would be taking a second cut for a sale
+ * already made.
+ */
+export function calculateExtrasCharge(
+  extrasAmount: string,
+  currency: string,
+): ChargeBreakdown {
+  const extras = Number(extrasAmount);
+  if (!Number.isFinite(extras) || extras <= 0) {
+    throw new Error(`Cannot price extras of "${extrasAmount}".`);
+  }
+
+  const margin = extras * EXTRAS_MARGIN_RATE;
+  const charge = (extras + margin) / (1 - ASSUMED_FEE_RATE);
+
+  return {
+    fareAmount: '0.00',
+    extrasAmount: extras.toFixed(2),
+    supplierAmount: extras.toFixed(2),
+    chargeAmount: toMinorUnitCeil(charge),
+    marginAmount: margin.toFixed(2),
+    currency,
+  };
+}
+
 export type CoverageVerdict = 'covered' | 'short' | 'unknown';
 
 /**

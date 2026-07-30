@@ -43,7 +43,7 @@ export default async function SearchPage({
   }
 
   const criteria = parsed.data;
-  const travellers = criteria.adults + criteria.children + criteria.infants;
+  const travellers = criteria.adults + criteria.childAges.length;
 
   /**
    * Shifting a date by a day is the most common thing a traveller does on a

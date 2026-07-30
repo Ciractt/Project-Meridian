@@ -66,11 +66,7 @@ export async function runSearch(criteria: FlightSearchParams): Promise<SearchRes
   try {
     const offerRequest = await createOfferRequest({
       slices,
-      passengers: {
-        adults: criteria.adults,
-        children: criteria.children,
-        infants: criteria.infants,
-      },
+      passengers: { adults: criteria.adults, childAges: criteria.childAges },
       cabin: criteria.cabin,
       // max_connections of 0 means a single segment per slice, i.e. direct.
       maxConnections: criteria.direct === 'true' ? 0 : 1,

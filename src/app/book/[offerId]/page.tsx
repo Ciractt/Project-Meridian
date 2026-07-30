@@ -91,8 +91,10 @@ export default async function BookPage({
         departureDate: outbound.segments[0]?.departingAt.slice(0, 10) ?? '',
         returnDate: inbound?.segments[0]?.departingAt.slice(0, 10),
         adults: offer.passengers.filter((p) => p.type === 'adult').length || 1,
-        children: offer.passengers.filter((p) => p.type === 'child').length,
-        infants: offer.passengers.filter((p) => p.type === 'infant_without_seat').length,
+        /* Ages aren't carried on the offer — only the types the airline assigned
+           — so a recovery search can't reconstruct them. Falls back to no
+           children, and the form asks again. Better than guessing an age. */
+        childAges: [],
         cabin: 'economy',
         direct: 'false',
       }).toString()}`

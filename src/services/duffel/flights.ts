@@ -19,7 +19,7 @@ import type {
 
 interface SearchInput {
   slices: Array<{ origin: string; destination: string; departureDate: string }>;
-  passengers: { adults: number; children: number; infants: number };
+  passengers: { adults: number; childAges: number[] };
   cabin: 'economy' | 'premium_economy' | 'business' | 'first';
   maxConnections?: number;
 }
@@ -30,12 +30,22 @@ export type OfferSort = 'total_amount' | 'total_duration';
  *  us timing out with nothing. */
 const SUPPLIER_TIMEOUT_MS = 18_000;
 
+/**
+ * Adults by type, children by age.
+ *
+ * Duffel accepts `age` OR `type` per passenger, never both. Age is the more
+ * correct input for anyone under 18: airlines disagree about where childhood
+ * ends, and sending a band makes that call for them — which surfaces as a
+ * rejected order after the traveller has paid. Sending the age lets each airline
+ * apply its own rules and tells us what it decided in the offer's passenger list.
+ *
+ * Adults stay as a type because we don't ask adults their age and there is no
+ * airline disagreement to resolve above 18.
+ */
 function buildPassengers(counts: SearchInput['passengers']) {
-  const passengers: Array<{ type: DuffelPassengerType }> = [];
+  const passengers: Array<{ type: DuffelPassengerType } | { age: number }> = [];
   for (let i = 0; i < counts.adults; i++) passengers.push({ type: 'adult' });
-  for (let i = 0; i < counts.children; i++) passengers.push({ type: 'child' });
-  for (let i = 0; i < counts.infants; i++)
-    passengers.push({ type: 'infant_without_seat' });
+  for (const age of counts.childAges) passengers.push({ age });
   return passengers;
 }
 

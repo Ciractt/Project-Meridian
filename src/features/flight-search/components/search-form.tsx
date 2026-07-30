@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { flightSearchSchema, toSearchParams } from '../schema';
-import type { PassengerCounts, TripType } from '../types';
+import type { PassengerSelection, TripType } from '../types';
 import { PlaceField } from './place-field';
 import { PassengersField } from './passengers-field';
 import { DateRangeField } from './date-range-field';
@@ -50,10 +50,9 @@ export function SearchForm({
   );
   const [departureDate, setDepartureDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
-  const [passengers, setPassengers] = useState<PassengerCounts>({
+  const [passengers, setPassengers] = useState<PassengerSelection>({
     adults: 1,
-    children: 0,
-    infants: 0,
+    childAges: [],
   });
   const [cabin, setCabin] = useState('economy');
   const [direct, setDirect] = useState(false);
@@ -74,8 +73,7 @@ export function SearchForm({
       departureDate,
       returnDate: tripType === 'return' ? returnDate : undefined,
       adults: passengers.adults,
-      children: passengers.children,
-      infants: passengers.infants,
+      childAges: passengers.childAges.join(','),
       cabin,
       direct: direct ? 'true' : 'false',
     });
@@ -188,7 +186,7 @@ export function SearchForm({
             onChange={setPassengers}
             cabin={cabin}
             onCabinChange={setCabin}
-            error={errors.adults ?? errors.infants}
+            error={errors.adults ?? errors.childAges}
           />
         </Segment>
 

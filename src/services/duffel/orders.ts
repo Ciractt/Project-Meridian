@@ -4,6 +4,7 @@ import type {
   DuffelOrder,
   DuffelOrderCancellation,
   DuffelOrderPassengerInput,
+  DuffelService,
 } from './api-types';
 
 /**
@@ -99,6 +100,57 @@ export async function listRecentOrders(limit = 200): Promise<DuffelOrder[]> {
     path: '/air/orders',
     query: { limit, sort: 'created_at' },
     timeoutMs: 30_000,
+  });
+}
+
+/* ---- Post-booking services --------------------------------------------- *
+ *
+ * Bags only. Duffel's available-services catalogue currently supports baggage
+ * and nothing else, so there is no seat or meal equivalent here however much a
+ * traveller might want one.
+ *
+ * Also note the airline-side constraint: bags can only be added to an order that
+ * did NOT already include baggage as part of the original booking.
+ */
+
+/** What this order can still have added to it. Often empty. */
+export async function getOrderAvailableServices(
+  orderId: string,
+): Promise<DuffelService[]> {
+  return duffelRequest<DuffelService[]>({
+    path: `/air/orders/${orderId}/available_services`,
+    timeoutMs: 30_000,
+  });
+}
+
+/**
+ * Buys services against an existing order.
+ *
+ * The payment amount must equal the sum of quantity × price for every service —
+ * Duffel rejects a mismatch rather than charging the difference, which is the
+ * right behaviour and the reason the amount is computed server-side from their
+ * own figures rather than from anything the browser sent.
+ */
+export async function addOrderServices(input: {
+  orderId: string;
+  services: Array<{ id: string; quantity: number }>;
+  amount: string;
+  currency: string;
+}): Promise<DuffelOrder> {
+  return duffelRequest<DuffelOrder>({
+    method: 'POST',
+    path: `/air/orders/${input.orderId}/services`,
+    timeoutMs: 60_000,
+    body: {
+      data: {
+        add_services: input.services,
+        payment: {
+          type: 'balance',
+          amount: input.amount,
+          currency: input.currency,
+        },
+      },
+    },
   });
 }
 

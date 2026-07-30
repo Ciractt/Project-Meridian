@@ -8,6 +8,7 @@ import { formatFull } from '@/lib/date';
 import { buildGuidance } from '@/features/booking/pre-travel';
 import { PreTravelPanel } from '@/features/booking/components/pre-travel-panel';
 import { CancelBooking } from '@/features/booking/components/cancel-booking';
+import { AddBags } from '@/features/booking/components/add-bags';
 import { FinancialProtectionNotice } from '@/components/financial-protection-notice';
 
 export const metadata = { title: 'Your booking' };
@@ -116,7 +117,10 @@ export default async function BookingPage({
           </p>
         </section>
       ) : (
-        <CancelBooking orderId={booking.id} isOwner={booking.ownedByViewer} />
+        <>
+          <AddBags orderId={booking.id} isOwner={booking.ownedByViewer} />
+          <CancelBooking orderId={booking.id} isOwner={booking.ownedByViewer} />
+        </>
       )}
 
       <div className="mt-6">

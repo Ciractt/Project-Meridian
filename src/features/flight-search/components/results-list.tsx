@@ -49,7 +49,7 @@ export async function ResultsList({ criteria }: { criteria: FlightSearchParams }
     );
   }
 
-  const travellers = criteria.adults + criteria.children + criteria.infants;
+  const travellers = criteria.adults + criteria.childAges.length;
 
   // One logo per airline for the filter rail, resolved here so the client
   // component doesn't have to walk every offer to find them.
