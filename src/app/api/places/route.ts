@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   const query = new URL(request.url).searchParams.get('q')?.trim() ?? '';
 
   if (query.length < 2) {
-    return NextResponse.json({ places: [] });
+    return NextResponse.json({ places: [], source: 'live' });
   }
 
   try {
@@ -25,16 +25,16 @@ export async function GET(request: Request) {
       .slice(0, 8);
 
     return NextResponse.json(
-      { places },
+      { places, source: 'live' as const },
       // Airport names don't change. Caching these is the cheapest win
       // available and keeps keystrokes off Duffel entirely.
       { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate' } },
     );
   } catch (error) {
     if (error instanceof DuffelConfigError) {
-      return NextResponse.json({ places: [], unconfigured: true }, { status: 200 });
+      return NextResponse.json({ places: [], source: 'unconfigured' }, { status: 200 });
     }
     console.error('Place lookup failed:', error);
-    return NextResponse.json({ places: [] }, { status: 200 });
+    return NextResponse.json({ places: [], source: 'error' }, { status: 200 });
   }
 }

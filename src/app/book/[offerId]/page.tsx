@@ -121,6 +121,20 @@ export default async function BookPage({
     }),
   ]);
 
+  /* Ancillaries are frequently absent in test mode, and an empty result is
+     indistinguishable from a broken call without saying which. Logged rather than
+     shown: it's a developer question, not a traveller's. */
+  if (process.env.NODE_ENV !== 'production') {
+    console.info(
+      '[extras] offer=%s airline=%s available_services=%d seat_maps=%d raw_offer=%s',
+      offer.id,
+      offer.airline,
+      offer.availableServices.length,
+      Array.isArray(seatMaps) ? seatMaps.length : -1,
+      rawOffer === null ? 'FAILED' : 'ok',
+    );
+  }
+
   const hasExtras =
     rawOffer !== null &&
     (offer.availableServices.length > 0 ||

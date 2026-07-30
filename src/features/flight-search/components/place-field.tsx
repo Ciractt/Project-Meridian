@@ -38,6 +38,7 @@ export function PlaceField({
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState(false);
   const [results, setResults] = useState<Place[]>([]);
+  const [degraded, setDegraded] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const [pending, setPending] = useState(false);
@@ -48,9 +49,10 @@ export function PlaceField({
     let cancelled = false;
     setPending(true);
     const timer = setTimeout(() => {
-      void searchPlaces(query).then((places) => {
+      void searchPlaces(query).then((lookup) => {
         if (cancelled) return;
-        setResults(places);
+        setResults(lookup.places);
+        setDegraded(lookup.source === 'fallback');
         setActive(0);
         setPending(false);
       });
@@ -179,6 +181,15 @@ export function PlaceField({
           {!pending && query.trim().length >= 2 && results.length === 0 ? (
             <li className="px-4 py-3 text-sm text-ink-faint">
               Nothing matches “{query.trim()}”. Try a city name or a three-letter code.
+            </li>
+          ) : null}
+
+          {/* Say when the answer came from the short bundled list rather than the
+              live one. Otherwise a failing lookup and an unknown airport look
+              identical from here. */}
+          {degraded && !pending ? (
+            <li className="border-t border-hairline px-4 py-2 text-xs text-caution">
+              Airport search is temporarily unavailable — showing a shorter list.
             </li>
           ) : null}
 

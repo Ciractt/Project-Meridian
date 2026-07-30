@@ -1,5 +1,6 @@
 'use client';
 
+import { useId } from 'react';
 import { cn } from '@/lib/cn';
 
 const TITLES = [
@@ -153,7 +154,11 @@ function Input({
   type?: string;
   autoComplete?: string;
 }) {
-  const id = `f-${label.replace(/\W+/g, '-').toLowerCase()}-${Math.random().toString(36).slice(2, 7)}`;
+  /* useId, not Math.random(). The server and the client each rendered their own
+     random suffix, so the ids never matched and React discarded the tree with a
+     hydration mismatch. useId is stable across both by design — which is what it
+     exists for. */
+  const id = useId();
   return (
     <div>
       <label
