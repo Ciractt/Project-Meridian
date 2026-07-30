@@ -9,6 +9,7 @@ import {
   FareBrand,
   FareConditionsSummary,
 } from './fare-details';
+import { TripDetailsDialog } from './trip-details-dialog';
 
 /** A layover this long is worth warning about before someone books it. */
 const LONG_LAYOVER_MINUTES = 240;
@@ -105,6 +106,10 @@ export function OfferCard({
           >
             Select
           </Link>
+
+          {/* The card stays scannable; the detail sits one click away without
+              leaving the results. */}
+          <TripDetailsDialog offer={offer} travellers={travellers} />
           <p className="mt-2 text-center text-[11px] text-ink-faint">
             {travellers === 1 ? 'Total price' : `Total for ${travellers} travellers`}
           </p>

@@ -8,6 +8,7 @@ import { formatFull } from '@/lib/date';
 import { buildGuidance } from '@/features/booking/pre-travel';
 import { PreTravelPanel } from '@/features/booking/components/pre-travel-panel';
 import { CancelBooking } from '@/features/booking/components/cancel-booking';
+import { CheckoutSteps } from '@/features/booking/components/checkout-steps';
 import { AddBags } from '@/features/booking/components/add-bags';
 import { FinancialProtectionNotice } from '@/components/financial-protection-notice';
 
@@ -45,6 +46,10 @@ export default async function BookingPage({
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
+      {/* Extras are irrelevant once booked, so the completed flow is shown at
+          its shortest rather than replaying a step nobody can return to. */}
+      <CheckoutSteps current="done" includeExtras={false} />
+
       <div className="rounded-card border border-positive/30 bg-positive-wash p-6">
         <p className="font-mono text-[10px] tracking-[0.18em] text-positive uppercase">
           {booking.status === 'confirmed' ? 'Confirmed' : booking.status}

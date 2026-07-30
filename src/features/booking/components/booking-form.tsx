@@ -9,6 +9,7 @@ import { completeBooking, startBooking } from '../actions';
 import { PassengerFields, type PassengerDraft } from './passenger-fields';
 import { PaymentStep } from './payment-step';
 import { OfferCountdown } from './offer-countdown';
+import { CheckoutSteps, type CheckoutStep } from './checkout-steps';
 import { AncillariesStep } from './ancillaries-step';
 import { MIN_OFFER_WINDOW_MS } from '../constants';
 import type { SelectedService } from '../services';
@@ -212,6 +213,13 @@ export function BookingForm({
     });
   }
 
+  const step: CheckoutStep =
+    stage.name === 'details'
+      ? 'details'
+      : stage.name === 'extras'
+        ? 'extras'
+        : 'payment';
+
   if (stage.name === 'stuck') {
     return (
       <section
@@ -244,6 +252,7 @@ export function BookingForm({
   if (stage.name === 'extras') {
     return (
       <div className="space-y-4">
+        <CheckoutSteps current="extras" includeExtras={hasExtras} />
         {notice ? <Notice notice={notice} /> : null}
         <OfferCountdown expiresAt={expiresAt} onExpire={() => setOutOfTime(true)} />
         <AncillariesStep
@@ -262,6 +271,7 @@ export function BookingForm({
   if (stage.name === 'payment' || stage.name === 'ticketing') {
     return (
       <div className="space-y-4">
+        <CheckoutSteps current="payment" includeExtras={hasExtras} />
         {notice ? <Notice notice={notice} /> : null}
         {stage.name === 'payment' ? <OfferCountdown expiresAt={expiresAt} /> : null}
         <PaymentStep
@@ -278,6 +288,8 @@ export function BookingForm({
 
   return (
     <form onSubmit={submitDetails} noValidate className="space-y-4">
+      <CheckoutSteps current={step} includeExtras={hasExtras} />
+
       <OfferCountdown
         expiresAt={expiresAt}
         onExpire={() => setOutOfTime(true)}
