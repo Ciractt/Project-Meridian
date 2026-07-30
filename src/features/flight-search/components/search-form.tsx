@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { flightSearchSchema, toSearchParams } from '../schema';
+import { rememberSearch } from '../recent';
 import type { PassengerSelection, TripType } from '../types';
 import { PlaceField } from './place-field';
 import { PassengersField } from './passengers-field';
@@ -90,7 +91,21 @@ export function SearchForm({
 
     setErrors({});
     const query = toSearchParams(result.data);
-    startTransition(() => router.push(`/search?${query.toString()}`));
+    const href = `/search?${query.toString()}`;
+
+    // Written before navigating, so it survives even if the results page errors.
+    rememberSearch({
+      origin: result.data.origin,
+      destination: result.data.destination,
+      originCity: origin.display || result.data.origin,
+      destinationCity: destination.display || result.data.destination,
+      departureDate: result.data.departureDate,
+      returnDate: result.data.returnDate ?? '',
+      travellers: result.data.adults + result.data.childAges.length,
+      href,
+    });
+
+    startTransition(() => router.push(href));
   }
 
   const dateError = errors.departureDate ?? errors.returnDate;

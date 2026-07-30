@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getCurrentUser } from '@/features/auth/queries';
 import { SiteFooter } from '@/components/site-footer';
+import { getSiteContent } from '@/features/content/queries';
+import { AnnouncementBar } from '@/features/content/components/announcement-bar';
 import { display, mono, sans } from '@/lib/fonts';
 import { cn } from '@/lib/cn';
 import './globals.css';
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser();
+  const [user, content] = await Promise.all([getCurrentUser(), getSiteContent()]);
   return (
     <html lang="en-GB" className={cn(display.variable, sans.variable, mono.variable)}>
       <body className="min-h-dvh antialiased">
@@ -27,6 +29,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to content
         </a>
+
+        <AnnouncementBar announcement={content.announcement} />
 
         <header className="border-b border-hairline bg-surface">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">

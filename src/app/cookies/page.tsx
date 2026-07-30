@@ -11,11 +11,18 @@ export default function Page() {
       intro="Short, because there isn’t much."
     >
       <h2>What we set</h2>
-      <p>
-        Only cookies needed to make the site work. Today that means session cookies used to
-        keep you signed in if you have an account, set by our authentication provider and
-        refreshed as you browse.
-      </p>
+      <p>Only cookies needed to make the site work. Today that means two things.</p>
+      <ul>
+        <li>
+          <strong>Session cookies</strong> that keep you signed in if you have an account,
+          set by our authentication provider and refreshed as you browse.
+        </li>
+        <li>
+          <strong>Your recent searches</strong>, so the home page can offer them back to
+          you. This is stored on your device and never sent to us as a record of who
+          searched what — it expires after 30 days, and clearing your cookies removes it.
+        </li>
+      </ul>
 
       <h2>What we don’t set</h2>
       <p>

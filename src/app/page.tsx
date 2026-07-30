@@ -7,6 +7,10 @@ import { getLivePromotion } from '@/features/promotions/queries';
 import { PromoBanner } from '@/features/promotions/components/promo-banner';
 import { TrustStrip } from '@/components/trust-strip';
 import { HomeFaq } from '@/components/home-faq';
+import { cookies } from 'next/headers';
+import { getSiteContent } from '@/features/content/queries';
+import { parseRecent, RECENT_COOKIE } from '@/features/flight-search/recent';
+import { RecentSearches } from '@/features/flight-search/components/recent-searches';
 
 /**
  * Server Component. The only client boundary is <SearchForm />.
@@ -40,10 +44,14 @@ export default async function HomePage({
       }
     : undefined;
 
-  const [promotion, routePrices, demandRoutes] = await Promise.all([
+  const cookieStore = await cookies();
+  const recent = parseRecent(cookieStore.get(RECENT_COOKIE)?.value);
+
+  const [promotion, routePrices, demandRoutes, content] = await Promise.all([
     getLivePromotion(),
     getRoutePrices(),
     getDemandRoutes(6),
+    getSiteContent(),
   ]);
 
   /* Follow real demand once there's enough of it; fall back to the curated set
@@ -66,11 +74,17 @@ export default async function HomePage({
 
         <div className="relative mx-auto max-w-6xl px-5 pt-12 pb-12 sm:pt-16">
           <p className="font-mono text-[11px] tracking-[0.18em] text-chart uppercase">
-            Flight search
+            {content.hero.eyebrow}
           </p>
-          <h1 className="mt-3 mb-8 max-w-2xl font-display text-3xl leading-tight font-extrabold tracking-tight text-white text-balance sm:text-4xl">
-            The price you see is the price you pay.
+          <h1 className="mt-3 max-w-2xl font-display text-3xl leading-tight font-extrabold tracking-tight text-white text-balance sm:text-4xl">
+            {content.hero.headline}
           </h1>
+          {content.hero.subhead ? (
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70">
+              {content.hero.subhead}
+            </p>
+          ) : null}
+          <div className="mb-8" />
 
           <div id="search" className="scroll-mt-8">
             <SearchForm
@@ -78,6 +92,8 @@ export default async function HomePage({
               initialDestination={initialDestination}
             />
           </div>
+
+          <RecentSearches searches={recent} />
 
           <div className="mt-10">
             <TrustStrip />

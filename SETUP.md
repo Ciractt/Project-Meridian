@@ -66,8 +66,8 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    `0005_order_documents_flag.sql`, `0006_ancillaries.sql`,
    `0007_promotions.sql`, `0008_route_prices.sql`, then
    `0009_webhooks_and_pending_orders.sql`, `0010_confirmation_email.sql`, then
-   `0011_confirmation_email_failures.sql`, `0012_cancellations.sql`, then
-   `0013_post_booking_services.sql`.
+   `0011_confirmation_email_failures.sql`, `0012_cancellations.sql`, `0013_post_booking_services.sql`, then
+   `0014_site_content.sql`.
 
 7. **Add the secret key.** Settings → API Keys → Secret keys (or the
    `service_role` key under Legacy API Keys). This one bypasses row-level

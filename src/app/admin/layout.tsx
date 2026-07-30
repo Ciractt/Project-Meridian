@@ -44,6 +44,12 @@ export default async function AdminLayout({
         >
           Promotions
         </Link>
+        <Link
+          href="/admin/content"
+          className="text-airway underline underline-offset-2"
+        >
+          Content
+        </Link>
       </nav>
 
       {children}
