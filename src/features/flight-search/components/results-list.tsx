@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { runSearch } from '../results';
 import type { FlightSearchParams } from '../schema';
 import { ResultsPanel } from './results-panel';
+import { carriersMissingFrom } from '../unavailable-carriers';
+import { MissingCarriersNotice } from './missing-carriers-notice';
 
 /**
  * Async Server Component inside the page's <Suspense> boundary.
@@ -11,6 +13,13 @@ import { ResultsPanel } from './results-panel';
  */
 export async function ResultsList({ criteria }: { criteria: FlightSearchParams }) {
   const result = await runSearch(criteria);
+
+  /* Rendered above every outcome, including the empty and error states. It
+     matters most when we return nothing or only expensive fares, because that is
+     exactly when a traveller concludes the route is dear rather than that our
+     coverage is incomplete. */
+  const missing = carriersMissingFrom(criteria.origin, criteria.destination);
+  const notice = <MissingCarriersNotice carriers={missing} />;
 
   if (result.status === 'unconfigured') {
     return (
@@ -40,12 +49,15 @@ export async function ResultsList({ criteria }: { criteria: FlightSearchParams }
 
   if (result.status === 'empty') {
     return (
-      <Notice title="No flights on this route for these dates.">
-        Try nearby dates, a different airport, or allow connections.{' '}
-        <Link href="/" className="text-airway underline underline-offset-2">
-          Change search
-        </Link>
-      </Notice>
+      <>
+        {notice}
+        <Notice title="No flights on this route for these dates.">
+          Try nearby dates, a different airport, or allow connections.{' '}
+          <Link href="/" className="text-airway underline underline-offset-2">
+            Change search
+          </Link>
+        </Notice>
+      </>
     );
   }
 
@@ -61,12 +73,15 @@ export async function ResultsList({ criteria }: { criteria: FlightSearchParams }
   }
 
   return (
-    <ResultsPanel
-      offers={result.offers}
-      travellers={travellers}
-      logos={logos}
-      cached={result.cached}
-    />
+    <>
+      {notice}
+      <ResultsPanel
+        offers={result.offers}
+        travellers={travellers}
+        logos={logos}
+        cached={result.cached}
+      />
+    </>
   );
 }
 

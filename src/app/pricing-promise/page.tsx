@@ -47,6 +47,18 @@ export default function Page() {
         <li>No personalised pricing. Two people searching the same flight see the same price.</li>
       </ul>
 
+      <h2>We tell you what we can’t show you</h2>
+      <p>
+        A few airlines don’t make their fares available to us at all. On routes they
+        fly, we name them and say they may be cheaper direct — rather than showing
+        you an incomplete list and letting you assume it’s the whole market.
+      </p>
+      <p>
+        This costs us bookings. We think the alternative costs more: finding out
+        after you’ve paid that there was a fare we never mentioned is the same
+        failure as a hidden fee, just arriving by omission.
+      </p>
+
       <h2>How results are ranked</h2>
       <p>
         “Cheapest” is by total price and “Fastest” by journey time. “Best” weighs price

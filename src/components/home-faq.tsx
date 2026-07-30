@@ -69,6 +69,21 @@ const QUESTIONS = [
     ),
   },
   {
+    q: 'Do you show every airline?',
+    a: (
+      <>
+        No, and we tell you which ones are missing. A few carriers — Jet2 and
+        Ryanair among them — don’t make their fares available to us. On routes they
+        fly, we say so on the results page and suggest checking direct.
+        <br />
+        <br />
+        Showing you an incomplete list without mentioning it would let you assume
+        you’d seen the whole market. That’s the same failure as a hidden fee,
+        arriving by omission rather than by design.
+      </>
+    ),
+  },
+  {
     q: 'Can I choose seats and add bags?',
     a: (
       <>
