@@ -11,6 +11,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "manifest": "node scripts/build-destination-manifest.mjs"
   },
   "dependencies": {
@@ -35,6 +37,7 @@
     "prettier": "^3.4.0",
     "prettier-plugin-tailwindcss": "^0.6.0",
     "tailwindcss": "^4.3.3",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.10"
   }
 }
