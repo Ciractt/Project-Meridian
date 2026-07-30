@@ -72,7 +72,11 @@ export function TripDetailsDialog({
         ref={ref}
         onClose={() => setOpen(false)}
         aria-labelledby="trip-details-heading"
-        className="w-full max-w-2xl rounded-card bg-surface p-0 backdrop:bg-ink/50 open:animate-none"
+        /* `m-auto` is doing real work here. A native <dialog> centres itself in
+           the top layer using the UA's `margin: auto`, and Tailwind's preflight
+           resets margin on every element — so without this it pins to the top
+           left corner and overflows off-screen. */
+        className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden rounded-card bg-surface p-0 backdrop:bg-ink/50"
       >
         <div className="flex items-center justify-between gap-4 border-b border-hairline px-6 py-4">
           <h2
@@ -91,7 +95,9 @@ export function TripDetailsDialog({
           </button>
         </div>
 
-        <div className="max-h-[70vh] space-y-5 overflow-y-auto px-6 py-5">
+        {/* The header and footer stay put; only the itinerary scrolls, so the
+            price and the confirm button are always reachable. */}
+        <div className="max-h-[calc(90dvh-9rem)] space-y-5 overflow-y-auto px-6 py-5">
           {offer.slices.map((slice, index) => (
             <SliceDetail
               key={slice.id}
