@@ -7,6 +7,7 @@ import { formatMoney } from '@/lib/format';
 import { formatFull } from '@/lib/date';
 import { buildGuidance } from '@/features/booking/pre-travel';
 import { PreTravelPanel } from '@/features/booking/components/pre-travel-panel';
+import { CancelBooking } from '@/features/booking/components/cancel-booking';
 import { FinancialProtectionNotice } from '@/components/financial-protection-notice';
 
 export const metadata = { title: 'Your booking' };
@@ -103,6 +104,20 @@ export default async function BookingPage({
           airlineName={booking.airlineName}
         />
       ) : null}
+
+      {booking.status === 'cancelled' ? (
+        <section className="mt-6 rounded-card border border-hairline bg-paper p-6">
+          <h2 className="font-display text-base font-bold tracking-tight">
+            This booking is cancelled
+          </h2>
+          <p className="mt-2 text-sm text-ink-muted">
+            The airline has released the seats. Any refund due is on its way to the
+            card you paid with.
+          </p>
+        </section>
+      ) : (
+        <CancelBooking orderId={booking.id} isOwner={booking.ownedByViewer} />
+      )}
 
       <div className="mt-6">
         <FinancialProtectionNotice variant="confirmation" />

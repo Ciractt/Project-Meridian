@@ -1,6 +1,10 @@
 import 'server-only';
 import { duffelRequest, duffelRequestDetailed } from './client';
-import type { DuffelOrder, DuffelOrderPassengerInput } from './api-types';
+import type {
+  DuffelOrder,
+  DuffelOrderCancellation,
+  DuffelOrderPassengerInput,
+} from './api-types';
 
 /**
  * Order creation.
@@ -78,4 +82,59 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
 
 export async function getOrder(orderId: string): Promise<DuffelOrder> {
   return duffelRequest<DuffelOrder>({ path: `/air/orders/${orderId}` });
+}
+
+/**
+ * Recent orders, newest first.
+ *
+ * Used by reconciliation to find an order created by a request that timed out —
+ * we never received an id for those, so the only way to find them is to list and
+ * match on the `attempt_token` we set as order metadata.
+ *
+ * There is no metadata filter on this endpoint, so the matching happens locally.
+ * That is fine at this volume and is worth revisiting if order counts grow.
+ */
+export async function listRecentOrders(limit = 200): Promise<DuffelOrder[]> {
+  return duffelRequest<DuffelOrder[]>({
+    path: '/air/orders',
+    query: { limit, sort: 'created_at' },
+    timeoutMs: 30_000,
+  });
+}
+
+/* ---- Cancellation ------------------------------------------------------- *
+ *
+ * Two steps by design: quote, then confirm. The quote carries the refund the
+ * airline will give, which is frequently far less than the fare and sometimes
+ * nothing at all — so a traveller must see it before committing, and a one-shot
+ * cancel endpoint would make that impossible.
+ */
+
+/** Creates a cancellation quote. Does NOT cancel anything. */
+export async function quoteOrderCancellation(
+  orderId: string,
+): Promise<DuffelOrderCancellation> {
+  return duffelRequest<DuffelOrderCancellation>({
+    method: 'POST',
+    path: '/air/order_cancellations',
+    timeoutMs: 45_000,
+    body: { data: { order_id: orderId } },
+  });
+}
+
+/**
+ * Confirms a quote. THIS cancels the booking with the airline.
+ *
+ * Only the most recent quote for an order can be confirmed; an older one fails
+ * with `order_cancellation_stale`. So a quote the traveller has been sitting on
+ * must be re-taken rather than reused.
+ */
+export async function confirmOrderCancellation(
+  cancellationId: string,
+): Promise<DuffelOrderCancellation> {
+  return duffelRequest<DuffelOrderCancellation>({
+    method: 'POST',
+    path: `/air/order_cancellations/${cancellationId}/actions/confirm`,
+    timeoutMs: 60_000,
+  });
 }

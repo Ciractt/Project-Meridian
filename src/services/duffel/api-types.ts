@@ -172,6 +172,28 @@ export interface DuffelOrderPassengerInput {
   }>;
 }
 
+/**
+ * What the airline will let us do to this order.
+ *
+ * `cancel` present means the cancellation API will work. Absent means it has to
+ * go through Duffel's team by hand — so the UI must not offer a button that
+ * cannot work.
+ */
+export type DuffelOrderAction = 'cancel' | 'change' | 'update';
+
+export interface DuffelOrderCancellation {
+  id: string;
+  order_id: string;
+  /** What the AIRLINE returns. Goes to our balance, not the customer's card. */
+  refund_amount: string | null;
+  refund_currency: string | null;
+  /** 'original_form_of_payment' | 'airline_credits' | 'voucher' | 'balance' */
+  refund_to: string | null;
+  /** Quotes go stale; only the most recent one can be confirmed. */
+  expires_at: string | null;
+  confirmed_at: string | null;
+}
+
 export interface DuffelOrder {
   id: string;
   booking_reference: string | null;
@@ -182,6 +204,9 @@ export interface DuffelOrder {
   owner: DuffelCarrier;
   slices: DuffelSlice[];
   passengers: Array<{ id: string; given_name: string; family_name: string }>;
+  available_actions?: DuffelOrderAction[] | null;
+  cancelled_at?: string | null;
+  metadata?: Record<string, string> | null;
 }
 
 /** The offer's own passenger list — needed because order passenger IDs must

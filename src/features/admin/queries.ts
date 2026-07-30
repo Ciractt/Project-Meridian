@@ -269,3 +269,54 @@ export async function getFailedConfirmations(): Promise<FailedConfirmation[]> {
     error: row.confirmation_email_error ? String(row.confirmation_email_error) : null,
   }));
 }
+
+
+export interface StrandedRefund {
+  id: string;
+  bookingReference: string | null;
+  origin: string;
+  destination: string;
+  contactEmail: string;
+  airlineRefund: string | null;
+  currency: string | null;
+  error: string | null;
+  failedAt: string;
+}
+
+/**
+ * Cancelled with the airline, not refunded to the traveller.
+ *
+ * The highest-severity state in the system: their booking is gone AND we still
+ * have their money. Nothing retries this automatically, because a blind retry on
+ * a refund that may have partially succeeded is its own problem.
+ */
+export async function getStrandedRefunds(): Promise<StrandedRefund[]> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select(
+      'id, booking_reference, origin, destination, contact_email, airline_refund_amount, airline_refund_currency, customer_refund_error, customer_refund_failed_at',
+    )
+    .not('customer_refund_failed_at', 'is', null)
+    .order('customer_refund_failed_at', { ascending: true })
+    .limit(50);
+
+  if (error) {
+    console.error('Could not load stranded refunds:', error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    id: String(row.id),
+    bookingReference: row.booking_reference ? String(row.booking_reference) : null,
+    origin: String(row.origin),
+    destination: String(row.destination),
+    contactEmail: String(row.contact_email),
+    airlineRefund: row.airline_refund_amount ? String(row.airline_refund_amount) : null,
+    currency: row.airline_refund_currency ? String(row.airline_refund_currency) : null,
+    error: row.customer_refund_error ? String(row.customer_refund_error) : null,
+    failedAt: String(row.customer_refund_failed_at),
+  }));
+}

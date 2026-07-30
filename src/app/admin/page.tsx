@@ -2,12 +2,13 @@ import {
   getAttentionAttempts,
   getFailedConfirmations,
   getPendingAirlineChanges,
+  getStrandedRefunds,
   getRecentOrders,
   getSearchStats,
   getTopRoutes,
 } from '@/features/admin/queries';
 import { formatMoney } from '@/lib/format';
-import { resendConfirmation } from '@/features/admin/actions';
+import { reconcileAttempt, reconcileNow, resendConfirmation } from '@/features/admin/actions';
 import { Button } from '@/components/ui/button';
 
 export const metadata = { title: 'Admin' };
@@ -21,14 +22,22 @@ export const metadata = { title: 'Admin' };
  * nobody opens.
  */
 export default async function AdminPage() {
-  const [stats, routes, attention, orders, airlineChanges, failedEmails] =
-    await Promise.all([
+  const [
+    stats,
+    routes,
+    attention,
+    orders,
+    airlineChanges,
+    failedEmails,
+    strandedRefunds,
+  ] = await Promise.all([
     getSearchStats(),
     getTopRoutes(),
     getAttentionAttempts(),
     getRecentOrders(),
     getPendingAirlineChanges(),
     getFailedConfirmations(),
+    getStrandedRefunds(),
   ]);
 
   if (!stats) {
@@ -52,6 +61,49 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-8">
+      {/* The worst state in the system: the airline has cancelled AND we still
+          hold their money. Above every other queue. */}
+      {strandedRefunds.length > 0 ? (
+        <section className="rounded-card border-2 border-danger bg-chart-wash p-5">
+          <h2 className="font-display text-base font-bold tracking-tight text-danger">
+            {strandedRefunds.length} cancelled booking
+            {strandedRefunds.length === 1 ? '' : 's'} not refunded
+          </h2>
+          <p className="mt-1 mb-4 max-w-2xl text-sm text-ink-muted">
+            The airline cancelled and returned money to our balance, but refunding
+            the traveller’s card failed. Their booking is gone and we are holding
+            their money. Refund manually in the Duffel dashboard — this is not
+            retried automatically, because a blind retry on a partially succeeded
+            refund is its own problem.
+          </p>
+          <ul className="space-y-2">
+            {strandedRefunds.map((row) => (
+              <li
+                key={row.id}
+                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-danger/20 pt-2 text-sm"
+              >
+                <span className="font-mono">
+                  {row.bookingReference ?? row.id.slice(0, 8)} · {row.origin} →{' '}
+                  {row.destination}
+                </span>
+                <span className="font-mono text-xs">
+                  {row.airlineRefund && row.currency
+                    ? formatMoney(row.airlineRefund, row.currency)
+                    : '—'}{' '}
+                  owed
+                </span>
+                <span className="max-w-56 truncate text-xs text-ink-muted">
+                  {row.contactEmail}
+                </span>
+                <span className="max-w-64 truncate text-xs text-danger">
+                  {row.error ?? 'unknown error'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {/* Claimed, failed, and nothing will retry. Each is a paying traveller who
           may have no copy of their booking reference at all. */}
       {failedEmails.length > 0 ? (
@@ -144,11 +196,23 @@ export default async function AdminPage() {
             <strong>Needs reconciliation</strong> means a ticket may exist — check
             Duffel’s order list by hand and never retry the booking.
           </p>
+          <form
+            action={async () => {
+              'use server';
+              await reconcileNow();
+            }}
+            className="mb-4"
+          >
+            <Button type="submit" variant="secondary">
+              Reconcile all against Duffel
+            </Button>
+          </form>
+
           <ul className="space-y-2">
             {attention.map((attempt) => (
               <li
                 key={attempt.token}
-                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-hairline pt-2 text-sm"
+                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-hairline pt-2 text-sm"
               >
                 <span className="font-mono text-xs">
                   {attempt.paymentIntentId ?? attempt.token}
@@ -170,6 +234,16 @@ export default async function AdminPage() {
                     ? formatMoney(attempt.chargeAmount, attempt.chargeCurrency)
                     : '—'}
                 </span>
+                <form
+                  action={async () => {
+                    'use server';
+                    await reconcileAttempt(attempt.token);
+                  }}
+                >
+                  <Button type="submit" variant="ghost">
+                    Resolve now
+                  </Button>
+                </form>
               </li>
             ))}
           </ul>

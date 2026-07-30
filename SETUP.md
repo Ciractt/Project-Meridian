@@ -66,7 +66,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    `0005_order_documents_flag.sql`, `0006_ancillaries.sql`,
    `0007_promotions.sql`, `0008_route_prices.sql`, then
    `0009_webhooks_and_pending_orders.sql`, `0010_confirmation_email.sql`, then
-   `0011_confirmation_email_failures.sql`.
+   `0011_confirmation_email_failures.sql`, then `0012_cancellations.sql`.
 
 7. **Add the secret key.** Settings → API Keys → Secret keys (or the
    `service_role` key under Legacy API Keys). This one bypasses row-level
@@ -211,3 +211,48 @@ retry itself. Failures appear at the top of `/admin` with a **Resend** button.
 
 That queue should normally be empty. Anything sitting in it is a paying traveller
 who may have no copy of their booking reference.
+
+---
+
+## Reconciliation
+
+Resolves bookings stuck in an unknown state — order creation timed out or came
+back `202`, so a ticket may or may not exist. It asks Duffel rather than guessing,
+then either records the order and sends the confirmation, or refunds.
+
+Set a secret and schedule it:
+
+```bash
+CRON_SECRET=$(openssl rand -hex 32)
+```
+
+`vercel.json`:
+
+```json
+{ "crons": [{ "path": "/api/cron/reconcile", "schedule": "*/15 * * * *" }] }
+```
+
+There's also a **Reconcile all** button on `/admin`, and a **Resolve now** on each
+stuck attempt for when someone is waiting. Both are safe to run repeatedly and
+alongside the schedule.
+
+Attempts younger than five minutes are skipped — `completeBooking` may still be
+running, and racing it is how you create the duplicate you were trying to avoid.
+
+---
+
+## Cancellations
+
+Travellers cancel from their booking page. Two steps by design: a quote showing
+the airline's refund, then confirmation. The airline's refund is often far less
+than the fare and sometimes nothing, so nobody commits before seeing the figure.
+
+**The money moves twice.** The airline refunds to *our Duffel balance*; we then
+refund the traveller's card against the original payment intent. A confirmed
+cancellation with a failed card refund means their booking is gone and we're
+holding their money — that appears at the very top of `/admin` and is not retried
+automatically, because a blind retry on a partially succeeded refund is its own
+problem.
+
+Guests must type the booking's contact email to cancel. The URL alone is enough to
+*view* a booking; it should not be enough for a stranger to destroy a flight.
