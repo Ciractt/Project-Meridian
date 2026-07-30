@@ -1,0 +1,11 @@
+{
+  "_comment": "Licence record, keyed by IATA code. One entry per image file. Kept because if a file is ever queried the answer has to exist somewhere — not because most licences require a visible credit.",
+  "_example": {
+    "AGP": {
+      "source": "Unsplash",
+      "url": "https://unsplash.com/photos/...",
+      "author": "Photographer Name",
+      "licence": "Unsplash Licence"
+    }
+  }
+}

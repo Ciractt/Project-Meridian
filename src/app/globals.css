@@ -1,0 +1,122 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Tailwind v4 is CSS-first: everything in @theme becomes both a
+ * CSS custom property and a utility class. One source of truth.
+ *
+ * Direction: aeronautical chart. v2 widens the palette — sectional charts are
+ * not black and white. They use tinted terrain, airspace bands in blue and
+ * magenta, and ink linework over the top. Colour here is functional: each
+ * wash means something and is used only for that meaning.
+ */
+@theme {
+  /* Ink */
+  --color-ink: #0b1017;
+  --color-ink-muted: #414b5a;
+  --color-ink-faint: #6d7787;
+
+  /* Paper and terrain — chart substrate */
+  --color-paper: #eef1f6;
+  --color-surface: #ffffff;
+  --color-terrain: #f2ecdd; /* tinted relief */
+  --color-terrain-line: #ded4bd;
+  --color-night: #0c1622; /* hero panel — the search bar's backdrop */
+  --color-night-line: #1c2b3c;
+  --color-hairline: #dbe1ea;
+  --color-hairline-strong: #bcc5d2;
+
+  /* Signal. Each wash carries one meaning and no other. */
+  --color-chart: #b01270; /* controlled airfield magenta — price, CTA, focus */
+  --color-chart-wash: #fbe9f3;
+  --color-airway: #1f5fc4; /* airway blue — informational, links, never a CTA */
+  --color-airway-wash: #e7eefb;
+  --color-positive: #0d6f4d; /* fare drops, confirmations */
+  --color-positive-wash: #e2f2ec;
+  --color-caution: #8a4c00; /* long layovers, overnight, tight connections */
+  --color-caution-wash: #fbf0dd;
+  --color-danger: #a81f18;
+
+  /* Type */
+  --font-display: var(--font-display-src), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sans-src), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-src), ui-monospace, monospace;
+
+  /* Radii */
+  --radius-card: 14px;
+  --radius-control: 10px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .font-mono,
+  [class*='font-mono'] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* One focus treatment across the whole product. Visible, high contrast,
+     never removed. */
+  :focus-visible {
+    outline: 2px solid var(--color-chart);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 50;
+}
+
+/* The chart grid: latitude and longitude ruling, at the weight a real
+   sectional prints it. Decorative, so it sits behind content at low
+   contrast and never carries meaning on its own. */
+@utility chart-grid {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--color-terrain-line) 0 1px,
+      transparent 1px 64px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--color-terrain-line) 0 1px,
+      transparent 1px 64px
+    );
+}
+
+@utility chart-grid-night {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--color-night-line) 0 1px,
+      transparent 1px 72px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--color-night-line) 0 1px,
+      transparent 1px 72px
+    );
+}

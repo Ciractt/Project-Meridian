@@ -1,0 +1,195 @@
+import { SearchForm } from '@/features/flight-search/components/search-form';
+import { FEATURED_ROUTES } from '@/features/destinations/routes';
+import { RouteCard } from '@/features/destinations/components/route-card';
+import { getRoutePrices } from '@/features/destinations/prices';
+import { getDemandRoutes } from '@/features/destinations/demand';
+import { getLivePromotion } from '@/features/promotions/queries';
+import { PromoBanner } from '@/features/promotions/components/promo-banner';
+import { TrustStrip } from '@/components/trust-strip';
+import { HomeFaq } from '@/components/home-faq';
+
+/**
+ * Server Component. The only client boundary is <SearchForm />.
+ *
+ * The page alternates between the night panel, paper and white so it has some
+ * rhythm — an earlier version put everything on one pale background at one scale,
+ * which read as a wireframe however good the individual pieces were.
+ *
+ * The search bar stays the hero. Everything below it either carries a number or
+ * answers a question; nothing is here to fill space.
+ */
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const one = (value: string | string[] | undefined): string =>
+    typeof value === 'string' ? value : '';
+
+  const initialOrigin = one(params.origin)
+    ? {
+        code: one(params.origin).toUpperCase(),
+        display: one(params.originCity) || one(params.origin).toUpperCase(),
+      }
+    : undefined;
+  const initialDestination = one(params.destination)
+    ? {
+        code: one(params.destination).toUpperCase(),
+        display: one(params.destinationCity) || one(params.destination).toUpperCase(),
+      }
+    : undefined;
+
+  const [promotion, routePrices, demandRoutes] = await Promise.all([
+    getLivePromotion(),
+    getRoutePrices(),
+    getDemandRoutes(6),
+  ]);
+
+  /* Follow real demand once there's enough of it; fall back to the curated set
+     below that threshold. Three is the point where a "popular routes" grid stops
+     looking like a list of whatever two people searched this morning. */
+  const useDemand = demandRoutes.length >= 3;
+  const routes = useDemand
+    ? demandRoutes
+    : FEATURED_ROUTES.map((route) => ({
+        ...route,
+        price: routePrices.get(`${route.from}-${route.to}`),
+      }));
+
+  const anyPrices = routes.some((route) => route.price);
+
+  return (
+    <>
+      <section className="relative bg-night">
+        <div className="chart-grid-night absolute inset-0 opacity-70" aria-hidden="true" />
+
+        <div className="relative mx-auto max-w-6xl px-5 pt-12 pb-12 sm:pt-16">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-chart uppercase">
+            Flight search
+          </p>
+          <h1 className="mt-3 mb-8 max-w-2xl font-display text-3xl leading-tight font-extrabold tracking-tight text-white text-balance sm:text-4xl">
+            The price you see is the price you pay.
+          </h1>
+
+          <div id="search" className="scroll-mt-8">
+            <SearchForm
+              initialOrigin={initialOrigin}
+              initialDestination={initialDestination}
+            />
+          </div>
+
+          <div className="mt-10">
+            <TrustStrip />
+          </div>
+        </div>
+      </section>
+
+      {promotion ? (
+        <div className="mx-auto max-w-6xl px-5 pt-10">
+          {/* Below the search bar, never above it. */}
+          <PromoBanner promotion={promotion} />
+        </div>
+      ) : null}
+
+      <section aria-labelledby="routes" className="bg-paper">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2
+                id="routes"
+                className="font-display text-2xl font-extrabold tracking-tight"
+              >
+                {useDemand ? 'What people are searching' : 'Popular from the UK'}
+              </h2>
+              <p className="mt-2 max-w-xl text-sm text-ink-muted">
+                {anyPrices
+                  ? 'Cheapest returns we’ve seen recently, taxes and airline charges included. Pick a route and we’ll check live availability for your dates.'
+                  : 'Pick a route and we’ll ask for your dates. Every price includes taxes and airline charges.'}
+              </p>
+            </div>
+          </div>
+
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {routes.map((route) => (
+              <li key={`${route.from}-${route.to}`}>
+                <RouteCard route={route} price={route.price} />
+              </li>
+            ))}
+          </ul>
+
+          {anyPrices ? (
+            <p className="mt-5 text-xs text-ink-faint">
+              Indicative only. Fares move constantly and these were true for one set
+              of dates when we last saw them — we re-check the live price before
+              anything is charged.
+            </p>
+          ) : null}
+        </div>
+      </section>
+
+      <section aria-labelledby="how" className="bg-surface">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <h2
+            id="how"
+            className="font-display text-2xl font-extrabold tracking-tight"
+          >
+            Why book here
+          </h2>
+
+          <dl className="mt-8 grid gap-6 sm:grid-cols-3">
+            {[
+              {
+                term: 'One search',
+                headline: 'Full-service and low-cost, side by side',
+                detail:
+                  'Ranked by what the journey actually costs you, with the baggage each fare includes shown on the result. A cheap fare with no checked bag often isn’t the cheaper one.',
+                mark: 'text-airway',
+                rule: 'bg-airway',
+              },
+              {
+                term: 'Whole price',
+                headline: 'Nothing appears at the last screen',
+                detail:
+                  'Taxes, airline charges and card fees are inside every figure from the first result onwards. Bags and seats are priced before you pay, at the amount they add to your total.',
+                mark: 'text-chart',
+                rule: 'bg-chart',
+              },
+              {
+                term: 'Real tickets',
+                headline: 'Issued the moment you pay',
+                detail:
+                  'Your airline reference works on the airline’s own site for seats, bags and check-in. We re-check the live fare before charging, so the price never moves underneath you.',
+                mark: 'text-positive',
+                rule: 'bg-positive',
+              },
+            ].map((item) => (
+              <div key={item.term}>
+                <div className={`h-0.5 w-10 ${item.rule}`} aria-hidden="true" />
+                <dt
+                  className={`mt-4 font-mono text-[10px] tracking-[0.14em] uppercase ${item.mark}`}
+                >
+                  {item.term}
+                </dt>
+                <dd>
+                  <p className="mt-2 font-display text-base font-bold tracking-tight">
+                    {item.headline}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.detail}
+                  </p>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <div className="bg-paper">
+        <div className="mx-auto max-w-6xl px-5">
+          <HomeFaq />
+        </div>
+      </div>
+    </>
+  );
+}

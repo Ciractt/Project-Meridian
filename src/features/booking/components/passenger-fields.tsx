@@ -1,0 +1,239 @@
+'use client';
+
+import { cn } from '@/lib/cn';
+
+const TITLES = [
+  { value: 'mr', label: 'Mr' },
+  { value: 'ms', label: 'Ms' },
+  { value: 'mrs', label: 'Mrs' },
+  { value: 'miss', label: 'Miss' },
+  { value: 'dr', label: 'Dr' },
+] as const;
+
+const TYPE_LABELS: Record<string, string> = {
+  adult: 'Adult',
+  child: 'Child',
+  infant_without_seat: 'Infant',
+};
+
+export interface PassengerDraft {
+  id: string;
+  type: 'adult' | 'child' | 'infant_without_seat';
+  title: string;
+  givenName: string;
+  familyName: string;
+  bornOn: string;
+  gender: string;
+  passportNumber?: string;
+  passportCountry?: string;
+  passportExpiry?: string;
+}
+
+export function PassengerFields({
+  index,
+  passenger,
+  errors,
+  onChange,
+  needsDocuments,
+}: {
+  index: number;
+  passenger: PassengerDraft;
+  errors: Record<string, string>;
+  onChange: (patch: Partial<PassengerDraft>) => void;
+  /** From the offer. False for most short-haul fares. */
+  needsDocuments: boolean;
+}) {
+  const prefix = `passengers.${index}`;
+  const error = (field: string) => errors[`${prefix}.${field}`];
+
+  return (
+    <fieldset className="rounded-card border border-hairline bg-surface p-5">
+      <legend className="px-2 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+        {TYPE_LABELS[passenger.type] ?? 'Traveller'} {index + 1}
+      </legend>
+
+      <p className="mb-4 text-xs text-ink-muted">
+        Enter names exactly as printed on the passport or ID being used to
+        travel. A mismatch can mean being refused at the gate, and corrections
+        after ticketing usually carry an airline fee.
+      </p>
+
+      <div className="grid gap-4 sm:grid-cols-[6rem_1fr_1fr]">
+        <Select
+          label="Title"
+          value={passenger.title}
+          error={error('title')}
+          onChange={(value) => onChange({ title: value })}
+          options={TITLES.map((t) => ({ value: t.value, label: t.label }))}
+        />
+        <Input
+          label="First name"
+          value={passenger.givenName}
+          error={error('givenName')}
+          autoComplete="off"
+          onChange={(value) => onChange({ givenName: value })}
+        />
+        <Input
+          label="Last name"
+          value={passenger.familyName}
+          error={error('familyName')}
+          autoComplete="off"
+          onChange={(value) => onChange({ familyName: value })}
+        />
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <Input
+          label="Date of birth"
+          type="date"
+          value={passenger.bornOn}
+          error={error('bornOn')}
+          onChange={(value) => onChange({ bornOn: value })}
+        />
+        <Select
+          label="Sex as shown on your travel document"
+          value={passenger.gender}
+          error={error('gender')}
+          onChange={(value) => onChange({ gender: value })}
+          options={[
+            { value: 'f', label: 'Female' },
+            { value: 'm', label: 'Male' },
+          ]}
+          hint="Airline systems only accept these two values. This must match your document, not how you identify."
+        />
+      </div>
+
+      {needsDocuments ? (
+        <div className="mt-5 border-t border-hairline pt-5">
+          <p className="mb-4 text-xs text-ink-muted">
+            This airline requires passport details at the time of booking. They go
+            straight to the airline — we don’t keep them.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Input
+              label="Passport number"
+              value={passenger.passportNumber ?? ''}
+              error={error('passportNumber')}
+              autoComplete="off"
+              onChange={(value) => onChange({ passportNumber: value.toUpperCase() })}
+            />
+            <Input
+              label="Issuing country"
+              value={passenger.passportCountry ?? ''}
+              error={error('passportCountry')}
+              autoComplete="off"
+              onChange={(value) => onChange({ passportCountry: value.toUpperCase() })}
+            />
+            <Input
+              label="Expiry date"
+              type="date"
+              value={passenger.passportExpiry ?? ''}
+              error={error('passportExpiry')}
+              onChange={(value) => onChange({ passportExpiry: value })}
+            />
+          </div>
+        </div>
+      ) : null}
+    </fieldset>
+  );
+}
+
+function Input({
+  label,
+  value,
+  onChange,
+  error,
+  type = 'text',
+  autoComplete,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+  type?: string;
+  autoComplete?: string;
+}) {
+  const id = `f-${label.replace(/\W+/g, '-').toLowerCase()}-${Math.random().toString(36).slice(2, 7)}`;
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+      >
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        autoComplete={autoComplete}
+        aria-invalid={error ? true : undefined}
+        onChange={(event) => onChange(event.target.value)}
+        className={cn(
+          'mt-1.5 w-full rounded-control border bg-surface px-3 py-2.5 text-sm text-ink',
+          error ? 'border-danger' : 'border-hairline-strong',
+        )}
+      />
+      {error ? (
+        <p role="alert" className="mt-1 text-xs text-danger">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function Select({
+  label,
+  value,
+  onChange,
+  options,
+  error,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: Array<{ value: string; label: string }>;
+  error?: string;
+  hint?: string;
+}) {
+  const id = `s-${label.replace(/\W+/g, '-').toLowerCase()}`;
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+      >
+        {label}
+      </label>
+      <select
+        id={id}
+        value={value}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={hint ? `${id}-hint` : undefined}
+        onChange={(event) => onChange(event.target.value)}
+        className={cn(
+          'mt-1.5 w-full rounded-control border bg-surface px-3 py-2.5 text-sm text-ink',
+          error ? 'border-danger' : 'border-hairline-strong',
+        )}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {hint ? (
+        <p id={`${id}-hint`} className="mt-1 text-xs text-ink-faint">
+          {hint}
+        </p>
+      ) : null}
+      {error ? (
+        <p role="alert" className="mt-1 text-xs text-danger">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
