@@ -20,7 +20,7 @@ export function RecentSearches({ searches }: { searches: RecentSearch[] }) {
     <section aria-labelledby="recent" className="mt-8">
       <h2
         id="recent"
-        className="mb-3 font-mono text-[10px] tracking-[0.14em] text-white/50 uppercase"
+        className="mb-3 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
       >
         Pick up where you left off
       </h2>
@@ -30,21 +30,21 @@ export function RecentSearches({ searches }: { searches: RecentSearch[] }) {
           <li key={search.href}>
             <Link
               href={search.href}
-              className="block rounded-card border border-night-line bg-white/5 px-4 py-3 transition-colors hover:border-white/30"
+              className="block rounded-card border border-hairline bg-surface px-4 py-3 transition-colors hover:border-hairline-strong"
             >
               <span className="flex items-center gap-2">
-                <span className="font-mono text-sm font-semibold text-white">
+                <span className="font-mono text-sm font-semibold text-ink">
                   {search.origin}
                 </span>
                 <span className="min-w-0 flex-1">
                   <RouteLine className="text-chart" />
                 </span>
-                <span className="font-mono text-sm font-semibold text-white">
+                <span className="font-mono text-sm font-semibold text-ink">
                   {search.destination}
                 </span>
               </span>
 
-              <span className="mt-2 block truncate text-xs text-white/55">
+              <span className="mt-2 block truncate text-xs text-ink-muted">
                 {search.departureDate ? formatShort(search.departureDate) : 'Any date'}
                 {search.returnDate ? ` – ${formatShort(search.returnDate)}` : ''}
                 {' · '}

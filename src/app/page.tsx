@@ -11,6 +11,7 @@ import { cookies } from 'next/headers';
 import { getSiteContent } from '@/features/content/queries';
 import { parseRecent, RECENT_COOKIE } from '@/features/flight-search/recent';
 import { RecentSearches } from '@/features/flight-search/components/recent-searches';
+import { HeroCollage } from '@/features/destinations/components/hero-collage';
 
 /**
  * Server Component. The only client boundary is <SearchForm />.
@@ -69,33 +70,53 @@ export default async function HomePage({
 
   return (
     <>
-      <section className="relative bg-night">
-        <div className="chart-grid-night absolute inset-0 opacity-70" aria-hidden="true" />
+      {/* Light hero, not a dark band.
+          The dark version was doing a photograph's job without being one — a
+          large flat area carrying contrast that imagery should carry. Light lets
+          the search bar be the darkest, most deliberate thing on the page, which
+          is the right hierarchy for a page whose only job is to get someone
+          searching. */}
+      {/* NO overflow-hidden. The comboboxes and the calendar are absolutely
+          positioned children that must escape this section — clipping here is
+          how the date picker silently stopped opening once before. The grid is
+          inset-0 and the collage clips itself, so nothing needs containing. */}
+      <section className="relative bg-paper">
+        <div
+          className="chart-grid-light absolute inset-0 opacity-50"
+          aria-hidden="true"
+        />
 
         <div className="relative mx-auto max-w-6xl px-5 pt-12 pb-12 sm:pt-16">
-          <p className="font-mono text-[11px] tracking-[0.18em] text-chart uppercase">
-            {content.hero.eyebrow}
-          </p>
-          <h1 className="mt-3 max-w-2xl font-display text-3xl leading-tight font-extrabold tracking-tight text-white text-balance sm:text-4xl">
-            {content.hero.headline}
-          </h1>
-          {content.hero.subhead ? (
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70">
-              {content.hero.subhead}
-            </p>
-          ) : null}
-          <div className="mb-8" />
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
+            <div className="min-w-0">
+              <p className="font-mono text-[11px] tracking-[0.18em] text-chart uppercase">
+                {content.hero.eyebrow}
+              </p>
+              <h1 className="mt-3 max-w-2xl font-display text-4xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-5xl">
+                {content.hero.headline}
+              </h1>
+              {content.hero.subhead ? (
+                <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-muted">
+                  {content.hero.subhead}
+                </p>
+              ) : null}
 
-          <div id="search" className="scroll-mt-8">
-            <SearchForm
-              initialOrigin={initialOrigin}
-              initialDestination={initialDestination}
-            />
+              <div id="search" className="mt-8 scroll-mt-8">
+                <SearchForm
+                  initialOrigin={initialOrigin}
+                  initialDestination={initialDestination}
+                />
+              </div>
+
+              <RecentSearches searches={recent} />
+            </div>
+
+            {/* Decorative, and last in the source order so a screen reader and a
+                narrow viewport both reach the search bar first. */}
+            <HeroCollage />
           </div>
 
-          <RecentSearches searches={recent} />
-
-          <div className="mt-10">
+          <div className="mt-12">
             <TrustStrip />
           </div>
         </div>
@@ -108,7 +129,7 @@ export default async function HomePage({
         </div>
       ) : null}
 
-      <section aria-labelledby="routes" className="bg-paper">
+      <section aria-labelledby="routes" className="bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -144,7 +165,7 @@ export default async function HomePage({
         </div>
       </section>
 
-      <section aria-labelledby="how" className="bg-surface">
+      <section aria-labelledby="how" className="bg-paper">
         <div className="mx-auto max-w-6xl px-5 py-16">
           <h2
             id="how"
@@ -201,7 +222,7 @@ export default async function HomePage({
         </div>
       </section>
 
-      <div className="bg-paper">
+      <div className="bg-surface">
         <div className="mx-auto max-w-6xl px-5">
           <HomeFaq />
         </div>

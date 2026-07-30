@@ -107,6 +107,22 @@
     );
 }
 
+/* Grid ruling for light surfaces. The terrain version is warm tan, which sits
+   oddly on the cool paper the hero now uses. */
+@utility chart-grid-light {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--color-hairline) 0 1px,
+      transparent 1px 72px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--color-hairline) 0 1px,
+      transparent 1px 72px
+    );
+}
+
 @utility chart-grid-night {
   background-image:
     repeating-linear-gradient(

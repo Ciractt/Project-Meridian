@@ -114,15 +114,15 @@ export function SearchForm({
     <form onSubmit={handleSubmit} noValidate aria-label="Flight search">
       <fieldset className="mb-3">
         <legend className="sr-only">Trip type</legend>
-        <div className="inline-flex rounded-full bg-white/10 p-0.5">
+        <div className="inline-flex rounded-full border border-hairline bg-surface p-0.5">
           {(['return', 'one-way'] as const).map((type) => (
             <label
               key={type}
               className={cn(
                 'cursor-pointer rounded-full px-4 py-1.5 text-xs font-medium tracking-tight transition-colors',
                 tripType === type
-                  ? 'bg-surface text-ink'
-                  : 'text-white/70 hover:text-white',
+                  ? 'bg-ink text-white'
+                  : 'text-ink-muted hover:text-ink',
               )}
             >
               <input
@@ -144,7 +144,9 @@ export function SearchForm({
 
       {/* One connected row on desktop, stacked rows on mobile. No
           overflow-hidden — the comboboxes and calendar have to escape it. */}
-      <div className="grid rounded-card bg-surface shadow-2xl shadow-ink/20 lg:grid-cols-[1.1fr_3rem_1.1fr_1.3fr_1.1fr_auto]">
+      {/* A border as well as a shadow now: on a light background the card needs
+          an edge to read as a distinct surface rather than a lighter patch. */}
+      <div className="grid rounded-card border border-hairline bg-surface shadow-xl shadow-ink/10 lg:grid-cols-[1.1fr_3rem_1.1fr_1.3fr_1.1fr_auto]">
         <Segment className="rounded-t-card lg:rounded-l-card lg:rounded-tr-none">
           <PlaceField
             label="From"
@@ -218,7 +220,7 @@ export function SearchForm({
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-white/80 hover:text-white">
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-ink-muted hover:text-ink">
           <input
             type="checkbox"
             checked={direct}
@@ -227,9 +229,7 @@ export function SearchForm({
           />
           Direct flights only
         </label>
-        <p className="text-xs text-white/50">
-          No card details needed to search.
-        </p>
+        <p className="text-xs text-ink-faint">No card details needed to search.</p>
       </div>
     </form>
   );

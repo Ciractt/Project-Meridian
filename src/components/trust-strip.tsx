@@ -31,16 +31,16 @@ const CLAIMS = [
 
 export function TrustStrip() {
   return (
-    <ul className="grid gap-x-8 gap-y-4 border-t border-night-line pt-6 sm:grid-cols-3">
+    <ul className="grid gap-x-8 gap-y-4 border-t border-hairline pt-6 sm:grid-cols-3">
       {CLAIMS.map((claim) => (
         <li key={claim.title}>
-          <p className="flex items-baseline gap-2 text-sm font-medium text-white">
+          <p className="flex items-baseline gap-2 text-sm font-medium text-ink">
             <span aria-hidden="true" className="text-chart">
               ✓
             </span>
             {claim.title}
           </p>
-          <p className="mt-1 pl-5 text-xs leading-relaxed text-white/60">
+          <p className="mt-1 pl-5 text-xs leading-relaxed text-ink-muted">
             {claim.detail}
           </p>
         </li>
