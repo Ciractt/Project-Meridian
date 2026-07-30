@@ -40,10 +40,10 @@ export function PreTravelNotice({
           <li>
             This trip enters{' '}
             <strong>
-              {guidance.foreignCountries.map((code) => countryName(code)).join(', ')}
+              {guidance.destinationCountries.map((code) => countryName(code)).join(', ')}
             </strong>
             {guidance.transitCountries.length > 0
-              ? `, via ${guidance.transitCountries.map((code) => countryName(code)).join(', ')}`
+              ? `, passing through ${guidance.transitCountries.map((code) => countryName(code)).join(', ')}`
               : ''}
             . Visa and entry rules depend on your nationality and length of stay, so
             check{' '}
@@ -122,7 +122,7 @@ export function PreTravelPanel({
           <Step index={2} title="Check entry requirements yourself" tone="caution">
             This trip enters{' '}
             <strong>
-              {guidance.foreignCountries.map((code) => countryName(code)).join(', ')}
+              {guidance.destinationCountries.map((code) => countryName(code)).join(', ')}
             </strong>
             {guidance.transitCountries.length > 0 ? (
               <>

@@ -176,6 +176,17 @@ export default async function BookPage({
             </div>
           </section>
 
+          {!hasExtras ? (
+            /* Silence here reads as a missing feature. Many fares genuinely have
+               nothing to sell — bags already included, or no seat map from the
+               carrier — and saying so is both true and one fewer support email. */
+            <p className="rounded-card border border-hairline bg-paper p-4 text-sm text-ink-muted">
+              {offer.airline} isn’t selling extra bags or seat selection for this fare.
+              Anything included is listed with the price above, and you can add bags
+              from your booking afterwards if the airline offers them later.
+            </p>
+          ) : null}
+
           <PreTravelNotice guidance={guidance} airlineName={offer.airline} />
 
           {/* Before payment, not after. Whether a booking is protected is

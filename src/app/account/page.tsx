@@ -1,5 +1,6 @@
 import { requireUser } from '@/features/auth/queries';
 import { getMyTrips } from '@/features/booking/queries';
+import Link from 'next/link';
 import { formatMoney } from '@/lib/format';
 import { formatShort } from '@/lib/date';
 import { signOut } from '@/features/auth/actions';
@@ -31,10 +32,14 @@ export default async function AccountPage() {
       ) : (
         <ul className="space-y-3">
           {trips.map((trip) => (
-            <li
-              key={trip.id}
-              className="rounded-card border border-hairline bg-surface p-5"
-            >
+            <li key={trip.id}>
+              {/* Links to the booking page, which is where cancelling and adding
+                  bags live. Without this the trips list was a dead end and the
+                  management features were unreachable from an account. */}
+              <Link
+                href={`/booking/${trip.id}`}
+                className="block rounded-card border border-hairline bg-surface p-5 transition-colors hover:border-hairline-strong"
+              >
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <p className="flex items-baseline gap-2">
                   <span className="font-mono text-lg font-semibold tracking-tight">
@@ -48,7 +53,7 @@ export default async function AccountPage() {
                   </span>
                 </p>
                 <p className="font-mono text-sm text-ink-muted">
-                  {formatMoney(trip.totalAmount, trip.totalCurrency)}
+                  {formatMoney(trip.paidAmount, trip.currency)}
                 </p>
               </div>
 
@@ -61,15 +66,20 @@ export default async function AccountPage() {
                 {trip.airlineName ? ` · ${trip.airlineName}` : ''}
               </p>
 
-              {trip.bookingReference ? (
-                <p className="mt-2 text-xs text-ink-faint">
-                  Airline reference{' '}
-                  <span className="font-mono text-ink-muted">
-                    {trip.bookingReference}
-                  </span>{' '}
-                  — use this on the airline’s own site for seats, bags and check-in.
-                </p>
-              ) : null}
+              <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-faint">
+                {trip.bookingReference ? (
+                  <span>
+                    Airline reference{' '}
+                    <span className="font-mono text-ink-muted">
+                      {trip.bookingReference}
+                    </span>
+                  </span>
+                ) : null}
+                <span className="text-airway">
+                  Manage this booking — bags, cancellation ›
+                </span>
+              </p>
+              </Link>
             </li>
           ))}
         </ul>

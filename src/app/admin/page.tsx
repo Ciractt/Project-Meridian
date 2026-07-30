@@ -9,7 +9,11 @@ import {
   getTopRoutes,
 } from '@/features/admin/queries';
 import { formatMoney } from '@/lib/format';
-import { reconcileAttempt, reconcileNow, resendConfirmation } from '@/features/admin/actions';
+import { resendConfirmation } from '@/features/admin/actions';
+import {
+  ReconcileAllButton,
+  ResolveAttemptButton,
+} from '@/features/admin/components/reconcile-controls';
 import { Button } from '@/components/ui/button';
 
 export const metadata = { title: 'Admin' };
@@ -221,8 +225,8 @@ export default async function AdminPage() {
       {attention.length > 0 ? (
         <section className="rounded-card border-2 border-danger bg-surface p-5">
           <h2 className="font-display text-base font-bold tracking-tight text-danger">
-            {attention.length} booking{attention.length === 1 ? '' : 's'} need
-            attention
+            {attention.length} booking{attention.length === 1 ? '' : 's'}{' '}
+            {attention.length === 1 ? 'needs' : 'need'} attention
           </h2>
           <p className="mt-1 mb-4 max-w-2xl text-sm text-ink-muted">
             Money moved and the outcome is unclear.{' '}
@@ -230,17 +234,7 @@ export default async function AdminPage() {
             <strong>Needs reconciliation</strong> means a ticket may exist — check
             Duffel’s order list by hand and never retry the booking.
           </p>
-          <form
-            action={async () => {
-              'use server';
-              await reconcileNow();
-            }}
-            className="mb-4"
-          >
-            <Button type="submit" variant="secondary">
-              Reconcile all against Duffel
-            </Button>
-          </form>
+          <ReconcileAllButton />
 
           <ul className="space-y-2">
             {attention.map((attempt) => (
@@ -268,16 +262,7 @@ export default async function AdminPage() {
                     ? formatMoney(attempt.chargeAmount, attempt.chargeCurrency)
                     : '—'}
                 </span>
-                <form
-                  action={async () => {
-                    'use server';
-                    await reconcileAttempt(attempt.token);
-                  }}
-                >
-                  <Button type="submit" variant="ghost">
-                    Resolve now
-                  </Button>
-                </form>
+                <ResolveAttemptButton token={attempt.token} />
               </li>
             ))}
           </ul>

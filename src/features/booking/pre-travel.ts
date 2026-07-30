@@ -21,9 +21,16 @@ import type { Slice } from '@/features/flight-search/types';
 
 export interface PreTravelGuidance {
   isInternational: boolean;
-  /** Countries the traveller will enter or pass through, excluding home. */
-  foreignCountries: string[];
-  /** Countries entered only in transit — often have their own rules. */
+  /**
+   * Countries the traveller is actually going to, excluding home AND excluding
+   * anywhere only passed through. An earlier version put every non-UK country in
+   * here, so a Newcastle–Faro trip routed via Dublin read "enters Ireland,
+   * Portugal, via Ireland" — naming Ireland twice and burying the distinction the
+   * sentence exists to draw.
+   */
+  destinationCountries: string[];
+  /** Entered only in transit. Often has its own visa rules, which is exactly why
+   *  it is listed apart rather than lumped in above. */
   transitCountries: string[];
   /** Approximate, and labelled as such. Airlines vary. */
   checkInOpensAround: string;
@@ -68,6 +75,7 @@ export function buildGuidance({
   }
 
   const foreign = [...countries].filter((code) => code !== HOME_COUNTRY);
+  const destinations = foreign.filter((code) => endpoints.has(code));
   const transit = foreign.filter((code) => !endpoints.has(code));
 
   const totalMinutes = slices.reduce(
@@ -78,7 +86,7 @@ export function buildGuidance({
 
   return {
     isInternational: foreign.length > 0,
-    foreignCountries: foreign,
+    destinationCountries: destinations,
     transitCountries: transit,
     // Most airlines open online check-in 24 to 48 hours ahead. We give the
     // earlier bound and say it's approximate rather than inventing precision.

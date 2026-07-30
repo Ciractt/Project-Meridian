@@ -10,8 +10,16 @@ export interface TripSummary {
   returnDate: string | null;
   passengerCount: number;
   airlineName: string | null;
-  totalAmount: string;
-  totalCurrency: string;
+  /**
+   * What the traveller paid — `charged_amount`, not `total_amount`.
+   *
+   * `orders.total_amount` is the SUPPLIER amount: what the airline took from our
+   * balance. Showing it here meant the account page quoted £688 for a booking the
+   * confirmation had correctly called £745. Two different true numbers, only one
+   * of which is any of the customer's business.
+   */
+  paidAmount: string;
+  currency: string;
   status: string;
 }
 
@@ -28,7 +36,7 @@ export async function getMyTrips(): Promise<TripSummary[]> {
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, booking_reference, origin, destination, departure_date, return_date, passenger_count, airline_name, total_amount, total_currency, status',
+      'id, booking_reference, origin, destination, departure_date, return_date, passenger_count, airline_name, total_amount, charged_amount, charged_currency, total_currency, status',
     )
     .order('departure_date', { ascending: false })
     .limit(50);
@@ -47,8 +55,9 @@ export async function getMyTrips(): Promise<TripSummary[]> {
     returnDate: row.return_date ? String(row.return_date) : null,
     passengerCount: Number(row.passenger_count),
     airlineName: row.airline_name ? String(row.airline_name) : null,
-    totalAmount: String(row.total_amount),
-    totalCurrency: String(row.total_currency),
+    // Falls back for any row written before the two were kept apart.
+    paidAmount: String(row.charged_amount ?? row.total_amount),
+    currency: String(row.charged_currency ?? row.total_currency),
     status: String(row.status),
   }));
 }
