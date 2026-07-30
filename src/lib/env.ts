@@ -13,6 +13,14 @@ const schema = z.object({
   // Required from Phase 2 onward. Optional now so the Phase 1 app runs with no
   // credentials at all.
   DUFFEL_API_TOKEN: z.string().min(1).optional(),
+  // Confirmation email. All optional so the app runs without them — when any is
+  // missing the send is skipped (logged, never fatal) rather than crashing a
+  // booking. `EMAIL_FROM` must be an address on a domain verified with Resend.
+  RESEND_API_KEY: z.string().min(1).optional(),
+  EMAIL_FROM: z.string().min(1).optional(),
+  // Canonical origin for building the absolute /booking/[orderId] link in the
+  // email. On Vercel we fall back to VERCEL_URL; see lib/url.ts.
+  SITE_URL: z.string().url().optional(),
 });
 
 const parsed = schema.safeParse(process.env);

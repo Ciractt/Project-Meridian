@@ -21,6 +21,7 @@ import { repriceOffer } from './repricing';
 import { calculateCharge, chargeCoversFare, coversFare } from './pricing';
 import { MIN_OFFER_WINDOW_MS } from './constants';
 import { validateSelectedServices } from './services';
+import { sendOrderConfirmationEmail } from './email';
 import { z } from 'zod';
 
 /* ------------------------------------------------------------------ *
@@ -482,6 +483,11 @@ export async function completeBooking(raw: unknown): Promise<CompleteOutcome> {
     order_id: orderRow.id,
     completed_at: new Date().toISOString(),
   });
+
+  /* Send the confirmation now the orders row exists. Claimed before sending so
+     the order.created webhook — which fires for this order too — can't send a
+     second copy. Cannot throw; a mail failure never touches a ticketed booking. */
+  await sendOrderConfirmationEmail(orderRow.id);
 
   return {
     status: 'booked',

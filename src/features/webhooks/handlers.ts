@@ -2,6 +2,7 @@ import 'server-only';
 import { getSupabaseServiceClient } from '@/lib/supabase/service';
 import { getOrder } from '@/services/duffel/orders';
 import { createRefund, getPaymentIntent } from '@/services/duffel/payments';
+import { sendOrderConfirmationEmail } from '@/features/booking/email';
 
 /**
  * Duffel webhook handlers.
@@ -113,6 +114,13 @@ async function onOrderCreated(event: EventEnvelope): Promise<void> {
       updated_at: new Date().toISOString(),
     })
     .eq('token', attempt.token);
+
+  /* This is the confirmation path for an order that came back 202 — the
+     synchronous completeBooking never wrote a row for it, so nothing has emailed
+     the traveller yet. The send claims a per-order flag first, so a webhook
+     redelivery (at-least-once, retried for 72h) can't send a second copy, and it
+     cannot throw. */
+  if (row?.id) await sendOrderConfirmationEmail(row.id);
 }
 
 /**
