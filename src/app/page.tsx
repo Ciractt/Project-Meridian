@@ -123,9 +123,26 @@ export default async function HomePage({
       </section>
 
       {promotion ? (
-        <div className="mx-auto max-w-6xl px-5 pt-10">
+        /* Straddles the paper/white seam rather than stopping on it.
+           The banner previously ended exactly where the background changed,
+           which reads as a misalignment rather than a decision. Two absolute
+           halves give it a colour change through its middle — no negative
+           margins, no z-index, and it collapses cleanly when there's no
+           promotion to show. */
+        <div className="relative">
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-1/2 bg-paper"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 h-1/2 bg-surface"
+          />
+
           {/* Below the search bar, never above it. */}
-          <PromoBanner promotion={promotion} />
+          <div className="relative mx-auto max-w-6xl px-5 py-12">
+            <PromoBanner promotion={promotion} />
+          </div>
         </div>
       ) : null}
 
