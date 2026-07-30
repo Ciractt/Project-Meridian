@@ -13,7 +13,9 @@ public/destinations/LON.jpg
 ```
 
 A build step scans this folder and generates the lookup table, so no code changes
-and no route configuration. Any route to a destination you have artwork for
+and no route configuration. It runs automatically before `npm run dev` and
+`npm run build` — but **a dev server already running won't pick up a new file**,
+so restart it or run `npm run manifest`. Any route to a destination you have artwork for
 becomes a photo card; everything else uses the compact layout. `npm run manifest`
 regenerates it without a full build.
 

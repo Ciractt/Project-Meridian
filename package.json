@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "predev": "node scripts/build-destination-manifest.mjs",
     "build": "next build",
     "prebuild": "node scripts/build-destination-manifest.mjs",
     "start": "next start",
@@ -12,8 +13,8 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "manifest": "node scripts/build-destination-manifest.mjs"
+    "manifest": "node scripts/build-destination-manifest.mjs",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@duffel/components": "^3.17.0",

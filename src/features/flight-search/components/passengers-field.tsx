@@ -65,7 +65,7 @@ export function PassengersField({
         )}
       >
         <span className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
-          Travellers and cabin
+          Travellers
         </span>
         <span className="mt-1 block truncate text-sm text-ink">
           {total} {total === 1 ? 'traveller' : 'travellers'}, {CABIN_LABELS[cabin]}
