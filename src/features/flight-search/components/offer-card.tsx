@@ -184,17 +184,27 @@ function SliceRow({ slice }: { slice: Slice }) {
       {/* Aircraft and flight numbers on the result itself. A 787 and a 737 on the
           same route are not the same product, and neither is a turboprop — this is
           the kind of detail sites bury two clicks deep. */}
-      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 pl-28 font-mono text-[11px] text-ink-faint">
+      {/* One row per segment, each labelled with the leg it describes.
+          These were previously concatenated into a single line, so a two-leg
+          journey read as an unbroken run of flight numbers and aircraft with no
+          way to tell which belonged to which — and a three-stop itinerary would
+          have been unreadable. */}
+      <ul className="mt-2 space-y-0.5 pl-28 font-mono text-[11px] text-ink-faint">
         {slice.segments.map((segment) => (
-          <span key={segment.id}>
-            {segment.flightNumber}
-            {segment.aircraft ? ` · ${segment.aircraft}` : ''}
-            {segment.originTerminal || segment.destinationTerminal
-              ? ` · T${segment.originTerminal ?? '?'}→T${segment.destinationTerminal ?? '?'}`
-              : ''}
-          </span>
+          <li key={segment.id} className="flex flex-wrap items-baseline gap-x-2">
+            <span className="text-ink-muted">
+              {segment.originCode}–{segment.destinationCode}
+            </span>
+            <span>{segment.flightNumber}</span>
+            {segment.aircraft ? <span>· {segment.aircraft}</span> : null}
+            {segment.originTerminal || segment.destinationTerminal ? (
+              <span>
+                · T{segment.originTerminal ?? '?'}→T{segment.destinationTerminal ?? '?'}
+              </span>
+            ) : null}
+          </li>
         ))}
-      </div>
+      </ul>
 
       {longLayover || operatedBy.length > 0 ? (
         <div className="mt-2 flex flex-wrap gap-1.5 pl-28">

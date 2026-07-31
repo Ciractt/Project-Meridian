@@ -2,6 +2,7 @@ import { requireUser } from '@/features/auth/queries';
 import { getMyTrips } from '@/features/booking/queries';
 import Link from 'next/link';
 import { formatMoney } from '@/lib/format';
+import { TripStatusPill } from '@/features/booking/components/trip-status-pill';
 import { formatShort } from '@/lib/date';
 import { signOut } from '@/features/auth/actions';
 import { Button } from '@/components/ui/button';
@@ -38,8 +39,16 @@ export default async function AccountPage() {
                   management features were unreachable from an account. */}
               <Link
                 href={`/booking/${trip.id}`}
-                className="block rounded-card border border-hairline bg-surface p-5 transition-colors hover:border-hairline-strong"
+                className={`block rounded-card border bg-surface p-5 transition-colors hover:border-hairline-strong ${
+                  trip.cancelledAt ? 'border-danger/30' : 'border-hairline'
+                }`}
               >
+                <div className="mb-3">
+                  <TripStatusPill
+                    cancelled={trip.cancelledAt !== null}
+                    daysUntilDeparture={trip.daysUntilDeparture}
+                  />
+                </div>
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <p className="flex items-baseline gap-2">
                   <span className="font-mono text-lg font-semibold tracking-tight">

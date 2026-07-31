@@ -21,6 +21,9 @@ export interface TripSummary {
   paidAmount: string;
   currency: string;
   status: string;
+  cancelledAt: string | null;
+  /** Null once travelled or cancelled. */
+  daysUntilDeparture: number | null;
 }
 
 /**
@@ -36,7 +39,7 @@ export async function getMyTrips(): Promise<TripSummary[]> {
   const { data, error } = await supabase
     .from('orders')
     .select(
-      'id, booking_reference, origin, destination, departure_date, return_date, passenger_count, airline_name, total_amount, charged_amount, charged_currency, total_currency, status',
+      'id, booking_reference, origin, destination, departure_date, return_date, passenger_count, airline_name, total_amount, charged_amount, charged_currency, total_currency, status, cancelled_at',
     )
     .order('departure_date', { ascending: false })
     .limit(50);
@@ -58,6 +61,28 @@ export async function getMyTrips(): Promise<TripSummary[]> {
     // Falls back for any row written before the two were kept apart.
     paidAmount: String(row.charged_amount ?? row.total_amount),
     currency: String(row.charged_currency ?? row.total_currency),
+    cancelledAt: row.cancelled_at ? String(row.cancelled_at) : null,
+    daysUntilDeparture: row.cancelled_at
+      ? null
+      : daysUntil(String(row.departure_date)),
     status: String(row.status),
   }));
+}
+
+
+/**
+ * Whole days until a departure date, or null once it has passed.
+ *
+ * Compared at UTC midnight rather than by elapsed hours, so a flight tomorrow
+ * morning reads as "tomorrow" all evening rather than flipping to "today" at some
+ * arbitrary point overnight.
+ */
+function daysUntil(departureDate: string): number | null {
+  const departure = Date.parse(`${departureDate}T00:00:00Z`);
+  if (!Number.isFinite(departure)) return null;
+
+  const now = new Date();
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const days = Math.round((departure - today) / 86_400_000);
+  return days < 0 ? null : days;
 }
