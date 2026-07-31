@@ -12,6 +12,8 @@ import { OfferCountdown } from './offer-countdown';
 import { CheckoutSteps, type CheckoutStep } from './checkout-steps';
 import { AncillariesStep } from './ancillaries-step';
 import { CheckoutSummaryBar } from './checkout-summary-bar';
+import { fromMinorUnits, toMinorUnits } from '../money';
+import { useCheckoutTotals } from '../checkout-totals';
 import { MIN_OFFER_WINDOW_MS } from '../constants';
 import type { SelectedService } from '../services';
 
@@ -243,6 +245,8 @@ export function BookingForm({
     );
   }
 
+  const { extrasMinor, extrasCurrency } = useCheckoutTotals();
+
   const step: CheckoutStep =
     stage.name === 'details'
       ? 'details'
@@ -294,7 +298,17 @@ export function BookingForm({
           onConfirm={(services) => begin(services)}
           onSkip={() => begin([])}
         />
-        {summaryBar(amount, 'Flights only — extras priced next')}
+        {(() => {
+          /* Same figure as the price panel, from the same source, so the two
+             cannot drift on the one screen where a total is changing under the
+             traveller. */
+          const base = toMinorUnits(amount);
+          const combinable =
+            base !== null && extrasMinor !== null && extrasCurrency === trip.currency;
+          return combinable && extrasMinor > 0
+            ? summaryBar(fromMinorUnits(base + extrasMinor), 'Flights and extras')
+            : summaryBar(amount, 'Flights only — extras priced next');
+        })()}
       </div>
     );
   }

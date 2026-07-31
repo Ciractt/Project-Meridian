@@ -1,6 +1,12 @@
 import Link from 'next/link';
 import { repriceOffer } from '@/features/booking/repricing';
 import { BookingForm } from '@/features/booking/components/booking-form';
+import { CheckoutTotalsProvider } from '@/features/booking/checkout-totals';
+import {
+  ExtrasCaveat,
+  ExtrasLine,
+  RunningTotal,
+} from '@/features/booking/components/running-total';
 import type { PassengerDraft } from '@/features/booking/components/passenger-fields';
 import { RouteLine } from '@/components/route-line';
 import { toSearchParams } from '@/features/flight-search/schema';
@@ -193,7 +199,8 @@ export default async function BookPage({
         Check the details before you pay
       </h1>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem]">
+      <CheckoutTotalsProvider>
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem]">
         <div className="min-w-0 space-y-4">
           <section className="rounded-card border border-hairline bg-surface p-5">
             <h2 className="mb-4 font-display text-base font-bold tracking-tight">
@@ -270,19 +277,12 @@ export default async function BookPage({
               </p>
             ) : null}
 
-            <p className="mt-3 font-mono text-3xl font-semibold tracking-tight text-chart">
-              {formatMoney(offer.totalAmount, offer.currency)}
-            </p>
-
-            {/* This figure is the flights. If the airline sells extras, the
-                amount taken at payment can be higher, and this panel stays on
-                screen at `lg` while the payment step shows that larger number —
-                so it has to say which one it is. */}
-            {hasExtras ? (
-              <p className="mt-1 text-xs text-ink-faint">
-                Flights only. Anything you add is priced before you pay.
-              </p>
-            ) : null}
+            {/* Two client leaves in an otherwise server-rendered panel. This
+                figure has to move when a seat is chosen — it used to sit at the
+                flight total for the whole of checkout while the payment step
+                charged flights plus bags a few hundred pixels away. */}
+            <RunningTotal baseAmount={offer.totalAmount} currency={offer.currency} />
+            {hasExtras ? <ExtrasCaveat /> : null}
 
             <div className="mt-4 space-y-1.5 border-t border-hairline pt-4">
               <FareBrand
@@ -307,6 +307,7 @@ export default async function BookPage({
                 />
               ) : null}
               <Row term="Our fee" value={formatMoney(offer.feeAmount, offer.currency)} />
+              <ExtrasLine currency={offer.currency} />
               <Row term="Travellers" value={String(offer.passengers.length)} />
             </dl>
 
@@ -341,7 +342,8 @@ export default async function BookPage({
             </p>
           </div>
         </aside>
-      </div>
+        </div>
+      </CheckoutTotalsProvider>
     </div>
   );
 }

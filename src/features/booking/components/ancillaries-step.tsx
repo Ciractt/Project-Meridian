@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import { toMinorUnits } from '../money';
+import { useCheckoutTotals } from '../checkout-totals';
 import { Button } from '@/components/ui/button';
 import type { SelectedService } from '../services';
 import type { PassengerDraft } from './passenger-fields';
@@ -53,6 +55,7 @@ export function AncillariesStep({
 }) {
   const [selected, setSelected] = useState<SelectedService[]>([]);
   const [chosenCount, setChosenCount] = useState(0);
+  const { setExtras } = useCheckoutTotals();
 
   return (
     <section className="space-y-4">
@@ -94,11 +97,18 @@ export function AncillariesStep({
           },
           onPayloadReady: (
             data: { services?: SelectedService[] },
-            _metadata: unknown,
+            metadata: AncillariesMetadata | undefined,
           ) => {
             const services = data.services ?? [];
             setSelected(services);
             setChosenCount(services.length);
+
+            /* Only what gets sent to the server is `services` — id and
+               quantity, no prices, exactly as before. The metadata is read for
+               display alone: Duffel has already applied our markup to these
+               figures, so the preview and the charge should agree, and
+               startBooking re-prices regardless. */
+            setExtras(...sumExtras(metadata));
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any)}
@@ -132,4 +142,55 @@ export function AncillariesStep({
       </p>
     </section>
   );
+}
+
+/**
+ * The shape of Duffel's second `onPayloadReady` argument, narrowed to the
+ * three fields we read. Their own type is exported but the component is
+ * already cast to `any` at the call site for the reasons above it, so this
+ * describes only what is actually touched.
+ */
+interface AncillariesMetadata {
+  baggage_services?: Array<{
+    serviceInformation?: { total_amount?: string; total_currency?: string };
+  }>;
+  seat_services?: Array<{
+    serviceInformation?: { total_amount?: string; total_currency?: string };
+  }>;
+}
+
+/**
+ * Adds up what has been selected, in minor units.
+ *
+ * Returns `[null, null]` if any line is unparseable or the currencies differ,
+ * rather than a partial sum. A total that quietly drops a service is worse
+ * than a panel that carries on showing the flight price — the first is wrong,
+ * the second is merely incomplete, and the payment step corrects both.
+ */
+function sumExtras(
+  metadata: AncillariesMetadata | undefined,
+): [number | null, string | null] {
+  const lines = [
+    ...(metadata?.baggage_services ?? []),
+    ...(metadata?.seat_services ?? []),
+  ];
+  if (lines.length === 0) return [0, null];
+
+  let total = 0;
+  let currency: string | null = null;
+
+  for (const line of lines) {
+    const amount = line.serviceInformation?.total_amount;
+    const lineCurrency = line.serviceInformation?.total_currency;
+    if (!amount || !lineCurrency) return [null, null];
+    if (currency && currency !== lineCurrency) return [null, null];
+
+    const minor = toMinorUnits(amount);
+    if (minor === null) return [null, null];
+
+    currency = lineCurrency;
+    total += minor;
+  }
+
+  return [total, currency];
 }
