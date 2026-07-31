@@ -105,9 +105,8 @@ export async function setPromotionActive(id: string, active: boolean): Promise<v
   const supabase = getSupabaseServiceClient();
   if (!supabase) return;
 
-  if (active) {
-    await supabase.from('promotions').update({ active: false }).neq('id', id);
-  }
+  /* No longer deactivates the others. Several can run at once and the home page
+     rotates through them — priority decides the order. */
   await supabase.from('promotions').update({ active }).eq('id', id);
 
   revalidatePath('/admin/promotions');

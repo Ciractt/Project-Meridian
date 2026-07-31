@@ -10,9 +10,13 @@ export const metadata = { title: 'Promotions' };
 /**
  * Manage the homepage banner.
  *
- * Only one can be live at a time — activating one deactivates the others. A
- * homepage that stacks competing sales looks like a discount site rather than a
- * price-comparison one, and dilutes whichever offer actually matters.
+ * Several can be live at once and the home page rotates through them in priority
+ * order, so priority is effectively an inventory decision rather than a display
+ * preference — position one gets materially more attention than position four.
+ *
+ * The old rule was one at a time, on the grounds that stacked sales look like a
+ * discount site. That still holds as a matter of restraint: the query caps at six,
+ * and anything past three or four dilutes the ones before it.
  */
 export default async function AdminPromotionsPage() {
   await requireRole('admin', '/admin/promotions');

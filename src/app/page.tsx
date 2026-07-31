@@ -3,8 +3,8 @@ import { FEATURED_ROUTES } from '@/features/destinations/routes';
 import { RouteCard } from '@/features/destinations/components/route-card';
 import { getRoutePrices } from '@/features/destinations/prices';
 import { getDemandRoutes } from '@/features/destinations/demand';
-import { getLivePromotion } from '@/features/promotions/queries';
-import { PromoBanner } from '@/features/promotions/components/promo-banner';
+import { getLivePromotions } from '@/features/promotions/queries';
+import { PromoCarousel } from '@/features/promotions/components/promo-carousel';
 import { TrustStrip } from '@/components/trust-strip';
 import { HomeFaq } from '@/components/home-faq';
 import Link from 'next/link';
@@ -50,8 +50,8 @@ export default async function HomePage({
   const cookieStore = await cookies();
   const recent = parseRecent(cookieStore.get(RECENT_COOKIE)?.value);
 
-  const [promotion, routePrices, demandRoutes, content] = await Promise.all([
-    getLivePromotion(),
+  const [promotions, routePrices, demandRoutes, content] = await Promise.all([
+    getLivePromotions(),
     getRoutePrices(),
     getDemandRoutes(6),
     getSiteContent(),
@@ -68,7 +68,7 @@ export default async function HomePage({
         price: routePrices.get(`${route.from}-${route.to}`),
       }));
 
-  const anyPrices = routes.some((route) => route.price);
+  const anyPrices = routes.some((route: (typeof routes)[number]) => route.price);
 
   return (
     <>
@@ -124,7 +124,7 @@ export default async function HomePage({
         </div>
       </section>
 
-      {promotion ? (
+      {promotions.length > 0 ? (
         /* Straddles the paper/white seam rather than stopping on it.
            The banner previously ended exactly where the background changed,
            which reads as a misalignment rather than a decision. Two absolute
@@ -143,7 +143,7 @@ export default async function HomePage({
 
           {/* Below the search bar, never above it. */}
           <div className="relative mx-auto max-w-6xl px-5 py-12">
-            <PromoBanner promotion={promotion} />
+            <PromoCarousel promotions={promotions} />
           </div>
         </div>
       ) : null}
@@ -167,7 +167,7 @@ export default async function HomePage({
           </div>
 
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {routes.map((route) => (
+            {routes.map((route: (typeof routes)[number]) => (
               <li key={`${route.from}-${route.to}`}>
                 <RouteCard route={route} price={route.price} />
               </li>
@@ -180,7 +180,7 @@ export default async function HomePage({
           {useDemand ? (
             <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-faint">
               <span>Route guides:</span>
-              {routes.slice(0, 6).map((route) => {
+              {routes.slice(0, 6).map((route: (typeof routes)[number]) => {
                 const slug = routeSlug(route.from, route.to);
                 return slug ? (
                   <Link

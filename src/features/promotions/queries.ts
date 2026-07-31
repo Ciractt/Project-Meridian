@@ -51,7 +51,19 @@ function toPromotion(row: any): Promotion {
  * window, so the database decides what is live rather than a WHERE clause we
  * might forget to write. It also means the home page needs no secret key.
  */
-export async function getLivePromotion(): Promise<Promotion | null> {
+/**
+ * Every live promotion, in display order.
+ *
+ * Capped at six. A carousel longer than that is a list nobody reaches the end of,
+ * and each additional slide dilutes the ones before it — the constraint is
+ * commercial as much as technical.
+ *
+ * Ordered by priority so the admin controls sequence. Worth knowing if these
+ * become paid placements: whoever sits at position one gets materially more
+ * attention than position four, so priority is effectively an inventory decision
+ * rather than a display preference.
+ */
+export async function getLivePromotions(): Promise<Promotion[]> {
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -59,15 +71,14 @@ export async function getLivePromotion(): Promise<Promotion | null> {
     .select(COLUMNS)
     .order('priority', { ascending: false })
     .order('created_at', { ascending: false })
-    .limit(1);
+    .limit(6);
 
   if (error) {
     // A missing banner must never break the home page.
-    console.error('Could not load promotion:', error.message);
-    return null;
+    console.error('Could not load promotions:', error.message);
+    return [];
   }
-  const row = data?.[0];
-  return row ? toPromotion(row) : null;
+  return (data ?? []).map(toPromotion);
 }
 
 /** All promotions, live or not. Admin only — hence the service client. */
