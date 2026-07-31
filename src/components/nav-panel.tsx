@@ -86,6 +86,10 @@ export function NavPanel({
 
            `open:` rather than a bare display value, or the closed panel
            renders. */
+        /* Clicking the backdrop closes. A click on ::backdrop hit-tests as a
+           click on the dialog element itself, so the target check is what
+           separates "outside the panel" from "on something in it" — it holds
+           because these dialogs have p-0 and their content fills them. */
         onClick={(event) => {
           if (event.target === ref.current) setOpen(false);
         }}

@@ -91,6 +91,13 @@ export function FilterSheet({
         ref={ref}
         onClose={() => setOpen(false)}
         aria-label="Filter results"
+        /* Clicking the backdrop closes. A click on ::backdrop hit-tests as a
+           click on the dialog element itself, so the target check is what
+           separates "outside the panel" from "on something in it" — it holds
+           because these dialogs have p-0 and their content fills them. */
+        onClick={(event) => {
+          if (event.target === ref.current) setOpen(false);
+        }}
         /* Anchored to the bottom rather than centred: on a phone this is a
            sheet, and the controls should sit where the thumb already is.
            `mt-auto` supplies the top margin the UA's `margin: auto` would

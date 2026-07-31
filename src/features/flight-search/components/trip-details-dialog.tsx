@@ -76,6 +76,13 @@ export function TripDetailsDialog({
            the top layer using the UA's `margin: auto`, and Tailwind's preflight
            resets margin on every element — so without this it pins to the top
            left corner and overflows off-screen. */
+        /* Clicking the backdrop closes. A click on ::backdrop hit-tests as a
+           click on the dialog element itself, so the target check is what
+           separates "outside the panel" from "on something in it" — it holds
+           because these dialogs have p-0 and their content fills them. */
+        onClick={(event) => {
+          if (event.target === ref.current) setOpen(false);
+        }}
         /* `open:flex` rather than `flex`: a bare display value would override
            the UA's `dialog:not([open]) { display: none }` and leave the dialog
            on screen while closed. */
