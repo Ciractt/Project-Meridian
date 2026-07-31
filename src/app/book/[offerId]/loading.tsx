@@ -15,7 +15,7 @@ import { RouteLine } from '@/components/route-line';
 export default function ConfirmingAvailability() {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-5 py-24 text-center">
-      <p className="font-mono text-[11px] tracking-[0.18em] text-chart uppercase">
+      <p className="text-sm font-medium text-chart">
         Almost there
       </p>
 

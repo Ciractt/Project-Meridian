@@ -30,7 +30,7 @@ export function ContentPage({
       </nav>
 
       {eyebrow ? (
-        <p className="font-mono text-[11px] tracking-[0.18em] text-chart uppercase">
+        <p className="text-sm font-medium text-chart">
           {eyebrow}
         </p>
       ) : null}

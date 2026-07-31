@@ -422,7 +422,7 @@ function Stat({
 
   return (
     <div className={`rounded-card border p-5 ${styles}`}>
-      <dt className="font-mono text-[10px] tracking-[0.14em] uppercase">{term}</dt>
+      <dt className="text-xs font-medium">{term}</dt>
       <dd>
         <span className="mt-2 block font-mono text-2xl font-semibold tracking-tight text-ink">
           {value}
@@ -443,7 +443,7 @@ function Th({
   return (
     <th
       scope="col"
-      className={`px-4 py-2.5 font-mono text-[10px] font-normal tracking-[0.14em] text-ink-faint uppercase ${
+      className={`px-4 py-2.5 text-xs font-medium text-ink-faint ${
         align === 'right' ? 'text-right' : ''
       }`}
     >

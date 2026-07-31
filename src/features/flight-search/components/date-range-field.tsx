@@ -163,7 +163,7 @@ export function DateRangeField({
           error && 'bg-chart-wash',
         )}
       >
-        <span className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+        <span className="block text-xs font-medium text-ink-faint">
           {tripType === 'one-way' ? 'Depart' : 'Depart – Return'}
         </span>
         <span

@@ -256,7 +256,7 @@ export function BookingForm({
         role="alert"
         className="rounded-card border-2 border-danger bg-surface p-6"
       >
-        <p className="font-mono text-[10px] tracking-[0.18em] text-danger uppercase">
+        <p className="text-sm font-medium text-danger">
           Action needed from us
         </p>
         <h2 className="mt-3 font-display text-xl font-extrabold tracking-tight">
@@ -343,7 +343,7 @@ export function BookingForm({
       ))}
 
       <fieldset className="rounded-card border border-hairline bg-surface p-5">
-        <legend className="px-2 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+        <legend className="px-2 text-xs font-medium text-ink-faint">
           Contact
         </legend>
         <p className="mb-4 text-xs text-ink-muted">
@@ -452,7 +452,7 @@ function TextField({
     <div>
       <label
         htmlFor={id}
-        className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+        className="block text-xs font-medium text-ink-faint"
       >
         {label}
       </label>

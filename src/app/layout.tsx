@@ -38,7 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               Meridian
             </a>
             <nav aria-label="Account" className="flex items-center gap-4">
-              <span className="hidden rounded-full bg-caution-wash px-3 py-1 font-mono text-[11px] tracking-[0.14em] text-caution uppercase sm:inline">
+              <span className="hidden rounded-full bg-caution-wash px-3 py-1 text-[11px] font-semibold tracking-[0.1em] text-caution uppercase sm:inline">
                 Sandbox
               </span>
               {user?.role === 'admin' || user?.role === 'support' ? (

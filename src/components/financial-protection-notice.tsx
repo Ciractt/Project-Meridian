@@ -34,7 +34,7 @@ export function FinancialProtectionNotice({
     >
       <h2
         id="protection-heading"
-        className="font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+        className="text-xs font-medium text-ink-faint"
       >
         Financial protection
       </h2>

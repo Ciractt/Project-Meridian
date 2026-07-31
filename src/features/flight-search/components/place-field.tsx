@@ -121,7 +121,7 @@ export function PlaceField({
       >
         <label
           htmlFor={id}
-          className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+          className="block text-xs font-medium text-ink-faint"
         >
           {label}
         </label>

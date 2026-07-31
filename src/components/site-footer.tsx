@@ -67,7 +67,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 border-t border-hairline pt-8">
-          <p className="font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+          <p className="text-xs font-medium text-ink-faint">
             Payment
           </p>
           {/* Official marks where we have them, a text badge where we don't. A
@@ -152,7 +152,7 @@ export function SiteFooter() {
 function Column({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+      <h2 className="text-xs font-medium text-ink-faint">
         {title}
       </h2>
       <ul className="mt-3 space-y-2">{children}</ul>

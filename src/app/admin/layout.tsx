@@ -22,7 +22,7 @@ export default async function AdminLayout({
     <div className="mx-auto max-w-6xl px-5 py-10">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-hairline pb-4">
         <div>
-          <p className="font-mono text-[10px] tracking-[0.18em] text-chart uppercase">
+          <p className="text-sm font-medium text-chart">
             Internal
           </p>
           <h1 className="mt-1 font-display text-xl font-extrabold tracking-tight">

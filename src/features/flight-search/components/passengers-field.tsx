@@ -64,7 +64,7 @@ export function PassengersField({
           error && 'bg-chart-wash',
         )}
       >
-        <span className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+        <span className="block text-xs font-medium text-ink-faint">
           Travellers
         </span>
         <span className="mt-1 block truncate text-sm text-ink">
@@ -182,7 +182,7 @@ export function PassengersField({
 
           <label
             htmlFor={`${id}-cabin`}
-            className="mt-4 block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+            className="mt-4 block text-xs font-medium text-ink-faint"
           >
             Cabin
           </label>

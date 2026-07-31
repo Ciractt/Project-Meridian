@@ -49,7 +49,7 @@ export function PassengerFields({
 
   return (
     <fieldset className="rounded-card border border-hairline bg-surface p-5">
-      <legend className="px-2 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+      <legend className="px-2 text-xs font-medium text-ink-faint">
         {TYPE_LABELS[passenger.type] ?? 'Traveller'} {index + 1}
       </legend>
 
@@ -163,7 +163,7 @@ function Input({
     <div>
       <label
         htmlFor={id}
-        className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+        className="block text-xs font-medium text-ink-faint"
       >
         {label}
       </label>
@@ -208,7 +208,7 @@ function Select({
     <div>
       <label
         htmlFor={id}
-        className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+        className="block text-xs font-medium text-ink-faint"
       >
         {label}
       </label>

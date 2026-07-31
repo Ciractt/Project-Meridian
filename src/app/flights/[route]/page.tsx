@@ -222,7 +222,7 @@ export default async function RoutePage({
 function Stat({ term, value }: { term: string; value: string }) {
   return (
     <div className="rounded-card border border-hairline bg-surface p-4">
-      <dt className="font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+      <dt className="text-xs font-medium text-ink-faint">
         {term}
       </dt>
       <dd className="mt-1.5 font-mono text-lg font-semibold text-chart">{value}</dd>

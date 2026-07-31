@@ -53,7 +53,7 @@ export default async function AdminPromotionsPage() {
 
                 <div className="flex flex-wrap items-center gap-3 text-sm">
                   <span
-                    className={`rounded-full px-2.5 py-1 font-mono text-[11px] tracking-[0.12em] uppercase ${
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                       promotion.active
                         ? 'bg-positive-wash text-positive'
                         : 'bg-paper text-ink-faint'

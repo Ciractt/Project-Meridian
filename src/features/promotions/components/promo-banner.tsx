@@ -74,7 +74,7 @@ export function PromoBanner({ promotion }: { promotion: Promotion }) {
 
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/75">
             {promotion.isPaidPlacement ? (
-              <span className="rounded-full bg-white/15 px-2 py-0.5 font-mono tracking-[0.14em] uppercase">
+              <span className="rounded-full bg-white/15 px-2 py-0.5 font-semibold tracking-[0.1em] uppercase">
                 Ad
               </span>
             ) : null}

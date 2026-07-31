@@ -194,7 +194,7 @@ export function FilterRail({
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <fieldset className="border-t border-hairline pt-4 first:border-t-0 first:pt-0">
-      <legend className="mb-2 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+      <legend className="mb-2 text-xs font-medium text-ink-faint">
         {title}
       </legend>
       {children}

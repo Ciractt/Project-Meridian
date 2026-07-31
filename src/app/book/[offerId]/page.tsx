@@ -442,7 +442,7 @@ function Row({ term, value }: { term: string; value: string }) {
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mx-auto max-w-xl px-5 py-20 text-center">
-      <p className="font-mono text-[11px] tracking-[0.18em] text-chart uppercase">
+      <p className="text-sm font-medium text-chart">
         Booking
       </p>
       <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight">

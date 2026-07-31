@@ -34,7 +34,7 @@ export function OfferCard({
       )}
     >
       {badge ? (
-        <p className="bg-chart px-4 py-1.5 font-mono text-[10px] tracking-[0.14em] text-white uppercase">
+        <p className="bg-chart px-4 py-1.5 text-[10px] font-semibold tracking-[0.1em] text-white uppercase">
           {badge}
         </p>
       ) : null}

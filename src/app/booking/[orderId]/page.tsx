@@ -51,7 +51,7 @@ export default async function BookingPage({
       <CheckoutSteps current="done" includeExtras={false} />
 
       <div className="rounded-card border border-positive/30 bg-positive-wash p-6">
-        <p className="font-mono text-[10px] tracking-[0.18em] text-positive uppercase">
+        <p className="text-sm font-medium text-positive">
           {booking.status === 'confirmed' ? 'Confirmed' : booking.status}
         </p>
         <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight">

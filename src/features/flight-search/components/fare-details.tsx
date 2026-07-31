@@ -99,7 +99,7 @@ export function FareBrand({
   return (
     <p
       className={cn(
-        'font-mono text-[10px] tracking-[0.12em] text-ink-muted uppercase',
+        'text-xs font-medium text-ink-muted',
         className,
       )}
     >

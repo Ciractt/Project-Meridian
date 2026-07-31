@@ -36,7 +36,7 @@ export function AnnouncementForm({ initial }: { initial: Announcement }) {
         <div>
           <label
             htmlFor="announcement-tone"
-            className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+            className="block text-xs font-medium text-ink-faint"
           >
             Style
           </label>
@@ -157,7 +157,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="block font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+        className="block text-xs font-medium text-ink-faint"
       >
         {label}
       </label>

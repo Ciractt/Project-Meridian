@@ -20,7 +20,7 @@ export function RecentSearches({ searches }: { searches: RecentSearch[] }) {
     <section aria-labelledby="recent" className="mt-8">
       <h2
         id="recent"
-        className="mb-3 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase"
+        className="mb-3 text-xs font-medium text-ink-faint"
       >
         Pick up where you left off
       </h2>
