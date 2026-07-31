@@ -40,9 +40,32 @@ export function OfferCard({
       ) : null}
 
       <div className="flex flex-col md:flex-row">
-        <div className="min-w-0 flex-1 space-y-5 p-4 sm:p-5">
-          {offer.slices.map((slice) => (
-            <SliceRow key={slice.id} slice={slice} />
+        {/* Outbound and return read better beside each other than stacked —
+            you compare the two halves of the trip in one movement rather than
+            two. Only from `xl`, because each leg needs roughly 380px before the
+            route line collapses to nothing, and below that the list column has
+            about 800px to share with a filter rail. */}
+        <div
+          className={cn(
+            'grid min-w-0 flex-1 gap-5 p-4 sm:p-5',
+            offer.slices.length > 1 && 'xl:grid-cols-2 xl:gap-6',
+          )}
+        >
+          {offer.slices.map((slice, index) => (
+            /* The rule belongs to the second leg rather than to the grid:
+               `divide-x` hangs it off the trailing edge of the first column, so
+               the gap lands entirely on one side of it. Owning it here gives it
+               the same air either side. */
+            <div
+              key={slice.id}
+              className={cn(
+                'min-w-0',
+                index > 0 &&
+                  'xl:border-l xl:border-dashed xl:border-hairline-strong xl:pl-6',
+              )}
+            >
+              <SliceRow slice={slice} />
+            </div>
           ))}
         </div>
 

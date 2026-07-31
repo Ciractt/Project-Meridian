@@ -1,5 +1,6 @@
 'use client';
 
+import { BadgePoundSterling, Clock, Sparkles, type LucideIcon } from 'lucide-react';
 import { AirlineLogo } from './airline-logo';
 import { TripDetailsDialog } from './trip-details-dialog';
 import { formatDuration, formatLocalTime, formatMoney } from '@/lib/format';
@@ -33,6 +34,7 @@ export function FeatureOfferCard({
   travellers: number;
   labels: string[];
 }) {
+  const Icon = LABEL_ICONS[labels[0] ?? ''] ?? Sparkles;
   return (
     <article
       /* The notch is a mask, so it bites through the border and the background
@@ -43,7 +45,7 @@ export function FeatureOfferCard({
       className="ticket-notch flex flex-col rounded-card border border-hairline bg-surface transition-colors hover:border-hairline-strong"
       style={{ '--notch-y': 'calc(100% - 8rem)' } as React.CSSProperties}
     >
-      <div className="flex-1 divide-y divide-hairline">
+      <div className="flex-1 divide-y divide-dashed divide-hairline-strong">
         {offer.slices.map((slice) => (
           <LegRow key={slice.id} slice={slice} />
         ))}
@@ -51,12 +53,9 @@ export function FeatureOfferCard({
 
       <div className="flex h-32 flex-col justify-between border-t border-hairline p-4">
         <div className="flex items-baseline justify-between gap-3">
-          <p className="flex min-w-0 flex-wrap gap-x-2 text-xs font-medium text-chart">
-            {labels.map((label) => (
-              <span key={label} className="truncate">
-                {label}
-              </span>
-            ))}
+          <p className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-chart">
+            <Icon aria-hidden="true" size={15} strokeWidth={1.75} className="shrink-0" />
+            <span className="truncate">{labels.join(' · ')}</span>
           </p>
           <p className="shrink-0 font-mono text-xl leading-none font-semibold tracking-tight text-chart">
             {formatMoney(offer.totalAmount, offer.currency)}
@@ -127,3 +126,12 @@ function LegRow({ slice }: { slice: Slice }) {
     </div>
   );
 }
+
+/* The criterion carries a mark as well as a word. Three cards differing only
+   in a line of small text is a lot of work for the reader; the reference gives
+   each one a glyph and it is the cheapest legibility win on the page. */
+const LABEL_ICONS: Record<string, LucideIcon> = {
+  'Best overall': Sparkles,
+  Cheapest: BadgePoundSterling,
+  Fastest: Clock,
+};

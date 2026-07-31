@@ -17,7 +17,7 @@ import { OfferCard } from './offer-card';
 import { FeatureOfferCard } from './feature-offer-card';
 import { FilterRail } from './filter-rail';
 import { FilterSheet } from './filter-sheet';
-import { SortTabs } from './sort-tabs';
+import { SortSelect } from './sort-select';
 
 /**
  * Owns filter and sort state for a result set (ADR-013).
@@ -92,13 +92,16 @@ export function ResultsPanel({
     <div className="space-y-8">
       {picks.length > 0 ? (
         <section aria-labelledby="picks-heading">
-          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h2
-              id="picks-heading"
-              className="font-display text-lg font-bold tracking-tight"
-            >
-              Our picks
-            </h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+            <div className="flex min-w-0 flex-1 items-center gap-4">
+              <h2
+                id="picks-heading"
+                className="shrink-0 text-xs font-semibold tracking-[0.1em] text-ink-faint uppercase"
+              >
+                Our picks
+              </h2>
+              <span aria-hidden="true" className="h-px flex-1 bg-hairline" />
+            </div>
             {/* Each card names its own criterion; this is the part that says
                 what does not go into it. ADR-013 — an unexplained ranking on a
                 price comparison is a regulatory problem, not a design one. */}
@@ -120,13 +123,15 @@ export function ResultsPanel({
           </ul>
 
           {listHidden ? (
-            <button
-              type="button"
-              onClick={() => setShowAll(true)}
-              className="mt-4 w-full rounded-control border border-hairline-strong bg-surface px-4 py-3 text-sm font-medium text-ink transition-colors hover:border-ink"
-            >
-              Show all {visible.length} flights
-            </button>
+            <div className="mt-6 text-center">
+              <button
+                type="button"
+                onClick={() => setShowAll(true)}
+                className="rounded-control border border-hairline-strong bg-surface px-6 py-3 text-sm font-medium text-airway transition-colors hover:border-airway"
+              >
+                Show all {visible.length} flights
+              </button>
+            </div>
           ) : null}
         </section>
       ) : null}
@@ -160,12 +165,18 @@ export function ResultsPanel({
       </aside>
 
       <div className="min-w-0">
-        <SortTabs
-          summary={summary}
-          currency={facets.currency}
-          active={filters.sort}
-          onChange={(sort) => setFilters((current) => ({ ...current, sort }))}
-        />
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+          <div className="flex min-w-0 flex-1 items-center gap-4">
+            <h2 className="shrink-0 text-xs font-semibold tracking-[0.1em] text-ink-faint uppercase">
+              {picks.length > 0 ? 'More flights' : 'Flights'}
+            </h2>
+            <span aria-hidden="true" className="h-px flex-1 bg-hairline" />
+          </div>
+          <SortSelect
+            active={filters.sort}
+            onChange={(sort) => setFilters((current) => ({ ...current, sort }))}
+          />
+        </div>
 
         <FilterSheet
           facets={facets}
