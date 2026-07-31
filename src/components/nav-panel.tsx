@@ -2,6 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import {
+  LifeBuoy,
+  Plane,
+  RefreshCcw,
+  ShieldCheck,
+  Ticket,
+  UserRound,
+  type LucideIcon,
+} from 'lucide-react';
 import { signOut } from '@/features/auth/actions';
 import type { AppRole } from '@/features/auth/types';
 
@@ -64,24 +73,34 @@ export function NavPanel({
         ref={ref}
         onClose={() => setOpen(false)}
         aria-label="Account and navigation"
-        /* A modal dialog is already positioned, so an explicit inset is
-           unambiguous where margin utilities would fight each other. `open:`
-           rather than a bare display value, or the closed panel renders. */
+        /* Positioned by margin, not by inset. The first attempt set `fixed`
+           with explicit insets and opened on the left — the UA's own
+           `inset-inline` rules for a modal dialog do not give way as cleanly as
+           they look like they should. TripDetailsDialog already carries a
+           comment about this exact trap; the fix is to use the mechanism that
+           works there. `margin: auto` centres a dialog, so auto on one side and
+           zero on the other pushes it to the opposite edge.
+
+           `max-h-none` because the UA caps a dialog at 100% minus 12px, which
+           would leave a hairline of backdrop under a full-height sheet.
+
+           `open:` rather than a bare display value, or the closed panel
+           renders. */
         onClick={(event) => {
           if (event.target === ref.current) setOpen(false);
         }}
-        className="fixed top-0 right-0 bottom-0 left-auto m-0 h-dvh w-full max-w-md bg-surface p-0 backdrop:bg-ink/50 open:flex open:flex-col"
+        className="mt-0 mr-0 mb-0 ml-auto h-dvh max-h-none w-full max-w-md bg-surface p-0 backdrop:bg-ink/50 open:flex open:flex-col"
       >
         <div className="flex shrink-0 items-start justify-between gap-4 px-6 pt-6 pb-4">
           <p className="font-display text-2xl font-extrabold tracking-tight">
+            Hello
             {user?.firstName ? (
               <>
-                Hello,
-                <br />
-                {user.firstName}.
+                ,<br />
+                <span className="text-chart">{user.firstName}.</span>
               </>
             ) : (
-              'Hello.'
+              '.'
             )}
           </p>
           <button
@@ -119,11 +138,11 @@ export function NavPanel({
           ) : null}
 
           <Section title="Trips">
-            <Tile href="/" onNavigate={() => setOpen(false)}>
+            <Tile href="/" icon={Plane} onNavigate={() => setOpen(false)}>
               Search flights
             </Tile>
             {user ? (
-              <Tile href="/account" onNavigate={() => setOpen(false)}>
+              <Tile href="/account" icon={Ticket} onNavigate={() => setOpen(false)}>
                 Your bookings
               </Tile>
             ) : null}
@@ -131,11 +150,15 @@ export function NavPanel({
 
           {user ? (
             <Section title="Account">
-              <Tile href="/account/settings" onNavigate={() => setOpen(false)}>
+              <Tile
+                href="/account/settings"
+                icon={UserRound}
+                onNavigate={() => setOpen(false)}
+              >
                 Your details
               </Tile>
               {isStaff ? (
-                <Tile href="/admin" onNavigate={() => setOpen(false)}>
+                <Tile href="/admin" icon={ShieldCheck} onNavigate={() => setOpen(false)}>
                   Admin
                 </Tile>
               ) : null}
@@ -143,11 +166,12 @@ export function NavPanel({
           ) : null}
 
           <Section title="Help">
-            <Tile href="/help" onNavigate={() => setOpen(false)}>
+            <Tile href="/help" icon={LifeBuoy} onNavigate={() => setOpen(false)}>
               Help centre
             </Tile>
             <Tile
               href="/help/changes-and-refunds"
+              icon={RefreshCcw}
               onNavigate={() => setOpen(false)}
             >
               Changes and refunds
@@ -181,10 +205,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Tile({
   href,
+  icon: Icon,
   onNavigate,
   children,
 }: {
   href: string;
+  icon: LucideIcon;
   onNavigate: () => void;
   children: React.ReactNode;
 }) {
@@ -192,9 +218,15 @@ function Tile({
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex min-h-20 items-end rounded-card border border-hairline bg-surface p-4 text-sm font-medium text-ink transition-colors hover:border-hairline-strong hover:bg-paper"
+      className="flex min-h-24 flex-col justify-between rounded-card border border-hairline bg-surface p-4 text-sm font-medium text-ink transition-colors hover:border-hairline-strong hover:bg-paper"
     >
-      {children}
+      <Icon
+        aria-hidden="true"
+        size={20}
+        strokeWidth={1.75}
+        className="text-ink-faint"
+      />
+      <span>{children}</span>
     </Link>
   );
 }
