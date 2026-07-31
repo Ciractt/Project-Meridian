@@ -279,3 +279,23 @@ booking; it should not be enough for a stranger to spend money on it or cancel i
 **Not available, because Duffel doesn't offer it:** post-booking seat selection,
 meals, and other special service requests. Changing flights is possible through
 the order-change API and isn't built yet.
+
+---
+
+## Route pages and SEO
+
+`/flights/newcastle-to-malaga` style pages generate from real demand. A route
+appears once **two or more searches** have run on it — below that the page renders
+the search form and says plainly that we don't know enough yet.
+
+That threshold is the whole design. Generating a page per city pair would produce
+thousands of near-identical thin pages, which search engines demote and which
+would be a poor advertisement for a site whose pitch is that it tells you things.
+Everything on a route page — airlines, quickest journey, whether a direct exists —
+comes from a search someone actually ran.
+
+`/sitemap.xml` lists only routes past the threshold, and grows on its own.
+`/robots.txt` blocks `/admin`, `/account`, `/book/` and `/booking/` — that last one
+matters most, since those are capability URLs containing someone's itinerary.
+
+Set `SITE_URL` in production or both files will emit localhost URLs.

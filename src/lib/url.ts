@@ -26,3 +26,23 @@ function siteOrigin(): string | null {
   if (env.NODE_ENV === 'development') return 'http://localhost:3000';
   return null;
 }
+
+
+/**
+ * Site origin for sitemap and robots, with no trailing slash.
+ *
+ * These files are generated at build time where request headers aren't
+ * available, so they need the configured value rather than an inferred one — and
+ * a sitemap full of localhost URLs is worse than no sitemap.
+ */
+export function siteUrl(): string {
+  const configured =
+    process.env.SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : null) ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ??
+    'http://localhost:3000';
+
+  return configured.replace(/\/+$/, '');
+}

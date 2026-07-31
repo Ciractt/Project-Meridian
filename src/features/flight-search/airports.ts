@@ -8,7 +8,7 @@ import type { Place } from './types';
  * the form is never dead — a lookup outage degrades the airport list rather
  * than breaking the page.
  */
-const AIRPORTS: Place[] = [
+export const AIRPORTS: Place[] = [
   { iataCode: 'LON', name: 'London (all airports)', city: 'London', countryCode: 'GB', isCity: true },
   { iataCode: 'PAR', name: 'Paris (all airports)', city: 'Paris', countryCode: 'FR', isCity: true },
   { iataCode: 'NYC', name: 'New York (all airports)', city: 'New York', countryCode: 'US', isCity: true },

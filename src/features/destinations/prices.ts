@@ -62,6 +62,23 @@ export async function recordRoutePrice(
     offer.totalAmountValue < best.totalAmountValue ? offer : best,
   );
 
+  /* Everything a route page will later claim comes from here — the airlines that
+     actually came back, the quickest itinerary seen, whether a direct exists. If
+     it wasn't observed, the page won't say it. */
+  const airlines = [...new Set(offers.map((offer) => offer.airline))].slice(0, 12);
+
+  const fastest = offers.reduce<number | null>((best, offer) => {
+    const total = offer.slices.reduce(
+      (sum, slice) => sum + (slice.durationMinutes ?? 0),
+      0,
+    );
+    return total > 0 && (best === null || total < best) ? total : best;
+  }, null);
+
+  const directAvailable = offers.some((offer) =>
+    offer.slices.every((slice) => slice.stopCount === 0),
+  );
+
   const { error } = await supabase.rpc('record_route_price', {
     p_origin: criteria.origin,
     p_destination: criteria.destination,
@@ -69,6 +86,9 @@ export async function recordRoutePrice(
     p_currency: cheapest.currency,
     p_departure_date: criteria.departureDate || null,
     p_return_date: criteria.returnDate ?? null,
+    p_airlines: airlines,
+    p_fastest_minutes: fastest,
+    p_direct_available: directAvailable,
   });
 
   if (error) console.error('Could not record route price:', error.message);

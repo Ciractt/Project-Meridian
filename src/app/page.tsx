@@ -7,7 +7,9 @@ import { getLivePromotion } from '@/features/promotions/queries';
 import { PromoBanner } from '@/features/promotions/components/promo-banner';
 import { TrustStrip } from '@/components/trust-strip';
 import { HomeFaq } from '@/components/home-faq';
+import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { routeSlug } from '@/features/routes/slug';
 import { getSiteContent } from '@/features/content/queries';
 import { parseRecent, RECENT_COOKIE } from '@/features/flight-search/recent';
 import { RecentSearches } from '@/features/flight-search/components/recent-searches';
@@ -171,6 +173,27 @@ export default async function HomePage({
               </li>
             ))}
           </ul>
+
+          {/* Internal links to the route pages. Without these they are orphans —
+              in the sitemap but reachable only from search, which is the slowest
+              possible way for them to be found. */}
+          {useDemand ? (
+            <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-faint">
+              <span>Route guides:</span>
+              {routes.slice(0, 6).map((route) => {
+                const slug = routeSlug(route.from, route.to);
+                return slug ? (
+                  <Link
+                    key={slug}
+                    href={`/flights/${slug}`}
+                    className="text-airway underline underline-offset-2"
+                  >
+                    {route.fromCity} to {route.toCity}
+                  </Link>
+                ) : null;
+              })}
+            </p>
+          ) : null}
 
           {anyPrices ? (
             <p className="mt-5 text-xs text-ink-faint">
