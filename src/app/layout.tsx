@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { getCurrentUser } from '@/features/auth/queries';
 import { SiteFooter } from '@/components/site-footer';
 import { getSiteContent } from '@/features/content/queries';
 import { AnnouncementBar } from '@/features/content/components/announcement-bar';
+import { NavPanel } from '@/components/nav-panel';
 import { display, mono, sans } from '@/lib/fonts';
 import { cn } from '@/lib/cn';
 import './globals.css';
@@ -37,21 +37,25 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <a href="/" className="font-display text-lg font-extrabold tracking-tight">
               Meridian
             </a>
-            <nav aria-label="Account" className="flex items-center gap-4">
-              <span className="hidden rounded-full bg-caution-wash px-3 py-1 text-[11px] font-semibold tracking-[0.1em] text-caution uppercase sm:inline">
+            <nav aria-label="Account" className="flex items-center gap-3">
+              {/* Was `hidden sm:inline`. A product that refuses to hide states
+                  everywhere else should not hide "this is not real money" on
+                  the device most of the traffic arrives on. */}
+              <span className="rounded-full bg-caution-wash px-3 py-1 text-[11px] font-semibold tracking-[0.1em] text-caution uppercase">
                 Sandbox
               </span>
-              {user?.role === 'admin' || user?.role === 'support' ? (
-                <Link href="/admin" className="text-sm text-ink-muted hover:text-ink">
-                  Admin
-                </Link>
-              ) : null}
-              <Link
-                href={user ? '/account' : '/sign-in'}
-                className="text-sm font-medium text-ink hover:text-chart"
-              >
-                {user ? 'Account' : 'Sign in'}
-              </Link>
+              {/* Admin and Account moved into the panel. The header was gaining
+                  a link every time something was added. */}
+              <NavPanel
+                user={
+                  user
+                    ? {
+                        firstName: user.fullName?.trim().split(/\s+/)[0] ?? null,
+                        role: user.role,
+                      }
+                    : null
+                }
+              />
             </nav>
           </div>
         </header>
