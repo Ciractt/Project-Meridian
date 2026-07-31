@@ -106,6 +106,22 @@ Migrations run in order in the Supabase SQL editor. See `SETUP.md`.
 Commit before and after each change. `git diff` is the check that a change did
 what was intended — several bugs here compiled cleanly and rendered wrong.
 
+## Operational gaps
+
+Not defects, but each has a cost attached and none is visible from the UI:
+
+- **No rate limiting on search.** Duffel bills for searches beyond the
+  search-to-book ratio. The cache mitigates repeat queries; nothing stops a bot
+  or a bored person issuing thousands of distinct ones.
+- **No error monitoring.** Failures are `console.error` into deployment logs
+  nobody reads. For code that moves money that is thin — `src/app/error.tsx` has
+  a note about wiring Sentry.
+- **Mobile is unverified.** There are ~76 responsive breakpoints in the
+  components, but nothing has been checked on a real device, and travel search
+  skews heavily mobile.
+- **Accessibility is unverified** in the same way — built to the ARIA patterns,
+  never tested with assistive technology. The statement at /accessibility says so.
+
 ## What to do next
 
 In order, from `DUFFEL-GAP-ANALYSIS.md` and the open items in `ARCHITECTURE.md`:
