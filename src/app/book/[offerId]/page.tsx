@@ -10,6 +10,9 @@ import { extrasMarginRate } from '@/features/booking/pricing';
 import { buildGuidance } from '@/features/booking/pre-travel';
 import { PreTravelNotice } from '@/features/booking/components/pre-travel-panel';
 import { FinancialProtectionNotice } from '@/components/financial-protection-notice';
+import { LoyaltyStep } from '@/features/booking/components/loyalty-step';
+import { getSavedLoyaltyAccounts } from '@/features/booking/loyalty';
+import { getProfileNames } from '@/features/auth/queries';
 import { AirlineLogo } from '@/features/flight-search/components/airline-logo';
 import {
   BaggageSummary,
@@ -151,6 +154,13 @@ export default async function BookPage({
     documentsCollected: offer.identityDocumentsRequired,
   });
 
+  /* Both empty when signed out, which is the common case — the loyalty step
+     still works, it just doesn't pre-fill. */
+  const [savedLoyalty, profileNames] = await Promise.all([
+    getSavedLoyaltyAccounts(),
+    getProfileNames(),
+  ]);
+
   const drafts: PassengerDraft[] = offer.passengers.map((passenger) => ({
     id: passenger.id,
     type: passenger.type,
@@ -200,6 +210,17 @@ export default async function BookPage({
               from your booking afterwards if the airline offers them later.
             </p>
           ) : null}
+
+          {/* Only appears when the airline's programme is actually supported on
+              this offer — anything else would be collected and ignored. */}
+          <LoyaltyStep
+            offerId={offer.id}
+            passengerIds={offer.passengers.map((passenger) => passenger.id)}
+            supportedProgrammes={offer.supportedLoyaltyProgrammes}
+            saved={savedLoyalty}
+            defaultGivenName={profileNames.givenName}
+            defaultFamilyName={profileNames.familyName}
+          />
 
           <PreTravelNotice guidance={guidance} airlineName={offer.airline} />
 

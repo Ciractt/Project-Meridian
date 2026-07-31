@@ -133,6 +133,15 @@ export interface DuffelOffer {
   live_mode: boolean;
   /** Estimated CO2 for the whole itinerary. */
   total_emissions_kg?: string | null;
+  /**
+   * Airline IATA codes whose loyalty programmes this offer supports.
+   *
+   * Duffel are explicit that accounts for airlines NOT in this list are ignored
+   * at booking — so it is the difference between offering something that works
+   * and offering something that silently does nothing. An empty list means no
+   * programmes are supported.
+   */
+  supported_loyalty_programmes?: string[] | null;
   /** Order passenger IDs must match these. */
   passengers?: DuffelOfferPassenger[];
   conditions?: DuffelConditions | null;

@@ -30,7 +30,7 @@ const API_VERSION = 'v2';
  */
 
 interface RequestOptions {
-  method?: 'GET' | 'POST';
+  method?: 'GET' | 'POST' | 'PATCH';
   path: string;
   query?: Record<string, string | number | boolean | undefined>;
   body?: unknown;

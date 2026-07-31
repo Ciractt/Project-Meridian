@@ -125,3 +125,40 @@ export async function searchPlaces(query: string): Promise<DuffelPlace[]> {
     timeoutMs: 5_000,
   });
 }
+
+
+/**
+ * Attach a loyalty programme account to a passenger on an existing offer.
+ *
+ * The alternative is collecting frequent-flyer numbers at search time, which
+ * airlines only accept alongside the traveller's name — so it would mean asking
+ * for names before showing a single price. Doing it here instead means the search
+ * form stays as it is and the number is asked for at the point it can be used.
+ *
+ * The offer must be re-read afterwards: the airline may change the price, the
+ * baggage allowance or the seat entitlement in response, and that is the entire
+ * point of sending it.
+ */
+export async function updateOfferPassenger(input: {
+  offerId: string;
+  passengerId: string;
+  givenName: string;
+  familyName: string;
+  loyaltyProgrammeAccounts: Array<{
+    airline_iata_code: string;
+    account_number: string;
+  }>;
+}): Promise<void> {
+  await duffelRequest<unknown>({
+    method: 'PATCH',
+    path: `/air/offers/${input.offerId}/passengers/${input.passengerId}`,
+    timeoutMs: 30_000,
+    body: {
+      data: {
+        given_name: input.givenName,
+        family_name: input.familyName,
+        loyalty_programme_accounts: input.loyaltyProgrammeAccounts,
+      },
+    },
+  });
+}

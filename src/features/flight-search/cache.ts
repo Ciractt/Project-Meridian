@@ -19,8 +19,8 @@ import type { Offer } from './types';
 /** Bump when the shape of `Offer` changes. Old rows then miss instead of
  *  deserialising into a type that no longer matches. v2 added `passengers`,
  *  without which a cached offer cannot be booked; v3 added
- *  `identityDocumentsRequired`; v4 added baggage, fare conditions and services; v5 added segment country codes; v6 moved the customer-facing total to include our fee; v7 added terminals, technical stops, emissions and carriage terms. */
-const SCHEMA_VERSION = 7;
+ *  `identityDocumentsRequired`; v4 added baggage, fare conditions and services; v5 added segment country codes; v6 moved the customer-facing total to include our fee; v7 added terminals, technical stops, emissions and carriage terms; v8 added supported loyalty programmes. */
+const SCHEMA_VERSION = 8;
 
 /** Upper bound on staleness. Fares move; ten minutes is the most we'll risk. */
 const MAX_TTL_MS = 10 * 60 * 1000;

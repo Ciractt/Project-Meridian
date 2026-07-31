@@ -192,6 +192,11 @@ export interface Offer {
   conditions: FareConditions;
   /** Estimated CO2 for the itinerary, kilograms. */
   emissionsKg: string | null;
+  /**
+   * Airlines whose loyalty programmes work on this offer. Anything else is
+   * ignored at booking, so this decides what we can honestly offer to collect.
+   */
+  supportedLoyaltyProgrammes: string[];
   /** The airline's own conditions of carriage — the contract the traveller is
    *  actually entering into. Almost no comparison site links to it. */
   conditionsOfCarriageUrl: string | null;

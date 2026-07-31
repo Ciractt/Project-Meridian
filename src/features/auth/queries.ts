@@ -62,3 +62,34 @@ export async function requireRole(
   if (ROLE_RANK[user.role] < ROLE_RANK[minimum]) redirect('/');
   return user;
 }
+
+
+/**
+ * Names saved on the profile, for pre-filling forms.
+ *
+ * Empty strings when signed out or unset — every caller pre-fills with these, and
+ * none of them treat the value as authoritative. The name that reaches an airline
+ * is always the one confirmed on the form.
+ */
+export async function getProfileNames(): Promise<{
+  givenName: string;
+  familyName: string;
+}> {
+  const user = await getCurrentUser();
+  if (!user) return { givenName: '', familyName: '' };
+
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from('profiles')
+    .select('passport_given_name, passport_family_name')
+    .eq('id', user.id)
+    .maybeSingle<{
+      passport_given_name: string | null;
+      passport_family_name: string | null;
+    }>();
+
+  return {
+    givenName: data?.passport_given_name ?? '',
+    familyName: data?.passport_family_name ?? '',
+  };
+}

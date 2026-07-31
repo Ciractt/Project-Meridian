@@ -104,7 +104,7 @@ showing higher prices than we could for some passengers.
 Corporate variants (`corporate_code`, `tour_code`, `tracking_reference`) matter
 later if you sell to businesses. The leisure ones matter now.
 
-### 3.2 Loyalty programme accounts
+### 3.2 Loyalty programme accounts — DONE
 
 Passing a frequent-flyer number can yield discounted fares, extra baggage, or free
 seat selection — and lets the traveller earn points, which is a common reason

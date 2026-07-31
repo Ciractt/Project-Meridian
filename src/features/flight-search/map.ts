@@ -223,6 +223,7 @@ export function mapOffer(offer: DuffelOffer): Offer {
     baggage: journeyBaggage,
     conditions: mapConditions(offer.conditions),
     emissionsKg: offer.total_emissions_kg ?? null,
+    supportedLoyaltyProgrammes: offer.supported_loyalty_programmes ?? [],
     conditionsOfCarriageUrl: offer.owner.conditions_of_carriage_url ?? null,
     availableServices: (offer.available_services ?? []).map(mapService),
     totalDurationMinutes,
