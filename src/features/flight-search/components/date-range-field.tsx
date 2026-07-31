@@ -163,9 +163,7 @@ export function DateRangeField({
           error && 'bg-chart-wash',
         )}
       >
-        <span className="block text-xs font-medium text-ink-faint">
-          {tripType === 'one-way' ? 'Depart' : 'Depart – Return'}
-        </span>
+        <span className="block text-xs font-medium text-ink-faint">When?</span>
         <span
           className={cn(
             'mt-1 block truncate text-sm',

@@ -20,8 +20,28 @@ import { PAYMENT_MARKS } from '@/lib/payment-marks.generated';
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t border-hairline bg-surface">
-      <div className="mx-auto max-w-6xl px-5 py-12">
+    /* No top margin. Every page above this ends on a surface, and the gap was
+       rendering as a band of paper between two white blocks — an empty section
+       rather than breathing room. The space now lives inside the footer. */
+    <footer className="border-t border-hairline bg-surface">
+      <div className="mx-auto max-w-6xl px-5 pt-16 pb-12">
+        {/* Says who we are before it says where to click. Every claim in it is
+            made elsewhere on the site and can be backed — this is the one place
+            they are said in one breath, so it is also the easiest place to
+            overclaim by accident. It stops where the evidence stops. */}
+        <div className="mb-12 max-w-xl">
+          <p className="font-display text-2xl font-extrabold tracking-tight">
+            Welcome aboard.
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+            Booking a flight shouldn’t need a spreadsheet. We show the whole
+            price on the first result — airline fare, taxes and our fee — tell
+            you what the fare actually includes, and re-check the live price
+            with the airline before your card is charged. No account needed to
+            start.
+          </p>
+        </div>
+
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <Column title="Meridian">
             <FooterLink href="/about">Who we are</FooterLink>

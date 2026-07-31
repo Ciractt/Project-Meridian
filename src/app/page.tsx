@@ -91,9 +91,11 @@ export default async function HomePage({
         <div className="relative mx-auto max-w-6xl px-5 pt-12 pb-12 sm:pt-16">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-chart">
-                {content.hero.eyebrow}
-              </p>
+              {content.hero.eyebrow ? (
+                <p className="text-sm font-medium text-chart">
+                  {content.hero.eyebrow}
+                </p>
+              ) : null}
               <h1 className="mt-3 max-w-2xl font-display text-4xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-5xl">
                 {content.hero.headline}
               </h1>

@@ -149,7 +149,7 @@ export function SearchForm({
       <div className="grid rounded-card border border-hairline bg-surface shadow-xl shadow-ink/10 lg:grid-cols-[1.1fr_3rem_1.1fr_1.3fr_1.1fr_auto]">
         <Segment className="rounded-t-card lg:rounded-l-card lg:rounded-tr-none">
           <PlaceField
-            label="From"
+            label="Where from?"
             name="origin"
             value={origin.code}
             display={origin.display}
@@ -174,7 +174,7 @@ export function SearchForm({
 
         <Segment>
           <PlaceField
-            label="To"
+            label="Where to?"
             name="destination"
             value={destination.code}
             display={destination.display}
