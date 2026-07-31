@@ -76,9 +76,12 @@ export function TripDetailsDialog({
            the top layer using the UA's `margin: auto`, and Tailwind's preflight
            resets margin on every element — so without this it pins to the top
            left corner and overflows off-screen. */
-        className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden rounded-card bg-surface p-0 backdrop:bg-ink/50"
+        /* `open:flex` rather than `flex`: a bare display value would override
+           the UA's `dialog:not([open]) { display: none }` and leave the dialog
+           on screen while closed. */
+        className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden rounded-card bg-surface p-0 backdrop:bg-ink/50 open:flex open:flex-col"
       >
-        <div className="flex items-center justify-between gap-4 border-b border-hairline px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-hairline px-6 py-4">
           <h2
             id="trip-details-heading"
             className="font-display text-lg font-bold tracking-tight"
@@ -96,8 +99,14 @@ export function TripDetailsDialog({
         </div>
 
         {/* The header and footer stay put; only the itinerary scrolls, so the
-            price and the confirm button are always reachable. */}
-        <div className="max-h-[calc(90dvh-9rem)] space-y-5 overflow-y-auto px-6 py-5">
+            price and the confirm button are always reachable.
+
+            This used to be `max-h-[calc(90dvh-9rem)]`, which hard-coded a 9rem
+            header-plus-footer. A footer that stacks on a narrow screen is
+            taller than that, so the buttons were pushed past `max-h-[90dvh]`
+            and clipped by the dialog's `overflow-hidden` — the confirm button
+            disappeared on a phone. Flex sizing has no number to get wrong. */}
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-5">
           {offer.slices.map((slice, index) => (
             <SliceDetail
               key={slice.id}
@@ -177,21 +186,24 @@ export function TripDetailsDialog({
           </section>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline px-6 py-4">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-hairline px-6 py-4">
           <span className="font-mono text-xl font-semibold tracking-tight text-chart">
             {formatMoney(offer.totalAmount, offer.currency)}
           </span>
-          <div className="flex items-center gap-3">
+          {/* Side by side these need roughly 340px and neither can shrink
+              below its own text; a 360px screen leaves about 280px inside the
+              dialog. Stack until there is room. */}
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-control border border-hairline-strong px-4 py-2.5 text-sm font-medium text-ink"
+              className="rounded-control border border-hairline-strong px-4 py-2.5 text-center text-sm font-medium text-ink"
             >
               Back to results
             </button>
             <Link
               href={`/book/${offer.id}`}
-              className="rounded-control bg-chart px-6 py-2.5 text-sm font-medium text-white transition-colors hover:brightness-110"
+              className="rounded-control bg-chart px-6 py-2.5 text-center text-sm font-medium text-white transition-colors hover:brightness-110"
             >
               Continue with this flight
             </Link>
@@ -226,7 +238,9 @@ function SliceDetail({ slice, label }: { slice: Slice; label: string }) {
         {slice.segments.map((segment, index) => (
           <li key={segment.id}>
             <div className="flex items-center gap-3">
-              <div className="w-20 shrink-0">
+              {/* 80px of logo against ~250px of usable row left the route line
+                  about 36px wide at 360px. */}
+              <div className="w-14 shrink-0 sm:w-20">
                 <AirlineLogo
                   src={segment.marketingCarrierLockupUrl ?? segment.marketingCarrierLogoUrl}
                   name={segment.marketingCarrier}
@@ -268,7 +282,7 @@ function SliceDetail({ slice, label }: { slice: Slice; label: string }) {
               </div>
             </div>
 
-            <p className="mt-1 pl-23 font-mono text-[11px] text-ink-faint">
+            <p className="mt-1 pl-17 font-mono text-[11px] text-ink-faint sm:pl-23">
               {segment.flightNumber}
               {segment.aircraft ? ` · ${segment.aircraft}` : ''}
               {segment.marketingCarrier !== segment.operatingCarrier

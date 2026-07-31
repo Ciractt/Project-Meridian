@@ -81,7 +81,8 @@ export function PassengersField({
       {open ? (
         <div
           id={`${id}-panel`}
-          className="absolute top-full right-0 z-30 mt-2 w-80 rounded-card border border-hairline bg-surface p-5 shadow-2xl shadow-ink/10"
+          /* See PlaceField — a fixed 20rem overflows the card below `lg`. */
+          className="absolute top-full right-0 z-30 mt-2 w-full rounded-card border border-hairline bg-surface p-5 shadow-2xl shadow-ink/10 lg:w-80"
         >
           <div className="flex items-center justify-between border-b border-hairline py-3 first:pt-0">
             <span>

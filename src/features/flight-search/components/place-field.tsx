@@ -166,7 +166,9 @@ export function PlaceField({
           id={listId}
           role="listbox"
           aria-label={`${label} suggestions`}
-          className="absolute top-full left-0 z-30 mt-2 max-h-80 w-80 overflow-auto rounded-card border border-hairline bg-surface py-1 shadow-2xl shadow-ink/10"
+          /* Full width of the segment until the bar becomes a row at `lg`. A
+             fixed 20rem is wider than the card on a 360px handset. */
+          className="absolute top-full left-0 z-30 mt-2 max-h-80 w-full overflow-auto rounded-card border border-hairline bg-surface py-1 shadow-2xl shadow-ink/10 lg:w-80"
         >
           {pending && results.length === 0 ? (
             <li className="px-4 py-3 text-sm text-ink-faint">Searching…</li>

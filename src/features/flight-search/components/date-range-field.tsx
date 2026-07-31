@@ -183,7 +183,15 @@ export function DateRangeField({
           aria-modal="false"
           aria-label="Choose dates"
           onKeyDown={onKeyDown}
-          className="absolute top-full left-0 z-30 mt-2 w-[22rem] rounded-card border border-hairline bg-surface p-4 shadow-2xl shadow-ink/10 sm:w-[38rem] sm:p-6"
+          /* Width is deliberately not a fixed measurement below `md`. Until the
+             search bar becomes a row at `lg`, this field is a full-width segment
+             of the card, so `w-full` is exactly the space available — no
+             arithmetic against the viewport, and nothing to get wrong at 360px.
+             The old `w-[22rem]` (352px) was wider than the card on any handset
+             narrower than an iPhone 12, and `sm:w-[38rem]` overflowed a 640px
+             window by 8px. At `lg` the segment shrinks to a grid cell, so the
+             panel anchors right to keep it inside a 1024px window. */
+          className="absolute top-full left-0 z-30 mt-2 w-full rounded-card border border-hairline bg-surface p-4 shadow-2xl shadow-ink/10 sm:p-6 md:w-[38rem] lg:left-auto lg:right-0"
         >
           <div className="mb-4 flex items-center justify-between">
             <button
