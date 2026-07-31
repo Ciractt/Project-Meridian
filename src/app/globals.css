@@ -4,46 +4,58 @@
  * Design tokens. Tailwind v4 is CSS-first: everything in @theme becomes both a
  * CSS custom property and a utility class. One source of truth.
  *
- * Direction: aeronautical chart. v2 widens the palette — sectional charts are
- * not black and white. They use tinted terrain, airspace bands in blue and
- * magenta, and ink linework over the top. Colour here is functional: each
- * wash means something and is used only for that meaning.
+ * Direction: the reference is Ulysse — deep navy ink, a saturated blue for
+ * action and price, cool near-white surfaces, and generous radii.
+ *
+ * **The names are unchanged and now under-describe what they hold.** `chart`
+ * was chart magenta and is now the primary blue; `airway` was informational
+ * blue and is now the link blue. Renaming them means rewriting ~800 utility
+ * usages across 58 files, and `cn()` cannot help — tailwind-merge only resolves
+ * scales it recognises, and none of these are among them. So the rename is a
+ * separate mechanical commit that changes no pixels, and this one changes only
+ * pixels. Either can be reverted without the other.
+ *
+ * Every value below clears WCAG AA (4.5:1) against white, against `paper`, and
+ * against its own wash. That is not automatic when matching another site's
+ * palette by eye: Ulysse's green and red both land near 3.2:1 on white, which
+ * would be a real regression given what /accessibility says.
  */
 @theme {
-  /* Ink */
-  --color-ink: #0b1017;
-  --color-ink-muted: #414b5a;
-  --color-ink-faint: #6d7787;
+  /* Ink — navy rather than near-black */
+  --color-ink: #1b2244;
+  --color-ink-muted: #545d80;
+  --color-ink-faint: #636c86;
 
-  /* Paper and terrain — chart substrate */
-  --color-paper: #eef1f6;
+  /* Paper and surfaces — cool, close to white, low contrast between them */
+  --color-paper: #f1f3fa;
   --color-surface: #ffffff;
-  --color-terrain: #f2ecdd; /* tinted relief */
-  --color-terrain-line: #ded4bd;
-  --color-night: #0c1622; /* hero panel — the search bar's backdrop */
-  --color-night-line: #1c2b3c;
-  --color-hairline: #dbe1ea;
-  --color-hairline-strong: #bcc5d2;
+  --color-terrain: #eceffb;
+  --color-terrain-line: #dbe0f2;
+  --color-night: #2a3161; /* hero panel — the search bar's backdrop */
+  --color-night-line: #3d4578;
+  --color-hairline: #e4e8f4;
+  --color-hairline-strong: #c7cee4;
 
-  /* Signal. Each wash carries one meaning and no other. */
-  --color-chart: #b01270; /* controlled airfield magenta — price, CTA, focus */
-  --color-chart-wash: #fbe9f3;
-  --color-airway: #1f5fc4; /* airway blue — informational, links, never a CTA */
-  --color-airway-wash: #e7eefb;
-  --color-positive: #0d6f4d; /* fare drops, confirmations */
-  --color-positive-wash: #e2f2ec;
-  --color-caution: #8a4c00; /* long layovers, overnight, tight connections */
-  --color-caution-wash: #fbf0dd;
-  --color-danger: #a81f18;
+  /* Signal. Each wash still carries one meaning and no other — the meanings
+     are unchanged, only the hues. */
+  --color-chart: #3350e0; /* price, primary action, focus */
+  --color-chart-wash: #eaeefe;
+  --color-airway: #2440b8; /* informational, links */
+  --color-airway-wash: #e8ecfd;
+  --color-positive: #0f7a48; /* fare drops, confirmations */
+  --color-positive-wash: #e4f5ec;
+  --color-caution: #8a5316; /* long layovers, overnight, tight connections */
+  --color-caution-wash: #fdf1e3;
+  --color-danger: #c62f2a;
 
   /* Type */
   --font-display: var(--font-display-src), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-sans-src), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-src), ui-monospace, monospace;
 
-  /* Radii */
-  --radius-card: 14px;
-  --radius-control: 10px;
+  /* Radii — softer, closer to the reference */
+  --radius-card: 18px;
+  --radius-control: 12px;
 }
 
 @layer base {

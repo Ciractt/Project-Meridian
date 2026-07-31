@@ -84,9 +84,13 @@ export function AncillariesStep({
             bags: { rate: markupRate, amount: 0 },
             seats: { rate: markupRate, amount: 0 },
           },
+          /* Duffel's component takes literal values, not CSS variables, so
+             these are the one place the palette is duplicated. They have to be
+             changed by hand whenever --color-chart or --radius-control move, or
+             the seat map is the last magenta thing on a blue site. */
           styles: {
-            accentColor: 'rgb(176, 18, 112)',
-            buttonCornerRadius: '10px',
+            accentColor: 'rgb(51, 80, 224)',
+            buttonCornerRadius: '12px',
           },
           onPayloadReady: (
             data: { services?: SelectedService[] },
