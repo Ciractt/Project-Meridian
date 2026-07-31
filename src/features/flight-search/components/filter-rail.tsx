@@ -12,6 +12,11 @@ interface FilterRailProps {
   onReset: () => void;
   activeCount: number;
   logos: Record<string, string | null>;
+  /**
+   * Render the "Filters / Clear n" heading. The desktop aside needs it; the
+   * mobile sheet has its own header and reset control, so it doesn't.
+   */
+  headed?: boolean;
 }
 
 const STOP_LABELS: Record<number, string> = {
@@ -27,6 +32,7 @@ export function FilterRail({
   onReset,
   activeCount,
   logos,
+  headed = true,
 }: FilterRailProps) {
   function toggle<T>(list: T[], value: T): T[] {
     return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
@@ -34,18 +40,20 @@ export function FilterRail({
 
   return (
     <div className="min-w-0 space-y-6 overflow-hidden">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-sm font-bold tracking-tight">Filters</h2>
-        {activeCount > 0 ? (
-          <button
-            type="button"
-            onClick={onReset}
-            className="text-xs text-airway underline underline-offset-2 hover:no-underline"
-          >
-            Clear {activeCount}
-          </button>
-        ) : null}
-      </div>
+      {headed ? (
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-sm font-bold tracking-tight">Filters</h2>
+          {activeCount > 0 ? (
+            <button
+              type="button"
+              onClick={onReset}
+              className="text-xs text-airway underline underline-offset-2 hover:no-underline"
+            >
+              Clear {activeCount}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <Group title="Stops">
         {/* An empty `stops` array means no restriction. Showing that as three
@@ -185,7 +193,7 @@ export function FilterRail({
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <fieldset className="border-t border-hairline pt-4">
+    <fieldset className="border-t border-hairline pt-4 first:border-t-0 first:pt-0">
       <legend className="mb-2 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
         {title}
       </legend>

@@ -14,6 +14,7 @@ import {
 import type { Offer } from '../types';
 import { OfferCard } from './offer-card';
 import { FilterRail } from './filter-rail';
+import { FilterSheet } from './filter-sheet';
 import { SortTabs } from './sort-tabs';
 
 /**
@@ -62,9 +63,14 @@ export function ResultsPanel({
 
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
+      {/* Below `lg` this grid is a single column and the aside is its first
+          child, so the rail — six controls and an airline list, call it 600px —
+          sat between the traveller and the first flight. It moves into a sheet
+          at that width; see FilterSheet. ResultsSkeleton already assumed this,
+          which was the tell. */}
       <aside
         aria-label="Filter results"
-        className="min-w-0 lg:sticky lg:top-24 lg:self-start"
+        className="hidden min-w-0 lg:sticky lg:top-24 lg:block lg:self-start"
       >
         <FilterRail
           facets={facets}
@@ -82,6 +88,16 @@ export function ResultsPanel({
           currency={facets.currency}
           active={filters.sort}
           onChange={(sort) => setFilters((current) => ({ ...current, sort }))}
+        />
+
+        <FilterSheet
+          facets={facets}
+          filters={filters}
+          logos={logos}
+          activeCount={activeCount}
+          matchCount={visible.length}
+          onChange={(patch) => setFilters((current) => ({ ...current, ...patch }))}
+          onReset={() => setFilters(defaultFilters)}
         />
 
         {visible.length === 0 ? (
