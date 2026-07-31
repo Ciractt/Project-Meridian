@@ -171,8 +171,14 @@ export default async function BookPage({
     gender: 'f',
   }));
 
+  /* Airport-local calendar dates, sliced off the string rather than parsed —
+     a Date object here is how a departure ends up a day out west of Greenwich. */
+  const firstSlice = offer.slices[0];
+  const returnSlice = offer.slices.length > 1 ? offer.slices[1] : undefined;
+
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10">
+    /* pb-28 clears the fixed CheckoutSummaryBar, which only exists below `lg`. */
+    <div className="mx-auto max-w-5xl px-5 pt-10 pb-28 lg:pb-10">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm">
         <Link href="/" className="text-airway underline underline-offset-2">
           Search
@@ -239,6 +245,15 @@ export default async function BookPage({
             seatMaps={seatMaps}
             hasExtras={hasExtras}
             extrasMarkupRate={extrasMarginRate()}
+            trip={{
+              originCode: firstSlice?.originCode ?? '',
+              destinationCode: firstSlice?.destinationCode ?? '',
+              departureDate: firstSlice?.segments[0]?.departingAt.slice(0, 10) ?? '',
+              returnDate: returnSlice?.segments[0]?.departingAt.slice(0, 10),
+              travellers: offer.passengers.length,
+              currency: offer.currency,
+              feeAmount: offer.feeAmount,
+            }}
           />
         </div>
 
@@ -258,6 +273,16 @@ export default async function BookPage({
             <p className="mt-3 font-mono text-3xl font-semibold tracking-tight text-chart">
               {formatMoney(offer.totalAmount, offer.currency)}
             </p>
+
+            {/* This figure is the flights. If the airline sells extras, the
+                amount taken at payment can be higher, and this panel stays on
+                screen at `lg` while the payment step shows that larger number —
+                so it has to say which one it is. */}
+            {hasExtras ? (
+              <p className="mt-1 text-xs text-ink-faint">
+                Flights only. Anything you add is priced before you pay.
+              </p>
+            ) : null}
 
             <div className="mt-4 space-y-1.5 border-t border-hairline pt-4">
               <FareBrand

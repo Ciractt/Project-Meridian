@@ -11,6 +11,7 @@ import { PaymentStep } from './payment-step';
 import { OfferCountdown } from './offer-countdown';
 import { CheckoutSteps, type CheckoutStep } from './checkout-steps';
 import { AncillariesStep } from './ancillaries-step';
+import { CheckoutSummaryBar } from './checkout-summary-bar';
 import { MIN_OFFER_WINDOW_MS } from '../constants';
 import type { SelectedService } from '../services';
 
@@ -44,6 +45,7 @@ export function BookingForm({
   seatMaps,
   hasExtras,
   extrasMarkupRate,
+  trip,
 }: {
   offerId: string;
   passengers: PassengerDraft[];
@@ -56,6 +58,16 @@ export function BookingForm({
   searchHref: string;
   /** From the offer: this airline needs passport details at booking. */
   needsDocuments: boolean;
+  /** Route, dates and money for the sticky bar. Calendar dates, not instants. */
+  trip: {
+    originCode: string;
+    destinationCode: string;
+    departureDate: string;
+    returnDate?: string;
+    travellers: number;
+    currency: string;
+    feeAmount: string;
+  };
   /** Raw Duffel payloads for their ancillaries component. Vendor types by
    *  necessity — see AncillariesStep. */
   rawOffer: unknown;
@@ -213,6 +225,24 @@ export function BookingForm({
     });
   }
 
+  /* Which figure the bar is showing, per stage. `amount` is the offer total,
+     which stops being the whole story the moment extras exist — so it is only
+     described as the total to pay once the server has priced them. */
+  function summaryBar(shown: string, caption: string) {
+    return (
+      <CheckoutSummaryBar
+        originCode={trip.originCode}
+        destinationCode={trip.destinationCode}
+        departureDate={trip.departureDate}
+        returnDate={trip.returnDate}
+        travellers={trip.travellers}
+        amount={shown}
+        currency={trip.currency}
+        caption={caption}
+      />
+    );
+  }
+
   const step: CheckoutStep =
     stage.name === 'details'
       ? 'details'
@@ -264,6 +294,7 @@ export function BookingForm({
           onConfirm={(services) => begin(services)}
           onSkip={() => begin([])}
         />
+        {summaryBar(amount, 'Flights only — extras priced next')}
       </div>
     );
   }
@@ -282,6 +313,7 @@ export function BookingForm({
           onFailed={(text) => setNotice({ tone: 'warn', text })}
           busy={stage.name === 'ticketing' || isPending}
         />
+        {summaryBar(stage.chargeAmount, 'Total to pay')}
       </div>
     );
   }
@@ -372,6 +404,11 @@ export function BookingForm({
           Continue to payment
         </Button>
       </div>
+
+      {summaryBar(
+        amount,
+        `Includes ${formatMoney(trip.feeAmount, trip.currency)} fee`,
+      )}
     </form>
   );
 }
