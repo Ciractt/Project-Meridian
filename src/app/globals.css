@@ -148,3 +148,36 @@
       transparent 1px 72px
     );
 }
+
+/*
+ * Ticket notch.
+ *
+ * A pair of radial gradients used as a mask, so the bite is taken out of the
+ * border and the background in one pass — which is why the arc has no stroke
+ * along it, and why this cannot be done with a positioned circle: that would
+ * need its own border to curve, and the two would never quite meet.
+ *
+ * `--notch-y` is where the perforation sits, set per instance. `mask-composite`
+ * is `intersect` because each gradient is opaque everywhere except its own
+ * circle, and we want both holes, not either.
+ *
+ * The transparent stop stops just short of the opaque one so the edge is
+ * antialiased rather than stepped.
+ */
+@utility ticket-notch {
+  --notch-y: 50%;
+  --notch-r: 11px;
+  mask-image:
+    radial-gradient(
+      circle var(--notch-r) at 0 var(--notch-y),
+      transparent 97%,
+      #000 100%
+    ),
+    radial-gradient(
+      circle var(--notch-r) at 100% var(--notch-y),
+      transparent 97%,
+      #000 100%
+    );
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+}

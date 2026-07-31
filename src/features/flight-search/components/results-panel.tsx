@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { cn } from '@/lib/cn';
 import Link from 'next/link';
 import {
   applyFilters,
@@ -13,6 +14,7 @@ import {
 } from '../filters';
 import type { Offer } from '../types';
 import { OfferCard } from './offer-card';
+import { FeatureOfferCard } from './feature-offer-card';
 import { FilterRail } from './filter-rail';
 import { FilterSheet } from './filter-sheet';
 import { SortTabs } from './sort-tabs';
@@ -37,6 +39,7 @@ export function ResultsPanel({
   cached: boolean;
 }) {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [showAll, setShowAll] = useState(false);
 
   // Facets come from the unfiltered set so the rail never shrinks while you
   // read it. Memoised because it walks every offer.
@@ -54,6 +57,30 @@ export function ResultsPanel({
 
   const activeCount = countActiveFilters(filters, facets);
 
+  /* The picks, deduplicated. One offer routinely wins on more than one count,
+     and three cards showing the same flight at the same price reads as a
+     rendering fault — so the labels collect onto one card rather than the card
+     repeating. Drawn from `visible`, so filtering also filters what gets
+     promoted; a pick your own filters exclude would be the worst kind of
+     recommendation. */
+  const picks = useMemo(() => {
+    const collected = new Map<string, { offer: Offer; labels: string[] }>();
+    for (const key of ['best', 'cheapest', 'fastest'] as const) {
+      const entry = summary[key];
+      if (!entry) continue;
+      const offer = visible.find((candidate) => candidate.id === entry.offerId);
+      if (!offer) continue;
+      const existing = collected.get(offer.id);
+      if (existing) existing.labels.push(BADGES[key]);
+      else collected.set(offer.id, { offer, labels: [BADGES[key]] });
+    }
+    return [...collected.values()];
+  }, [summary, visible]);
+
+  /* How many results the picks do not already account for. */
+  const remainder = visible.length - picks.length;
+  const listHidden = picks.length > 0 && remainder > 0 && !showAll;
+
   // Three identical figures side by side reads as a rendering fault. It is
   // usually just one flight winning on both counts, which is worth saying.
   const allOneOffer =
@@ -62,7 +89,57 @@ export function ResultsPanel({
     summary.best.offerId === summary.fastest?.offerId;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
+    <div className="space-y-8">
+      {picks.length > 0 ? (
+        <section aria-labelledby="picks-heading">
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <h2
+              id="picks-heading"
+              className="font-display text-lg font-bold tracking-tight"
+            >
+              Our picks
+            </h2>
+            {/* Each card names its own criterion; this is the part that says
+                what does not go into it. ADR-013 — an unexplained ranking on a
+                price comparison is a regulatory problem, not a design one. */}
+            <p className="text-xs text-ink-faint">
+              Chosen on price and journey time. Nothing here is paid placement.
+            </p>
+          </div>
+
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {picks.map((pick) => (
+              <li key={pick.offer.id} className="flex flex-col">
+                <FeatureOfferCard
+                  offer={pick.offer}
+                  travellers={travellers}
+                  labels={pick.labels}
+                />
+              </li>
+            ))}
+          </ul>
+
+          {listHidden ? (
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="mt-4 w-full rounded-control border border-hairline-strong bg-surface px-4 py-3 text-sm font-medium text-ink transition-colors hover:border-ink"
+            >
+              Show all {visible.length} flights
+            </button>
+          ) : null}
+        </section>
+      ) : null}
+
+      {/* The full list stays a list. A vertical card is the right shape for a
+          pick and the wrong one for scanning forty of them, so the two are
+          different components rather than one with a variant prop. */}
+      <div
+        className={cn(
+          'grid gap-8 lg:grid-cols-[16rem_1fr]',
+          listHidden && 'hidden',
+        )}
+      >
       {/* Below `lg` this grid is a single column and the aside is its first
           child, so the rail — six controls and an airline list, call it 600px —
           sat between the traveller and the first flight. It moves into a sheet
@@ -159,6 +236,7 @@ export function ResultsPanel({
             </p>
           </>
         )}
+      </div>
       </div>
     </div>
   );
