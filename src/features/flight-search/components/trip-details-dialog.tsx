@@ -269,11 +269,10 @@ function SliceDetail({ slice, label }: { slice: Slice; label: string }) {
                 </p>
               </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="mb-1 text-center tabular-nums text-[11px] text-ink-faint">
+              <div className="min-w-0 flex-1 text-center">
+                <p className="tabular-nums text-[11px] text-ink-faint">
                   {formatDuration(segment.durationMinutes)}
                 </p>
-                <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
               </div>
 
               <div className="shrink-0">

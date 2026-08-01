@@ -160,21 +160,27 @@ function SliceRow({ slice }: { slice: Slice }) {
       <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
         <Time code={slice.originCode} time={formatLocalTime(first.departingAt)} />
 
-        {/* min-w-0 so it can shrink, plus nowrap on the values inside so they
-            never break mid-figure. */}
-        <div className="min-w-0 flex-1">
-          <p className="mb-1 text-center tabular-nums text-[11px] whitespace-nowrap text-ink-faint">
+        {/* Duration and stops on one line rather than stacked either side of a
+            rule. The rule replaced the route line and had nothing to say: a
+            bare hairline between two times reads as a divider that lost its
+            content, and the two labels sitting on it are self-sufficient.
+            min-w-0 so the column can shrink, nowrap so a value never breaks
+            mid-figure. */}
+        <div className="flex min-w-0 flex-1 items-baseline justify-center gap-1.5">
+          <span className="tabular-nums text-[11px] whitespace-nowrap text-ink-faint">
             {formatDuration(slice.durationMinutes)}
-          </p>
-<span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
-          <p
+          </span>
+          <span aria-hidden="true" className="text-[11px] text-hairline-strong">
+            ·
+          </span>
+          <span
             className={cn(
-              'mt-1 truncate text-center tabular-nums text-[11px] whitespace-nowrap',
+              'truncate tabular-nums text-[11px] whitespace-nowrap',
               stops === 0 ? 'text-positive' : 'text-ink-faint',
             )}
           >
             {stops === 0 ? 'Direct' : describeStops(slice)}
-          </p>
+          </span>
         </div>
 
         <Time

@@ -378,19 +378,21 @@ function SliceReview({ slice }: { slice: Slice }) {
 
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Time code={slice.originCode} time={formatLocalTime(first.departingAt)} />
-          <div className="min-w-0 flex-1">
-            <p className="mb-1 text-center tabular-nums text-[11px] text-ink-faint">
+          <div className="flex min-w-0 flex-1 items-baseline justify-center gap-1.5">
+            <span className="tabular-nums text-[11px] whitespace-nowrap text-ink-faint">
               {formatDuration(slice.durationMinutes)}
-            </p>
-            <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
-            <p className="mt-1 text-center tabular-nums text-[11px] text-ink-faint">
+            </span>
+            <span aria-hidden="true" className="text-[11px] text-hairline-strong">
+              ·
+            </span>
+            <span className="truncate tabular-nums text-[11px] text-ink-faint">
               {stops === 0
                 ? 'Direct'
                 : slice.segments
                     .slice(0, -1)
                     .map((segment) => segment.destinationCode)
                     .join(' · ')}
-            </p>
+            </span>
           </div>
           <Time
             code={slice.destinationCode}

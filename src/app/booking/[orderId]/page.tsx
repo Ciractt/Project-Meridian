@@ -71,13 +71,11 @@ export default async function BookingPage({
       </div>
 
       <section className="mt-6 rounded-card border border-hairline bg-surface p-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <span className="tabular-nums text-2xl font-semibold tracking-tight">
             {booking.origin}
           </span>
-          <span className="min-w-0 flex-1">
-            <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
-          </span>
+          <span aria-hidden="true" className="text-ink-faint">&#8594;</span>
           <span className="tabular-nums text-2xl font-semibold tracking-tight">
             {booking.destination}
           </span>

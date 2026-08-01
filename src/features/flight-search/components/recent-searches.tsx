@@ -35,9 +35,7 @@ export function RecentSearches({ searches }: { searches: RecentSearch[] }) {
                 <span className="tabular-nums text-sm font-semibold text-ink">
                   {search.origin}
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
-                </span>
+                <span aria-hidden="true" className="text-ink-faint">&#8594;</span>
                 <span className="tabular-nums text-sm font-semibold text-ink">
                   {search.destination}
                 </span>

@@ -27,10 +27,6 @@ export default function ConfirmingAvailability() {
         takes a few seconds, and nothing is charged at this stage.
       </p>
 
-      <div className="mt-8 w-full max-w-xs" aria-hidden="true">
-        <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
-      </div>
-
       {/* A determinate-looking bar would be a lie — we don't know how long the
           airline will take. An indeterminate one says "working" without
           pretending to know. */}

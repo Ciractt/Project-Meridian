@@ -45,13 +45,11 @@ export function RouteCard({
               </span>
             </p>
 
-            <div className="mt-2 flex items-center gap-3">
+            <div className="mt-2 flex items-center gap-2">
               <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
                 {route.from}
               </span>
-              <span className="min-w-0 flex-1">
-                <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
-              </span>
+              <span aria-hidden="true" className="text-ink-faint">&#8594;</span>
               <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
                 {route.to}
               </span>
@@ -100,13 +98,11 @@ export function RouteCard({
           {price ? <PriceTag price={price} /> : null}
         </div>
 
-        <div className="mt-3 flex items-center gap-3">
+        <div className="mt-3 flex items-center gap-2">
           <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
             {route.from}
           </span>
-          <span className="min-w-0 flex-1">
-            <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
-          </span>
+          <span aria-hidden="true" className="text-ink-faint">&#8594;</span>
           <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
             {route.to}
           </span>
