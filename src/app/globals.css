@@ -75,6 +75,36 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* iOS Safari zooms the viewport in when a text-entry control with a font
+     under 16px takes focus. `initial-scale=1` does not disable it and Tailwind
+     has no guard for it, and every input and select here is text-sm, which is
+     14px. Once it fires the page is left zoomed and every other control has
+     moved, which reads as things being broken rather than as a font size.
+
+     `pointer: coarse` rather than a width query, because an iPad does this too
+     at a width no phone breakpoint would catch. */
+  @media (pointer: coarse) {
+    input:not([type='checkbox']):not([type='radio']):not([type='hidden']),
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+
+  /* Double-tap zoom, and the 300ms click delay that comes with it. A tap that
+     misses leaves the next one inside the double-tap window, so trying again
+     zooms instead of retrying. `manipulation` disables only that — pinch to
+     zoom still works, and removing that would be an accessibility failure
+     rather than a fix. */
+  a,
+  button,
+  label,
+  summary,
+  select,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+
   /* One focus treatment across the whole product. Visible, high contrast,
      never removed. */
   :focus-visible {

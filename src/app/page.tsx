@@ -84,7 +84,9 @@ export default async function HomePage({
           inset-0 and the collage clips itself, so nothing needs containing. */}
       <section className="relative bg-paper">
         <div
-          className="chart-grid-light absolute inset-0 opacity-50"
+          /* Decorative and full-bleed across the section, so it must not be in
+             the way of a tap that lands between two controls. */
+          className="chart-grid-light pointer-events-none absolute inset-0 opacity-50"
           aria-hidden="true"
         />
 
