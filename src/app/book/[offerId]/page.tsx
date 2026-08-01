@@ -316,9 +316,13 @@ export default async function BookPage({
             {offer.emissionsKg ? (
               <p className="mt-4 border-t border-hairline pt-4 text-xs text-ink-faint">
                 Estimated{' '}
+                {/* Only the figure is monospaced. A mono space is much wider
+                    than the body one, so "169 kg" rendered with a visible gap
+                    in the middle of a value. */}
                 <span className="font-mono">
-                  {Math.round(Number(offer.emissionsKg))} kg
+                  {Math.round(Number(offer.emissionsKg))}
                 </span>{' '}
+                kg{' '}
                 CO₂ for this itinerary, as reported by the airline.
               </p>
             ) : null}

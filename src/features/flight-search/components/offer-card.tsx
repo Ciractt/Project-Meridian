@@ -164,7 +164,10 @@ function SliceRow({ slice }: { slice: Slice }) {
   return (
     <div>
       <div className="flex items-center gap-4">
-      <div className="w-24 shrink-0">
+      {/* The lockup is a wordmark, so it wants width — but from `xl` the two
+          legs sit side by side and 96px of logo per leg is most of what the
+          middle column needed. It shrinks where the row does. */}
+      <div className="w-24 shrink-0 xl:w-14">
         <AirlineLogo
           src={first.marketingCarrierLockupUrl ?? first.marketingCarrierLogoUrl}
           name={first.marketingCarrier}
@@ -175,8 +178,12 @@ function SliceRow({ slice }: { slice: Slice }) {
       <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
         <Time code={slice.originCode} time={formatLocalTime(first.departingAt)} />
 
-        <div className="min-w-0 flex-1">
-          <p className="mb-1 text-center font-mono text-[11px] text-ink-faint">
+        {/* `min-w-0 flex-1` alone let this collapse to nothing once the legs
+            went side by side: the duration wrapped to two lines and butted up
+            against the arrival time. A floor stops the squeeze, and nowrap
+            means it cannot break mid-value even if one day it does. */}
+        <div className="min-w-20 flex-1">
+          <p className="mb-1 text-center font-mono text-[11px] whitespace-nowrap text-ink-faint">
             {formatDuration(slice.durationMinutes)}
           </p>
           <RouteLine
@@ -187,7 +194,7 @@ function SliceRow({ slice }: { slice: Slice }) {
           />
           <p
             className={cn(
-              'mt-1 truncate text-center font-mono text-[11px]',
+              'mt-1 truncate text-center font-mono text-[11px] whitespace-nowrap',
               stops === 0 ? 'text-positive' : 'text-ink-faint',
             )}
           >
