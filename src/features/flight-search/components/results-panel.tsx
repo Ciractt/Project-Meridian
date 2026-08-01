@@ -120,7 +120,18 @@ export function ResultsPanel({
             </p>
           </div>
 
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Columns follow the number of picks. When one offer is the cheapest
+              and the fastest and the best, the labels collapse onto a single
+              card — correct, and it left two empty thirds of the page looking
+              like something failed to load. */}
+          <ul
+            className={cn(
+              'grid gap-4',
+              picks.length === 1 && 'max-w-sm',
+              picks.length === 2 && 'sm:grid-cols-2',
+              picks.length >= 3 && 'sm:grid-cols-2 lg:grid-cols-3',
+            )}
+          >
             {picks.map((pick) => (
               <li key={pick.offer.id} className="flex flex-col">
                 <FeatureOfferCard

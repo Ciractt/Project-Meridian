@@ -164,9 +164,8 @@ function SliceRow({ slice }: { slice: Slice }) {
   return (
     <div>
       <div className="flex items-center gap-4">
-      {/* The lockup is a wordmark, so it wants width — but from `xl` the two
-          legs sit side by side and 96px of logo per leg is most of what the
-          middle column needed. It shrinks where the row does. */}
+      {/* Width comes from the artwork's own cap, which narrows at `xl`. The box
+          follows it rather than leading — see AirlineLogo. */}
       <div className="w-24 shrink-0 xl:w-14">
         <AirlineLogo
           src={first.marketingCarrierLockupUrl ?? first.marketingCarrierLogoUrl}
