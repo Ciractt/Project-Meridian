@@ -1,3 +1,4 @@
+import { RouteArrow } from '@/components/route-arrow';
 import Link from 'next/link';
 import { repriceOffer } from '@/features/booking/repricing';
 import { BookingForm } from '@/features/booking/components/booking-form';
@@ -378,21 +379,19 @@ function SliceReview({ slice }: { slice: Slice }) {
 
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Time code={slice.originCode} time={formatLocalTime(first.departingAt)} />
-          <div className="flex min-w-0 flex-1 items-baseline justify-center gap-1.5">
-            <span className="tabular-nums text-[11px] whitespace-nowrap text-ink-faint">
+          <div className="min-w-0 flex-1">
+            <p className="mb-1 text-center tabular-nums text-[11px] text-ink-faint">
               {formatDuration(slice.durationMinutes)}
-            </span>
-            <span aria-hidden="true" className="text-[11px] text-hairline-strong">
-              ·
-            </span>
-            <span className="truncate tabular-nums text-[11px] text-ink-faint">
+            </p>
+            <RouteArrow stops={stops} />
+            <p className="mt-1 truncate text-center tabular-nums text-[11px] text-ink-faint">
               {stops === 0
                 ? 'Direct'
                 : slice.segments
                     .slice(0, -1)
                     .map((segment) => segment.destinationCode)
                     .join(' · ')}
-            </span>
+            </p>
           </div>
           <Time
             code={slice.destinationCode}

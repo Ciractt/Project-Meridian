@@ -1,3 +1,4 @@
+import { RouteArrow } from '@/components/route-arrow';
 import { cn } from '@/lib/cn';
 import { dayOffset, formatDuration, formatLocalTime, formatMoney } from '@/lib/format';
 import type { Offer, Slice } from '../types';
@@ -160,27 +161,22 @@ function SliceRow({ slice }: { slice: Slice }) {
       <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
         <Time code={slice.originCode} time={formatLocalTime(first.departingAt)} />
 
-        {/* Duration and stops on one line rather than stacked either side of a
-            rule. The rule replaced the route line and had nothing to say: a
-            bare hairline between two times reads as a divider that lost its
-            content, and the two labels sitting on it are self-sufficient.
-            min-w-0 so the column can shrink, nowrap so a value never breaks
-            mid-figure. */}
-        <div className="flex min-w-0 flex-1 items-baseline justify-center gap-1.5">
-          <span className="tabular-nums text-[11px] whitespace-nowrap text-ink-faint">
+        {/* min-w-0 so the column can shrink, nowrap so a value never breaks
+            mid-figure. The arrow carries the direction the two times imply and
+            marks the stops; the labels either side stay exact. */}
+        <div className="min-w-0 flex-1">
+          <p className="mb-1 text-center tabular-nums text-[11px] whitespace-nowrap text-ink-faint">
             {formatDuration(slice.durationMinutes)}
-          </span>
-          <span aria-hidden="true" className="text-[11px] text-hairline-strong">
-            ·
-          </span>
-          <span
+          </p>
+          <RouteArrow stops={stops} />
+          <p
             className={cn(
-              'truncate tabular-nums text-[11px] whitespace-nowrap',
+              'mt-1 truncate text-center tabular-nums text-[11px] whitespace-nowrap',
               stops === 0 ? 'text-positive' : 'text-ink-faint',
             )}
           >
             {stops === 0 ? 'Direct' : describeStops(slice)}
-          </span>
+          </p>
         </div>
 
         <Time

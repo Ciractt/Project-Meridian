@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { RouteArrow } from '@/components/route-arrow';
 import { formatShort } from '@/lib/date';
 import type { RecentSearch } from '../recent';
 
@@ -35,7 +36,7 @@ export function RecentSearches({ searches }: { searches: RecentSearch[] }) {
                 <span className="tabular-nums text-sm font-semibold text-ink">
                   {search.origin}
                 </span>
-                <span aria-hidden="true" className="text-ink-faint">&#8594;</span>
+                <RouteArrow className="flex-1" />
                 <span className="tabular-nums text-sm font-semibold text-ink">
                   {search.destination}
                 </span>

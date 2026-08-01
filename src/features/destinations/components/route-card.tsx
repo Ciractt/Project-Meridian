@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { RouteArrow } from '@/components/route-arrow';
 import Link from 'next/link';
 import { formatMoney } from '@/lib/format';
 import { routeSearchHref, type FeaturedRoute } from '../routes';
@@ -49,7 +50,7 @@ export function RouteCard({
               <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
                 {route.from}
               </span>
-              <span aria-hidden="true" className="text-ink-faint">&#8594;</span>
+              <RouteArrow className="flex-1" />
               <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
                 {route.to}
               </span>
@@ -102,7 +103,7 @@ export function RouteCard({
           <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
             {route.from}
           </span>
-          <span aria-hidden="true" className="text-ink-faint">&#8594;</span>
+          <RouteArrow className="flex-1" />
           <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
             {route.to}
           </span>
