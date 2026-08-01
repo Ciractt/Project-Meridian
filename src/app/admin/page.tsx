@@ -3,6 +3,7 @@ import {
   getFailedConfirmations,
   getPendingAirlineChanges,
   getStrandedRefunds,
+  getStuckChanges,
   getUndeliveredBags,
   getRecentOrders,
   getSearchStats,
@@ -12,6 +13,7 @@ import { formatMoney } from '@/lib/format';
 import { resendConfirmation } from '@/features/admin/actions';
 import {
   ReconcileAllButton,
+  RefundChangeButton,
   ResolveAttemptButton,
 } from '@/features/admin/components/reconcile-controls';
 import { Button } from '@/components/ui/button';
@@ -36,6 +38,7 @@ export default async function AdminPage() {
     failedEmails,
     strandedRefunds,
     undeliveredBags,
+    stuckChanges,
   ] = await Promise.all([
     getSearchStats(),
     getTopRoutes(),
@@ -45,6 +48,7 @@ export default async function AdminPage() {
     getFailedConfirmations(),
     getStrandedRefunds(),
     getUndeliveredBags(),
+    getStuckChanges(),
   ]);
 
   if (!stats) {
@@ -105,6 +109,55 @@ export default async function AdminPage() {
                 <span className="max-w-64 truncate text-xs text-danger">
                   {row.error ?? 'unknown error'}
                 </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {/* Above every other queue, because it is the only one where somebody is
+          about to miss a flight rather than be out of pocket. The others are
+          money problems; this one has a clock on it. */}
+      {stuckChanges.length > 0 ? (
+        <section className="rounded-card border-2 border-danger bg-surface p-5">
+          <h2 className="font-display text-base font-bold tracking-tight text-danger">
+            {stuckChanges.length} change{stuckChanges.length === 1 ? '' : 's'} paid
+            but not applied
+          </h2>
+          <p className="mt-1 mb-4 max-w-2xl text-sm text-ink-muted">
+            The card was charged and the flight didn’t move.{' '}
+            <strong>Their original booking is still valid</strong> — they are
+            holding a ticket for a flight they think they’re no longer on, and
+            they won’t turn up for it. Contact them before refunding: a refund
+            arriving on its own reads as “your change went through”.
+          </p>
+          <ul className="space-y-3">
+            {stuckChanges.map((row) => (
+              <li
+                key={row.token}
+                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-t border-hairline pt-3 text-sm"
+              >
+                <span className="min-w-0">
+                  <span className="tabular-nums font-semibold">
+                    {row.bookingReference ?? '—'}
+                  </span>{' '}
+                  <span className="tabular-nums text-xs text-ink-muted">
+                    {row.origin} → {row.destination}
+                    {row.newDepartureDate ? ` · wanted ${row.newDepartureDate}` : ''}
+                  </span>
+                  <span className="block truncate text-xs text-ink-faint">
+                    {row.contactEmail ?? 'no contact email'}
+                  </span>
+                </span>
+                <span className="tabular-nums text-xs">
+                  {row.chargeAmount && row.currency
+                    ? formatMoney(row.chargeAmount, row.currency)
+                    : '—'}
+                </span>
+                <span className="max-w-64 truncate text-xs text-danger">
+                  {row.failureReason ?? 'unknown'}
+                </span>
+                <RefundChangeButton token={row.token} />
               </li>
             ))}
           </ul>

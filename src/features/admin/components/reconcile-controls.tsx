@@ -1,8 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { reconcileAttempt, reconcileNow } from '../actions';
+import { reconcileAttempt, reconcileNow, refundChange } from '../actions';
 
 /**
  * Reconciliation buttons that say what happened.
@@ -43,6 +43,57 @@ export function ResolveAttemptButton({ token }: { token: string }) {
       </Button>
       {message ? (
         <span role="status" className="max-w-md text-xs text-ink-muted">
+          {message}
+        </span>
+      ) : null}
+    </form>
+  );
+}
+
+
+/**
+ * Refund a stuck change.
+ *
+ * Two-step on purpose. Every other button on this page is recoverable or
+ * repeatable; this one moves money and is the end of a conversation someone
+ * should already have had with the traveller (ADR-045). A single click next to
+ * a list of tokens is too easy to press on the wrong row.
+ */
+export function RefundChangeButton({ token }: { token: string }) {
+  const [message, action, pending] = useActionState<string | null, FormData>(
+    refundChange,
+    null,
+  );
+  const [armed, setArmed] = useState(false);
+
+  if (!armed) {
+    return (
+      <button
+        type="button"
+        onClick={() => setArmed(true)}
+        className="text-xs text-airway underline underline-offset-2 hover:no-underline"
+      >
+        Refund…
+      </button>
+    );
+  }
+
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2">
+      <input type="hidden" name="token" value={token} />
+      <span className="text-xs text-ink-muted">Told the traveller?</span>
+      <Button type="submit" variant="secondary" loading={pending}>
+        Yes, refund
+      </Button>
+      <button
+        type="button"
+        onClick={() => setArmed(false)}
+        className="text-xs text-ink-faint underline underline-offset-2"
+      >
+        Cancel
+      </button>
+      {message ? (
+        <span role="status" className="text-xs text-ink-muted">
           {message}
         </span>
       ) : null}

@@ -358,3 +358,79 @@ export async function getUndeliveredBags(): Promise<UndeliveredBags[]> {
     createdAt: String(row.created_at),
   }));
 }
+
+
+export interface StuckChange {
+  token: string;
+  orderId: string;
+  bookingReference: string | null;
+  contactEmail: string | null;
+  origin: string | null;
+  destination: string | null;
+  /** Where the leg was being moved to. */
+  newDepartureDate: string | null;
+  chargeAmount: string | null;
+  currency: string | null;
+  failureReason: string | null;
+  createdAt: string;
+}
+
+/**
+ * Changes where the card was charged and the flight did not move.
+ *
+ * The most urgent queue on this page, and unlike the others it is urgent for
+ * the traveller rather than for the books. Their original booking is still
+ * live, so they hold a valid ticket for a flight they believe they are no
+ * longer on — and they will not turn up for it. Every row here is somebody who
+ * needs telling, not just refunding (ADR-045).
+ *
+ * The booking reference and contact email are joined in for that reason: the
+ * first thing whoever picks this up needs is a way to reach the person and
+ * something to quote at them.
+ */
+export async function getStuckChanges(): Promise<StuckChange[]> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('order_changes')
+    .select(
+      'token, order_id, new_departure_date, charge_amount, currency, failure_reason, created_at, orders (booking_reference, contact_email, origin, destination)',
+    )
+    .eq('status', 'paid_not_changed')
+    .order('created_at', { ascending: true })
+    .limit(50);
+
+  if (error) {
+    console.error('Could not load stuck changes:', error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => {
+    /* PostgREST returns an embedded row as an object for a many-to-one, but
+       types it as an array. Normalise rather than trusting either. */
+    const joined = row.orders as unknown;
+    const order = (Array.isArray(joined) ? joined[0] : joined) as
+      | {
+          booking_reference: string | null;
+          contact_email: string | null;
+          origin: string | null;
+          destination: string | null;
+        }
+      | undefined;
+
+    return {
+      token: String(row.token),
+      orderId: String(row.order_id),
+      bookingReference: order?.booking_reference ?? null,
+      contactEmail: order?.contact_email ?? null,
+      origin: order?.origin ?? null,
+      destination: order?.destination ?? null,
+      newDepartureDate: row.new_departure_date ? String(row.new_departure_date) : null,
+      chargeAmount: row.charge_amount ? String(row.charge_amount) : null,
+      currency: row.currency ? String(row.currency) : null,
+      failureReason: row.failure_reason ? String(row.failure_reason) : null,
+      createdAt: String(row.created_at),
+    };
+  });
+}

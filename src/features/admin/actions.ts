@@ -7,6 +7,7 @@ import {
   resolveAttemptByToken,
   runReconciliation,
 } from '@/features/booking/reconciliation';
+import { refundStuckChange } from '@/features/booking/change-reconciliation';
 
 /**
  * Resend a confirmation that failed.
@@ -83,5 +84,41 @@ export async function reconcileAttempt(
       return 'Too recent to touch safely.';
     default:
       return `Couldn’t resolve it: ${outcome.message}`;
+  }
+}
+
+
+/**
+ * Refund a change that took payment and never applied.
+ *
+ * Admin rather than support, and deliberately manual. The reconciliation pass
+ * will not do this on its own (ADR-045): the traveller's original booking is
+ * still live, so a refund arriving unannounced reads as "your change went
+ * through" to someone who then does not turn up for the flight they still hold.
+ *
+ * The precondition is a conversation, not a status. Whoever presses this should
+ * already have told the person their change did not happen and that their
+ * original flight stands. There is no way to enforce that in code, which is
+ * exactly why it is a button a human presses rather than a rule a job applies.
+ */
+export async function refundChange(
+  _previous: string | null,
+  formData: FormData,
+): Promise<string> {
+  await requireRole('admin', '/admin');
+
+  const token = String(formData.get('token') ?? '');
+  if (!token) return 'No change token supplied.';
+
+  const result = await refundStuckChange(token);
+  revalidatePath('/admin');
+
+  switch (result.status) {
+    case 'refunded':
+      return `Refunded ${result.amount} ${result.currency}.`;
+    case 'not_found':
+      return 'No charged payment found for that change.';
+    default:
+      return `Refund failed: ${result.message}`;
   }
 }
