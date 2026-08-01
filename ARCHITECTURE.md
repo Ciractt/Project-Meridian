@@ -1222,3 +1222,59 @@ functions share no state and a cold start is a fresh allowance. Serving stale
 cached offers instead of throttling — rejected: past the TTL an offer may not be
 bookable, and handing someone a price that fails at checkout is worse than
 telling them to wait.
+
+---
+
+## ADR-042 — Errors are reported through the existing console lines, and scrubbed on the way out
+
+**Decision.** Sentry, initialised only when a DSN is present, capturing
+server-side `console.error` rather than replacing sixty call sites, with every
+outbound string passed through a redaction pass first. No tracing, no session
+replay, no browser console capture.
+
+**Why now.** Every failure path in this product that cannot be allowed to throw
+ends in `console.error` — a refund that did not go through, a confirmation email
+that failed, a ticket that did not issue after a successful charge, a rate limit
+whose own storage is down. On Vercel those lines live in a log nobody reads
+until someone complains. The whole design of the money paths assumes something
+is watching, and nothing was.
+
+**Capture the console rather than rewriting the call sites.** Those sixty lines
+are already at the moment of failure and already carry the context that matters.
+Rewriting them into explicit `captureException` calls would be a large diff whose
+only effect is to move the same strings through a different function, and it
+would leave the codebase with two ways of reporting a problem instead of one.
+`error` only; `warn` in this codebase means "handled, carry on".
+
+**Redaction is the part that needed thought.** `sendDefaultPii: false` governs
+what the SDK adds, not what our own log lines already contain — and these paths
+hold passenger names, contact addresses, dates of birth, document numbers and
+payment intents. So messages, exception values and breadcrumbs all go through a
+scrub, and query strings are dropped entirely: on this product a query string is
+an origin, a destination and a set of dates, which is a travel history.
+
+The patterns are deliberately over-broad, and the cost is real and accepted: a
+booking reference is six alphanumerics with a digit in it, so it looks exactly
+like a document number and is redacted with them. That costs a minute of
+cross-referencing in the admin queue. A leaked passport number cannot be taken
+back. Where the two are in tension the answer is not close.
+
+**Nothing runs without a DSN.** Development, tests and anyone running this from
+a clone get no SDK at all — no network calls, no wrapped globals, no behaviour
+to reason about. Monitoring that changes how the app runs locally is worse than
+none.
+
+**Deliberately omitted.** Tracing, because latency is not the problem being
+solved and a sampled trace carries URLs and spans that would then need scrubbing
+too. Session replay, because it records the checkout form. Browser console
+capture, because the browser console is a mix of our code, Duffel's ancillaries
+component and whatever an extension injects, and only the first is actionable —
+unhandled exceptions and rejections still report, which is what would have
+answered the iOS hydration question in one screenshot instead of five rounds.
+
+**Trade-off accepted.** 121 packages for the SDK, and a build that now depends
+on Sentry's webpack plugin. The wrapper is applied unconditionally rather than
+behind a flag, so the production build has the same shape as the one run
+locally — a build-time difference is exactly the kind of thing that gets found
+in production. Source map upload is opt-in via auth token; without it the build
+still succeeds and reports minified traces.

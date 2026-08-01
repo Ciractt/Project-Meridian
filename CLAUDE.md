@@ -126,20 +126,17 @@ Not defects, but each has a cost attached and none is visible from the UI:
 
 In order, from `DUFFEL-GAP-ANALYSIS.md` and the open items in `ARCHITECTURE.md`:
 
-1. **Error monitoring (Sentry).** The money paths log to console. So does every
-   "cannot throw, logged instead" path — booking, account claiming, the search
-   rate limiter — which is a growing set of failures nobody would currently see.
-2. **Order changes.** The last real feature gap, comparable in size to checkout.
-3. **Move the session read out of the root layout.** It calls `cookies()`, which
+1. **Order changes.** The last real feature gap, comparable in size to checkout.
+2. **Move the session read out of the root layout.** It calls `cookies()`, which
    forces every route dynamic and is why the route landing pages had to drop ISR
    (see the `force-dynamic` note in `flights/[route]`). Reading it in the browser
    makes the whole product cacheable again, at the cost of a flash of
    signed-out state in the header.
-4. Traveller profiles — saved passengers picked from a dropdown. A real reason to
+3. Traveller profiles — saved passengers picked from a dropdown. A real reason to
    book direct, same argument as loyalty numbers.
-5. Special assistance requests (gap 3.4). An accessibility obligation as much as
+4. Special assistance requests (gap 3.4). An accessibility obligation as much as
    a feature: today someone needing assistance has to ring the airline.
-6. Rename the colour tokens. `chart` is no longer chart magenta and `airway` is
+5. Rename the colour tokens. `chart` is no longer chart magenta and `airway` is
    no longer an informational blue — ~800 usages across 58 files, with no help
    from `cn()`, since tailwind-merge does not resolve custom scale names.
 
@@ -147,7 +144,7 @@ Shipped since this list was last accurate: confirmation emails, the
 reconciliation job, tests on `pricing.ts` and the compensation paths, loyalty
 accounts, self-service cancellation, post-booking bags, admin queues, editable
 site content, route landing pages, the Ulysse-derived visual direction, checkout
-account signup, and search rate limiting.
+account signup, search rate limiting, and error monitoring (ADR-042).
 
 Before real money: terms and privacy reviewed by a solicitor, `lib/company.ts`
 filled in, live Duffel access with a funded balance, and **the ATOL question
