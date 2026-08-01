@@ -1316,3 +1316,53 @@ elsewhere: the pricing promise, the itemised fee, the named ranking criterion,
 the stated baggage allowance. Those are load-bearing product decisions rather
 than styling, and none of them can be copied by changing a hex value — which was
 the argument ADR-040 made and this is the consequence of accepting it.
+
+---
+
+## ADR-044 — A change costs the airline's price plus a flat fee, never a percentage
+
+**Decision.** When a traveller moves a booked flight, we pass the airline's
+change cost through at cost and add a flat handling fee, itemised separately.
+A change that costs nothing is free. A change in the traveller's favour is
+refunded with no fee deducted from it.
+
+**Why not a percentage.** Every other price in this product is a rate, so a rate
+was the obvious choice, and it is wrong here for three reasons.
+
+It scales with the penalty. The worse an airline's fare rules treat someone, the
+more we take — so our revenue is highest exactly when the traveller is most
+annoyed, and the incentive points at surfacing expensive changes rather than
+cheap ones.
+
+It is not proportional to anything we do. Moving a £400 flight and moving a £50
+flight are the same three API calls. A percentage charges eight times as much
+for identical work, and there is no answer to a traveller who asks why.
+
+And it would not survive being seen. ADR-038 commits to itemising our fee rather
+than folding it into a total, so a percentage of a change penalty appears as its
+own line on the screen where someone is already unhappy. A fee that only works
+when nobody looks at it is not one this product can charge.
+
+**Why a fee at all rather than nothing.** A change is real work with real
+liability: we hold the payment, settle the airline, and own the failure if it
+sticks halfway. Zero is a supported setting (`BOOKING_CHANGE_FEE=0`) and a
+defensible choice, but the default states a price rather than pretending the
+work is free and recovering it somewhere less visible.
+
+**No fee on a free change.** Charging £15 to process a change the airline is
+doing for nothing invents a fee out of an absence. That is the thing this
+product exists not to do.
+
+**No fee netted out of a refund.** Deducting from money going back is how
+"refunded £40" becomes "£25 arrived", and that conversation costs more than the
+fee earns. Note also that `refund_to` can be `airline_credits` rather than cash,
+which has to be said in those words — a voucher is not a refund.
+
+**No fare margin on the difference.** `calculateExtrasCharge` already
+establishes that we do not take the fare margin twice on one booking, and a
+change is a modification of a sale already made and already marked up.
+
+**Trade-off accepted.** On a large change we earn less than a percentage would,
+and on a small one the fee is proportionally larger — a £15 fee on a £20 change
+is 75%. That second case is the one to watch, and the answer if it bites is a
+lower fee or a floor below which we charge nothing, not a switch to a rate.

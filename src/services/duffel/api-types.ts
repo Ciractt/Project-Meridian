@@ -203,6 +203,65 @@ export interface DuffelOrderCancellation {
   confirmed_at: string | null;
 }
 
+/**
+ * A single alternative the airline will accept in place of an existing slice.
+ *
+ * `change_total_amount` is the whole difference: fare delta plus whatever
+ * penalty the fare rules impose, netted. It can be negative — some changes come
+ * back cheaper — and when it is, `refund_to` says where the money goes, which
+ * is frequently `airline_credits` rather than a card. "Refunded" and "given a
+ * voucher" are not the same thing and must not be rendered as if they were.
+ */
+export interface DuffelOrderChangeOffer {
+  id: string;
+  /** Signed. Positive means the traveller owes; negative means money back. */
+  change_total_amount: string | null;
+  change_total_currency: string | null;
+  /** The airline's penalty on its own, where it breaks it out. */
+  penalty_total_amount?: string | null;
+  penalty_total_currency?: string | null;
+  /** What the order costs after the change. */
+  new_total_amount?: string | null;
+  new_total_currency?: string | null;
+  /** Where a negative change_total would be returned. */
+  refund_to?: string | null;
+  expires_at: string | null;
+  slices: {
+    add: DuffelSlice[];
+    remove: DuffelSlice[];
+  };
+}
+
+export interface DuffelOrderChangeRequest {
+  id: string;
+  order_id: string;
+  order_change_offers: DuffelOrderChangeOffer[];
+}
+
+/**
+ * A selected change, pending confirmation.
+ *
+ * The same quote-then-confirm shape as a cancellation, and for the same reason:
+ * the traveller has to see what the airline will charge before committing to
+ * it, and a one-shot endpoint would make that impossible.
+ */
+export interface DuffelOrderChange {
+  id: string;
+  order_id: string;
+  change_total_amount: string | null;
+  change_total_currency: string | null;
+  penalty_total_amount?: string | null;
+  new_total_amount?: string | null;
+  new_total_currency?: string | null;
+  refund_to?: string | null;
+  expires_at: string | null;
+  confirmed_at?: string | null;
+  slices?: {
+    add: DuffelSlice[];
+    remove: DuffelSlice[];
+  };
+}
+
 export interface DuffelOrder {
   id: string;
   booking_reference: string | null;

@@ -44,6 +44,21 @@ const EXTRAS_MARGIN_RATE = Number(process.env.BOOKING_EXTRAS_MARGIN_RATE ?? '0.1
  */
 const ASSUMED_FEE_RATE = Number(process.env.BOOKING_ASSUMED_FEE_RATE ?? '0.029');
 
+/**
+ * What we add for handling a change. A flat amount, not a rate.
+ *
+ * Deliberately unlike every other price in this file. A percentage of a change
+ * cost scales with the airline's penalty, which means the worse the fare rules
+ * treat someone, the more we take — and the traveller changing a £400 flight
+ * pays us eight times the one changing a £50 flight for the same work, which is
+ * the same work. Taking a cut of somebody's bad day is exactly the sort of
+ * thing ADR-038's itemisation would make visible, and it should not survive
+ * being visible.
+ *
+ * Zero is a supported setting and a defensible one.
+ */
+const CHANGE_FEE = Number(process.env.BOOKING_CHANGE_FEE ?? '15.00');
+
 /** Exposed so the ancillaries component marks bags up by the same rate. */
 export function extrasMarginRate(): number {
   return EXTRAS_MARGIN_RATE;
@@ -122,6 +137,83 @@ export function calculateExtrasCharge(
     supplierAmount: extras.toFixed(2),
     chargeAmount: toMinorUnitCeil(charge),
     marginAmount: margin.toFixed(2),
+    currency,
+  };
+}
+
+export interface ChangeBreakdown {
+  /** Owed to the airline. Signed: negative means they owe us. */
+  airlineAmount: string;
+  /** Our flat handling fee. Not charged when the airline owes money. */
+  handlingFee: string;
+  /**
+   * What the card is charged. Never negative — a change that comes back cheaper
+   * is a refund, not a negative charge, and the two are settled differently.
+   */
+  chargeAmount: string;
+  /** Present only when the change is in the traveller's favour. */
+  refundAmount: string | null;
+  currency: string;
+}
+
+/**
+ * Price a change.
+ *
+ * Three cases, and they are genuinely different rather than one formula with
+ * signs:
+ *
+ * - **Costs money.** Pass the airline's figure through at cost, add the flat
+ *   fee, gross up for card processing. No margin on the fare difference: the
+ *   sale was already made and marked up once, and `calculateExtrasCharge`
+ *   already establishes that we do not take the fare margin twice.
+ *
+ * - **Free.** No charge at all, and no handling fee either. Charging £15 to
+ *   process a change the airline is doing for nothing invents a fee out of an
+ *   absence, which is what we are supposedly not.
+ *
+ * - **Refund due.** The airline returns the difference. We do not deduct a
+ *   handling fee from it — netting a fee out of someone's refund is how
+ *   "refunded £40" becomes "£25 arrived", and that conversation costs more than
+ *   the fee. `refund_to` may be airline credit rather than cash, which the
+ *   caller must say plainly and this function does not decide.
+ */
+export function calculateChangeCharge(
+  airlineChangeAmount: string,
+  currency: string,
+): ChangeBreakdown {
+  const airline = Number(airlineChangeAmount);
+  if (!Number.isFinite(airline)) {
+    throw new Error(`Cannot price a change from "${airlineChangeAmount}".`);
+  }
+
+  if (airline < 0) {
+    return {
+      airlineAmount: airline.toFixed(2),
+      handlingFee: '0.00',
+      chargeAmount: '0.00',
+      refundAmount: Math.abs(airline).toFixed(2),
+      currency,
+    };
+  }
+
+  if (airline === 0) {
+    return {
+      airlineAmount: '0.00',
+      handlingFee: '0.00',
+      chargeAmount: '0.00',
+      refundAmount: null,
+      currency,
+    };
+  }
+
+  const fee = Number.isFinite(CHANGE_FEE) && CHANGE_FEE > 0 ? CHANGE_FEE : 0;
+  const charge = (airline + fee) / (1 - ASSUMED_FEE_RATE);
+
+  return {
+    airlineAmount: airline.toFixed(2),
+    handlingFee: fee.toFixed(2),
+    chargeAmount: toMinorUnitCeil(charge),
+    refundAmount: null,
     currency,
   };
 }

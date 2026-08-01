@@ -159,10 +159,18 @@ The two-step flow: choose outbound, then see inbound options priced against it.
 This is how Google Flights and Skyscanner behave, and it is a materially better
 long-haul experience than pricing whole round trips.
 
-### 4.5 Order changes initiated by the customer
+### 4.5 Order changes initiated by the customer — server side built
 
 `/air/order_change_requests` → `/air/order_changes`. Search for alternatives, see
-the price difference, confirm. Without it, every change is a support conversation.
+the price difference, confirm.
+
+**Done:** the service layer, quote-and-price, the token table and the money
+model (ADR-044). One slice, date only; origin and destination stay as booked.
+
+**Still to build:** the interface, the payment step that settles a change owing
+money, and the reconciliation pass for `paid_not_changed` — a change that took
+payment and did not confirm leaves someone holding a ticket for a flight they
+believe they are no longer on, which is worse than any other stuck state here.
 
 ### 4.6 Order cancellations with a refund quote
 

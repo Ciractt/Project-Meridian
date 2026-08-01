@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   calculateCharge,
+  calculateChangeCharge,
   chargeCoversFare,
   coversFare,
   extrasMarginRate,
@@ -209,5 +210,39 @@ describe('chargeCoversFare — the conservative fallback', () => {
 describe('extrasMarginRate', () => {
   it('exposes the pinned extras rate', () => {
     expect(extrasMarginRate()).toBe(EXTRAS_MARGIN);
+  });
+});
+
+describe('calculateChangeCharge', () => {
+  it('passes the airline cost through and adds the flat fee', () => {
+    const result = calculateChangeCharge('80.00', 'GBP');
+    expect(result.airlineAmount).toBe('80.00');
+    expect(result.handlingFee).toBe('15.00');
+    // (80 + 15) / (1 - 0.029), rounded up to the minor unit.
+    expect(result.chargeAmount).toBe('97.84');
+    expect(result.refundAmount).toBeNull();
+  });
+
+  it('takes the same fee whatever the penalty, which is the point', () => {
+    const small = calculateChangeCharge('20.00', 'GBP');
+    const large = calculateChangeCharge('400.00', 'GBP');
+    expect(small.handlingFee).toBe(large.handlingFee);
+  });
+
+  it('charges nothing at all when the airline charges nothing', () => {
+    const result = calculateChangeCharge('0.00', 'GBP');
+    expect(result.chargeAmount).toBe('0.00');
+    expect(result.handlingFee).toBe('0.00');
+  });
+
+  it('never nets a fee out of a refund', () => {
+    const result = calculateChangeCharge('-40.00', 'GBP');
+    expect(result.refundAmount).toBe('40.00');
+    expect(result.handlingFee).toBe('0.00');
+    expect(result.chargeAmount).toBe('0.00');
+  });
+
+  it('rejects a figure it cannot price', () => {
+    expect(() => calculateChangeCharge('about eighty quid', 'GBP')).toThrow();
   });
 });

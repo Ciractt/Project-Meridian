@@ -18,6 +18,7 @@ export default defineConfig({
     // written against exactly these rates.
     env: {
       BOOKING_MARGIN_RATE: '0.05',
+      BOOKING_CHANGE_FEE: '15.00',
       BOOKING_EXTRAS_MARGIN_RATE: '0.15',
       BOOKING_ASSUMED_FEE_RATE: '0.029',
     },
