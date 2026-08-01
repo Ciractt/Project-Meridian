@@ -1162,3 +1162,63 @@ a site competing on telling you what you're buying.
 
 It costs one line of monospace per leg and no extra API call — the data was already
 in the offer and only the review page used it.
+
+---
+
+## ADR-041 — Search is rate limited on cache misses, and fails open
+
+**Decision.** A caller gets a fixed number of live searches per window, counted
+in Postgres, charged only when the cache cannot answer. Over the limit, the
+results page says so and names the time. If the limiter itself cannot be
+reached, the search proceeds.
+
+**Why.** Duffel meters offer requests against a search-to-book ratio, so the
+cost of search scales with traffic while revenue scales with bookings. ADR-014's
+cache absorbs repeat queries, but nothing absorbs a client issuing endlessly
+*distinct* ones — walking a calendar a day at a time, or enumerating airport
+pairs. That is a bill with no ceiling and no booking behind it, and it is the
+one place in this product where someone else's behaviour can cost us money
+directly.
+
+**Counted on cache misses only.** This is the load-bearing decision. A cache hit
+costs nothing, so charging for it would penalise the traveller flipping between
+two date pairs while doing nothing about the client walking the calendar. The
+behaviour we want to allow and the behaviour we want to stop separate almost
+exactly on whether the cache can answer, so that is the line. Every unit of
+quota corresponds to a request we are about to be billed for.
+
+**Fails open.** If Supabase is unreachable or the function is missing, the
+search runs. A limiter that blocks searching when its own storage is down turns
+a cost problem into an outage, and what is at risk here is a bill rather than a
+booking. The failure is logged rather than swallowed, so it shows up as soon as
+error monitoring exists.
+
+**A fixed window, not a token bucket.** A bucket is fairer under sustained load,
+and that is not the problem being solved: this stops a scraper rather than
+shaping traffic. A counter is one row and one statement, and readable in psql
+during an incident. The increment is a `security definer` function rather than a
+read-then-write from the application, because two concurrent searches would
+otherwise both read the same count and both write count+1 — the limit would leak
+by however many requests arrive in parallel, which is the exact shape of the
+traffic it exists to stop.
+
+**What it does not do.** The caller is identified by `x-forwarded-for`, which is
+client-supplied and forgeable in general, though on Vercel the leftmost entry is
+set by the platform. Someone rotating addresses defeats this. That is an
+accepted bar for a spend control: the alternatives — mandatory accounts,
+captchas, proof of work — all tax every real traveller to stop a determined few,
+and "no account needed" is a stated promise on the home page.
+
+**Trade-off accepted.** Shared addresses arrive as one caller, so a household or
+an office shares an allowance. The limit is set generously for that reason, and
+the failure mode is a message that explains the constraint and names when it
+lifts rather than an error. If it turns out to bite real travellers, the
+observable is the log line, and the answer is a higher limit rather than a
+cleverer key.
+
+**Alternatives.** Limiting by session or account — rejected, guests are the
+default path. Limiting in memory — does not work at all on serverless, where
+functions share no state and a cold start is a fresh allowance. Serving stale
+cached offers instead of throttling — rejected: past the TTL an offer may not be
+bookable, and handing someone a price that fails at checkout is worse than
+telling them to wait.

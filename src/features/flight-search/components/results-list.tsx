@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { runSearch } from '../results';
+import { describeRetryAfter } from '../rate-limit';
 import type { FlightSearchParams } from '../schema';
 import { ResultsPanel } from './results-panel';
 import { carriersMissingFrom } from '../unavailable-carriers';
@@ -35,6 +36,22 @@ export async function ResultsList({ criteria }: { criteria: FlightSearchParams }
       <Notice title="The airlines didn’t answer in time.">
         {result.message} Nothing was booked and nothing was charged. Searching again
         usually works.
+      </Notice>
+    );
+  }
+
+  if (result.status === 'throttled') {
+    /* Says what happened rather than blaming the traveller or inventing a
+       fault. Someone who has genuinely run forty distinct searches is doing
+       something reasonable, and the honest thing is to explain the constraint
+       and name the time — "try again later" with no number is the kind of
+       non-answer this product exists not to give. */
+    return (
+      <Notice title="You’ve run a lot of searches in a short time.">
+        Every search asks the airlines directly, and they cap how often we can do
+        that. Repeating a search you’ve already run still works — those come from
+        our own copy. Anything new will work again in{' '}
+        {describeRetryAfter(result.retryAfterSeconds)}.
       </Notice>
     );
   }

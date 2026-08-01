@@ -7,6 +7,7 @@ import {
 } from '@/services/duffel/errors';
 import { mapOffer } from './map';
 import { readCachedSearch, writeCachedSearch } from './cache';
+import { consumeSearchQuota } from './rate-limit';
 import { recordRoutePrice } from '@/features/destinations/prices';
 import type { FlightSearchParams } from './schema';
 import type { Offer } from './types';
@@ -23,7 +24,9 @@ export type SearchResult =
   | { status: 'empty' }
   | { status: 'unconfigured' }
   | { status: 'unavailable'; message: string }
-  | { status: 'rejected'; message: string };
+  | { status: 'rejected'; message: string }
+  /** Over the search allowance. Nothing was asked of Duffel. */
+  | { status: 'throttled'; retryAfterSeconds: number };
 
 /**
  * Orchestrates a search: cache, then Duffel, then cache write.
@@ -35,6 +38,12 @@ export type SearchResult =
  * Empty results are deliberately NOT cached. A route with no availability today
  * may have some in an hour, and caching nothing for ten minutes would make the
  * site look broken for a cost saving of one request.
+ *
+ * The rate limit is checked after the cache and before Duffel, which is the
+ * only place it makes sense: a cache hit costs nothing, so charging for one
+ * would penalise the traveller comparing two date pairs while doing nothing
+ * about the client walking a calendar. Every unit of quota corresponds to an
+ * offer request we are about to be billed for.
  */
 export async function runSearch(criteria: FlightSearchParams): Promise<SearchResult> {
   const cached = await readCachedSearch(criteria);
@@ -45,6 +54,11 @@ export async function runSearch(criteria: FlightSearchParams): Promise<SearchRes
       cached: true,
       expiresAt: cached.expiresAt,
     };
+  }
+
+  const quota = await consumeSearchQuota();
+  if (quota.status === 'throttled') {
+    return { status: 'throttled', retryAfterSeconds: quota.retryAfterSeconds };
   }
 
   const slices = [
