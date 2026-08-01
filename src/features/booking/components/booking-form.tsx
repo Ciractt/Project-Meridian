@@ -47,6 +47,7 @@ export function BookingForm({
   seatMaps,
   hasExtras,
   extrasMarkupRate,
+  signedIn,
   trip,
 }: {
   offerId: string;
@@ -60,6 +61,8 @@ export function BookingForm({
   searchHref: string;
   /** From the offer: this airline needs passport details at booking. */
   needsDocuments: boolean;
+  /** Whether a session exists. Someone signed in is never offered an account. */
+  signedIn: boolean;
   /** Route, dates and money for the sticky bar. Calendar dates, not instants. */
   trip: {
     originCode: string;
@@ -181,6 +184,9 @@ export function BookingForm({
         attemptToken,
         contact: { email, phoneNumber: phone },
         passengers,
+        /* Omitted entirely unless asked for, so the schema's `.optional()` is
+           the normal path rather than a branch the server has to unpick. */
+        ...(wantsAccount && !signedIn ? { createAccount: { password } } : {}),
       });
 
       switch (result.status) {
@@ -246,6 +252,8 @@ export function BookingForm({
   }
 
   const { extrasMinor, extrasCurrency } = useCheckoutTotals();
+  const [wantsAccount, setWantsAccount] = useState(false);
+  const [password, setPassword] = useState('');
 
   const step: CheckoutStep =
     stage.name === 'details'
@@ -385,6 +393,21 @@ export function BookingForm({
             error={errors['contact.phoneNumber']}
           />
         </div>
+
+        {/* Inside the contact fieldset because it reuses the email above it.
+            Signed-in travellers never see it — their booking already attaches. */}
+        {!signedIn ? (
+          <AccountOffer
+            checked={wantsAccount}
+            password={password}
+            error={errors['createAccount.password']}
+            onToggle={(next) => {
+              setWantsAccount(next);
+              if (!next) setPassword('');
+            }}
+            onPasswordChange={setPassword}
+          />
+        ) : null}
       </fieldset>
 
       {notice ? <Notice notice={notice} /> : null}
@@ -487,6 +510,75 @@ function TextField({
         <p role="alert" className="mt-1 text-xs text-danger">
           {error}
         </p>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * Open an account with the same booking.
+ *
+ * Not a prompt, a wall, or a step. "No account needed" is a stated promise on
+ * the home page, so this has to be a real offer rather than that promise with
+ * an obstacle in front of it: one unticked checkbox, inside the section that
+ * already has the email, revealing one field.
+ *
+ * **The reasons are the specific ones and no others.** Two of the three obvious
+ * pitches turn out to be false here — adding bags and cancelling already work
+ * for guests, by contact-email verification. What an account actually changes
+ * is that the trip appears alongside the others, and that traveller details and
+ * loyalty numbers come back next time. That is the whole list, so that is the
+ * whole claim.
+ */
+function AccountOffer({
+  checked,
+  password,
+  error,
+  onToggle,
+  onPasswordChange,
+}: {
+  checked: boolean;
+  password: string;
+  error?: string;
+  onToggle: (next: boolean) => void;
+  onPasswordChange: (next: string) => void;
+}) {
+  return (
+    <div className="mt-5 border-t border-hairline pt-4">
+      <label className="flex cursor-pointer items-start gap-3">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(event) => onToggle(event.target.checked)}
+          className="mt-0.5 size-4 shrink-0 accent-chart"
+        />
+        <span className="text-sm">
+          <span className="font-medium text-ink">
+            Save this trip to a Meridian account
+          </span>
+          <span className="mt-1 block text-xs leading-relaxed text-ink-muted">
+            Your bookings in one place, and your travellers’ details and loyalty
+            numbers filled in next time. We’ll email a link to confirm your
+            address after booking. Booking works the same either way.
+          </span>
+        </span>
+      </label>
+
+      {checked ? (
+        <div className="mt-4 sm:max-w-sm">
+          <TextField
+            id="account-password"
+            label="Choose a password"
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={onPasswordChange}
+            error={error}
+          />
+          <p className="mt-2 text-xs text-ink-faint">
+            At least 8 characters. We’ll use the email above.
+          </p>
+        </div>
       ) : null}
     </div>
   );

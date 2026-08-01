@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { claimOrdersForEmail } from '@/features/booking/claim';
 
 export interface AuthFormState {
   error?: string;
@@ -36,9 +37,18 @@ export async function signIn(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) return { error: 'That email and password combination didn’t work.' };
+
+  /* Pick up any bookings made as a guest with this address. Supabase has
+     confirmed it, so this is the same person who received the tickets. Cannot
+     throw, and a failure is silent by design: the booking is still reachable by
+     reference and email, and the next sign-in tries again. */
+  const user = data.user;
+  if (user?.email_confirmed_at) {
+    await claimOrdersForEmail(user.id, user.email);
+  }
 
   const next = String(formData.get('next') ?? '/account');
   revalidatePath('/', 'layout');

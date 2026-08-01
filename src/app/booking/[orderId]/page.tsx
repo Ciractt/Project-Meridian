@@ -137,7 +137,7 @@ export default async function BookingPage({
           href={booking.ownedByViewer ? '/account' : '/sign-in'}
           className="rounded-control bg-ink px-5 py-2.5 text-sm font-medium text-white"
         >
-          {booking.ownedByViewer ? 'All your trips' : 'Sign in to save this trip'}
+          {booking.ownedByViewer ? 'All your trips' : 'Sign in to see this trip'}
         </Link>
         <Link
           href="/"

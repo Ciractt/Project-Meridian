@@ -12,6 +12,7 @@ import {
 import { DuffelUnavailableError } from '@/services/duffel/errors';
 import type { DuffelOrderPassengerInput } from '@/services/duffel/api-types';
 import {
+  accountSignupSchema,
   bookingSchema,
   contactSchema,
   passengerSchema,
@@ -207,6 +208,11 @@ const completeSchema = z.object({
   attemptToken: z.string().uuid(),
   contact: contactSchema,
   passengers: z.array(passengerSchema).min(1).max(9),
+  /* Present only when the traveller ticked the box and had no session. On
+     completeBooking rather than startBooking because this is the call that
+     issues the ticket, and the account must not exist before the thing it is
+     being opened for does. */
+  createAccount: accountSignupSchema.optional(),
 });
 
 export async function completeBooking(raw: unknown): Promise<CompleteOutcome> {
@@ -489,6 +495,16 @@ export async function completeBooking(raw: unknown): Promise<CompleteOutcome> {
      second copy. Cannot throw; a mail failure never touches a ticketed booking. */
   await sendOrderConfirmationEmail(orderRow.id);
 
+  /* Account creation, if they asked for it. Deliberately last, deliberately
+     after the ticket exists, and deliberately unable to affect any of the
+     above: a payment that succeeded must never be undone by a signup that
+     didn't. Supabase will not sign them in here — the address has to be
+     confirmed first — so the booking stays attached by contact email until
+     they follow the link, at which point signIn claims it. */
+  if (!user && input.createAccount) {
+    await createAccountForBooking(input.contact.email, input.createAccount.password);
+  }
+
   return {
     status: 'booked',
     orderId: orderRow.id,
@@ -497,6 +513,38 @@ export async function completeBooking(raw: unknown): Promise<CompleteOutcome> {
 }
 
 /* ---- helpers ---- */
+
+/**
+ * Open an account off the back of a booking.
+ *
+ * Never throws and never reports failure to the caller. Everything that can go
+ * wrong here — a weak password, an address that already has an account, rate
+ * limiting, Supabase being down — happens *after* a ticket has been issued and
+ * paid for, and none of it is a reason to trouble someone who has just bought
+ * a flight. They keep the booking either way and can sign up later from any
+ * page.
+ *
+ * An address that already has an account is the ordinary case rather than an
+ * error: Supabase returns a decoy user rather than confirming the address is
+ * taken, and it should stay that way. Enumeration is exactly as bad on this
+ * form as on the sign-up page.
+ */
+async function createAccountForBooking(email: string, password: string) {
+  try {
+    /* Imported here rather than at the top of the file. The server client reads
+       its config at module load and throws when it is absent, so a static
+       import makes this whole module — and every test that touches booking
+       logic — depend on Supabase env being set. It caught exactly that. */
+    const { createSupabaseServerClient } = await import('@/lib/supabase/server');
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      console.error('Could not create account after booking:', error.message);
+    }
+  } catch (cause) {
+    console.error('Could not create account after booking:', cause);
+  }
+}
 
 function issuesToMap(parsed: {
   error: { issues: Array<{ path: Array<string | number | symbol>; message: string }> };

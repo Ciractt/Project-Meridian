@@ -18,7 +18,7 @@ import { PreTravelNotice } from '@/features/booking/components/pre-travel-panel'
 import { FinancialProtectionNotice } from '@/components/financial-protection-notice';
 import { LoyaltyStep } from '@/features/booking/components/loyalty-step';
 import { getSavedLoyaltyAccounts } from '@/features/booking/loyalty';
-import { getProfileNames } from '@/features/auth/queries';
+import { getCurrentUser, getProfileNames } from '@/features/auth/queries';
 import { AirlineLogo } from '@/features/flight-search/components/airline-logo';
 import {
   BaggageSummary,
@@ -162,7 +162,8 @@ export default async function BookPage({
 
   /* Both empty when signed out, which is the common case — the loyalty step
      still works, it just doesn't pre-fill. */
-  const [savedLoyalty, profileNames] = await Promise.all([
+  const [viewer, savedLoyalty, profileNames] = await Promise.all([
+    getCurrentUser(),
     getSavedLoyaltyAccounts(),
     getProfileNames(),
   ]);
@@ -252,6 +253,7 @@ export default async function BookPage({
             seatMaps={seatMaps}
             hasExtras={hasExtras}
             extrasMarkupRate={extrasMarginRate()}
+            signedIn={viewer !== null}
             trip={{
               originCode: firstSlice?.originCode ?? '',
               destinationCode: firstSlice?.destinationCode ?? '',

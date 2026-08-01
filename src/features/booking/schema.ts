@@ -158,6 +158,24 @@ export const selectedServiceSchema = z.object({
   quantity: z.coerce.number().int().min(1).max(9),
 });
 
+/**
+ * Optionally open an account with the same booking.
+ *
+ * A password and nothing else — the email is already being collected for the
+ * ticket, and asking for it twice mid-checkout to sign someone up would be
+ * asking them to type an address they can already see on the screen.
+ *
+ * `.optional()` throughout: this is never required to book, and a validation
+ * error here must never be able to stop a booking. The server treats a bad
+ * password as "don't create an account" rather than as a form failure.
+ */
+export const accountSignupSchema = z.object({
+  password: z
+    .string()
+    .min(8, 'Use at least 8 characters.')
+    .max(72, 'That password is too long.'),
+});
+
 export const bookingSchema = z.object({
   offerId: z.string().min(1),
   /** Client-generated, so a retry or double-click cannot book twice. */
