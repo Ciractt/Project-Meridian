@@ -134,7 +134,7 @@ export function CancelBooking({
               />
               <div className="flex justify-between gap-3 border-t border-hairline pt-1.5 font-medium text-ink">
                 <dt>Back to your card</dt>
-                <dd className="font-mono">
+                <dd className="tabular-nums">
                   {formatMoney(quote.customerRefund, quote.currency)}
                 </dd>
               </div>
@@ -178,7 +178,7 @@ function Row({ term, value }: { term: string; value: string }) {
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-ink-faint">{term}</dt>
-      <dd className="font-mono text-ink-muted">{value}</dd>
+      <dd className="tabular-nums text-ink-muted">{value}</dd>
     </div>
   );
 }

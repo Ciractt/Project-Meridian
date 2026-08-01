@@ -8,7 +8,6 @@ import {
   RunningTotal,
 } from '@/features/booking/components/running-total';
 import type { PassengerDraft } from '@/features/booking/components/passenger-fields';
-import { RouteLine } from '@/components/route-line';
 import { toSearchParams } from '@/features/flight-search/schema';
 import { getRawOffer } from '@/services/duffel/flights';
 import { getSeatMaps } from '@/services/duffel/seat-maps';
@@ -319,7 +318,7 @@ export default async function BookPage({
                 {/* Only the figure is monospaced. A mono space is much wider
                     than the body one, so "169 kg" rendered with a visible gap
                     in the middle of a value. */}
-                <span className="font-mono">
+                <span className="tabular-nums">
                   {Math.round(Number(offer.emissionsKg))}
                 </span>{' '}
                 kg{' '}
@@ -343,7 +342,7 @@ export default async function BookPage({
 
             <p className="mt-4 border-t border-hairline pt-4 text-xs text-ink-faint">
               Held until{' '}
-              <span className="font-mono">{formatInstantTime(offer.expiresAt)}</span>.
+              <span className="tabular-nums">{formatInstantTime(offer.expiresAt)}</span>.
               After that we re-check the live price before anything is charged.
             </p>
           </div>
@@ -380,11 +379,11 @@ function SliceReview({ slice }: { slice: Slice }) {
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Time code={slice.originCode} time={formatLocalTime(first.departingAt)} />
           <div className="min-w-0 flex-1">
-            <p className="mb-1 text-center font-mono text-[11px] text-ink-faint">
+            <p className="mb-1 text-center tabular-nums text-[11px] text-ink-faint">
               {formatDuration(slice.durationMinutes)}
             </p>
-            <RouteLine stops={stops} />
-            <p className="mt-1 text-center font-mono text-[11px] text-ink-faint">
+            <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
+            <p className="mt-1 text-center tabular-nums text-[11px] text-ink-faint">
               {stops === 0
                 ? 'Direct'
                 : slice.segments
@@ -403,7 +402,7 @@ function SliceReview({ slice }: { slice: Slice }) {
 
       <ul className="mt-3 space-y-1 text-xs text-ink-faint">
         {slice.segments.map((segment) => (
-          <li key={segment.id} className="font-mono">
+          <li key={segment.id} className="tabular-nums">
             {segment.flightNumber} · {segment.originCode}–{segment.destinationCode}
             {segment.aircraft ? ` · ${segment.aircraft}` : ''}
             {segment.marketingCarrier !== segment.operatingCarrier
@@ -427,13 +426,13 @@ function Time({
 }) {
   return (
     <div className="shrink-0">
-      <p className="font-mono text-lg leading-none font-semibold tracking-tight">
+      <p className="tabular-nums text-lg leading-none font-semibold tracking-tight">
         {time}
         {offset > 0 ? (
           <sup className="ml-0.5 text-[10px] text-caution">+{offset}</sup>
         ) : null}
       </p>
-      <p className="mt-1 font-mono text-[11px] text-ink-faint">{code}</p>
+      <p className="mt-1 tabular-nums text-[11px] text-ink-faint">{code}</p>
     </div>
   );
 }
@@ -442,7 +441,7 @@ function Row({ term, value }: { term: string; value: string }) {
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-ink-faint">{term}</dt>
-      <dd className="font-mono text-ink-muted">{value}</dd>
+      <dd className="tabular-nums text-ink-muted">{value}</dd>
     </div>
   );
 }

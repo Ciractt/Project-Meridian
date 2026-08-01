@@ -29,7 +29,7 @@ export default async function AdminLayout({
             Admin
           </h1>
         </div>
-        <p className="font-mono text-xs text-ink-faint">
+        <p className="tabular-nums text-xs text-ink-faint">
           {user.email} · {user.role}
         </p>
       </div>

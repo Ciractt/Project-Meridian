@@ -57,7 +57,7 @@ export function FeatureOfferCard({
             <Icon aria-hidden="true" size={15} strokeWidth={1.75} className="shrink-0" />
             <span className="truncate">{labels.join(' · ')}</span>
           </p>
-          <p className="shrink-0 font-mono text-xl leading-none font-semibold tracking-tight text-chart">
+          <p className="shrink-0 tabular-nums text-xl leading-none font-semibold tracking-tight text-chart">
             {formatMoney(offer.totalAmount, offer.currency)}
           </p>
         </div>
@@ -101,21 +101,21 @@ function LegRow({ slice }: { slice: Slice }) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate font-mono text-sm font-semibold text-ink">
+          <p className="truncate tabular-nums text-sm font-semibold text-ink">
             {formatLocalTime(first.departingAt)} – {formatLocalTime(last.arrivingAt)}
           </p>
-          <p className="truncate font-mono text-[11px] text-ink-faint">
+          <p className="truncate tabular-nums text-[11px] text-ink-faint">
             {slice.originCode} – {slice.destinationCode}
           </p>
         </div>
 
         <div className="shrink-0 text-right">
-          <p className="font-mono text-[11px] text-ink-faint">
+          <p className="tabular-nums text-[11px] text-ink-faint">
             {formatDuration(slice.durationMinutes)}
           </p>
           <p
             className={cn(
-              'font-mono text-[11px]',
+              'tabular-nums text-[11px]',
               stops === 0 ? 'text-positive' : 'text-caution',
             )}
           >

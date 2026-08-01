@@ -29,7 +29,7 @@ export function RunningTotal({
     base !== null && extrasMinor !== null && extrasCurrency === currency;
 
   return (
-    <p className="mt-3 font-mono text-3xl font-semibold tracking-tight text-chart">
+    <p className="mt-3 tabular-nums text-3xl font-semibold tracking-tight text-chart">
       {combinable
         ? formatMoney(fromMinorUnits(base + extrasMinor), currency)
         : formatMoney(baseAmount, currency)}
@@ -53,7 +53,7 @@ export function ExtrasLine({ currency }: { currency: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4">
       <dt className="text-ink-muted">Bags and seats</dt>
-      <dd className="font-mono">+{amount}</dd>
+      <dd className="tabular-nums">+{amount}</dd>
     </div>
   );
 }

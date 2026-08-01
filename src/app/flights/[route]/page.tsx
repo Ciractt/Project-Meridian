@@ -242,7 +242,7 @@ function Stat({ term, value }: { term: string; value: string }) {
       <dt className="text-xs font-medium text-ink-faint">
         {term}
       </dt>
-      <dd className="mt-1.5 font-mono text-lg font-semibold text-chart">{value}</dd>
+      <dd className="mt-1.5 tabular-nums text-lg font-semibold text-chart">{value}</dd>
     </div>
   );
 }

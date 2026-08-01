@@ -120,29 +120,30 @@ default. Say the word and I'll flatten it.
 
 ## Design direction
 
-**Reference point: aeronautical charts, not travel portals.** The palette is
-taken from VFR sectional charts — pale paper, ink linework, and the magenta
-that marks controlled airfields. Deliberately not the flat blue that Booking,
-Skyscanner, Expedia and Kayak all share, because a new OTA that looks like a
-cheaper version of an existing one inherits the comparison.
+**Reference point: Ulysse.** A French OTA built on the same supplier, and the
+closest thing to a worked example of this product done well. Deep navy ink, a
+saturated blue for price and primary action, cool near-white surfaces, generous
+radii, and a layout that keeps the total and the fee in front of you on every
+screen rather than at the end.
 
-- **Type.** Bricolage Grotesque for display (restrained: headlines only), Inter
-  Tight for body and controls, IBM Plex Mono with tabular figures for anything
-  a traveller reads as *data* — IATA codes, times, durations, prices.
-- **Signature.** The route line: a hairline path with one marker per stop. It
-  appears in the hero, completes itself in the form when both airports are
-  chosen, and will head every flight card. The markers encode stop count, which
-  is the most important non-price attribute of an itinerary — structure
-  carrying information, not decoration.
-- **Colour is functional, not decorative.** Sectional charts aren't black and
-  white — they use tinted terrain and airspace bands. Each wash in the palette
-  carries exactly one meaning and is used for nothing else: airway blue for
-  informational content and links, magenta for price and the primary action,
-  green for fare drops and confirmations, amber for caution states (long
-  layovers, overnight connections, sandbox mode). A traveller learns the code
-  once and it holds across every screen.
-- **Restraint.** Magenta becomes a solid fill in exactly one place — the search
-  button — and takes prices in Phase 2. Blue is never a call to action.
+This replaced the original direction, which took its palette from VFR sectional
+charts. ADR-040 records why, and what survived.
+
+- **Type.** Plus Jakarta Sans throughout, with weight and tracking carrying the
+  distinction a separate display face used to. Figures in a column — prices down
+  a result list, times down an itinerary — take `tabular-nums`, so the column
+  lines up without a second typeface.
+- **Colour is functional, not decorative.** Each wash carries exactly one
+  meaning and is used for nothing else: blue for price, primary action and
+  links; green for fare drops and confirmations; amber for caution states (long
+  layovers, overnight connections, sandbox mode); red for failure. A traveller
+  learns the code once and it holds across every screen.
+- **Contrast is a floor, not an aspiration.** Every token clears WCAG AA
+  (4.5:1) against white, against `paper`, and against its own wash. That is not
+  what matching another site by eye gives you — the reference's own green and
+  red both land near 3.2:1. Any new token clears the same bar.
+- **Structure over ornament.** A ticket notch on the picks, section rules,
+  hairlines. Nothing on a screen exists only to look like something.
 
 ---
 
@@ -1160,7 +1161,7 @@ turboprop is a different proposition again. Most sites put this two clicks deep,
 which is a reasonable choice for a site competing on price alone and an odd one for
 a site competing on telling you what you're buying.
 
-It costs one line of monospace per leg and no extra API call — the data was already
+It costs one line per leg and no extra API call — the data was already
 in the offer and only the review page used it.
 
 ---
@@ -1278,3 +1279,40 @@ behind a flag, so the production build has the same shape as the one run
 locally — a build-time difference is exactly the kind of thing that gets found
 in production. Source map upload is opt-in via auth token; without it the build
 still succeeds and reports minified traces.
+
+---
+
+## ADR-043 — The chart-derived devices are removed
+
+**Decision.** The route line, the chart grid ruling and the monospace family are
+removed. ADR-040 changed the palette and type; this finishes the job on the
+devices that outlived it.
+
+**Why they were left.** ADR-040 was a values-only change so it could be reverted
+cleanly, and these three needed judgement rather than a find-and-replace. Left
+alone they read as texture from a different product sitting on top of the new
+one.
+
+**The route line.** The strongest of them: its markers encoded stop count, so it
+was structure carrying information rather than decoration. It goes anyway,
+because every card that carried it also prints "Direct" or "1 stop" in words
+directly underneath — the graphic was the redundant copy of something already
+stated, and the accessible label it carried duplicated text already in the DOM.
+A hairline takes its place where a connector still reads.
+
+**The chart grid.** Decorative ruling behind the hero and the destination
+collage. With the palette gone it had nothing to belong to.
+
+**Monospace.** 102 usages, all now `tabular-nums`. The argument for a second
+family was column alignment — prices down a list and times down an itinerary
+have to be the same width or the column wobbles — and Plus Jakarta Sans supports
+tabular figures, so that argument is satisfied without a second file to
+download. Applied per element rather than globally: proportional figures read
+better inside a sentence, and most numbers in this product are in one.
+
+**Trade-off accepted.** The product now sits closer to the category it was
+originally positioned against, and the differentiation has to be carried
+elsewhere: the pricing promise, the itemised fee, the named ranking criterion,
+the stated baggage allowance. Those are load-bearing product decisions rather
+than styling, and none of them can be copied by changing a hex value — which was
+the argument ADR-040 made and this is the consequence of accepting it.

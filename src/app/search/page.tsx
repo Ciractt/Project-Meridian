@@ -68,11 +68,11 @@ export default async function SearchPage({
       <div className="sticky top-0 z-20 border-b border-night-line bg-night">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3">
           <p className="flex items-baseline gap-2 text-sm text-white">
-            <span className="font-mono text-base font-semibold">{criteria.origin}</span>
+            <span className="tabular-nums text-base font-semibold">{criteria.origin}</span>
             <span aria-hidden="true" className="text-chart">
               →
             </span>
-            <span className="font-mono text-base font-semibold">
+            <span className="tabular-nums text-base font-semibold">
               {criteria.destination}
             </span>
             <span className="ml-2 text-white/60">
@@ -129,7 +129,7 @@ function DayStepper({
   return (
     <div className="flex items-center gap-1 rounded-control bg-white/10 p-0.5">
       <StepLink href={previous} label={`${label}, one day earlier`} glyph="‹" />
-      <span className="min-w-24 text-center font-mono text-xs text-white">{value}</span>
+      <span className="min-w-24 text-center tabular-nums text-xs text-white">{value}</span>
       <StepLink href={next} label={`${label}, one day later`} glyph="›" />
     </div>
   );

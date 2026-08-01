@@ -84,7 +84,7 @@ export function FilterRail({
                 {STOP_LABELS[bucket.stops] ?? `${bucket.stops} stops`}
               </span>
             </span>
-            <span className="font-mono text-xs text-ink-faint">
+            <span className="tabular-nums text-xs text-ink-faint">
               from {formatMoney(String(bucket.cheapest), facets.currency)}
             </span>
           </label>
@@ -102,7 +102,7 @@ export function FilterRail({
           aria-label="Maximum total price"
           className="w-full accent-[var(--color-chart)]"
         />
-        <p className="mt-1 font-mono text-xs text-ink-muted">
+        <p className="mt-1 tabular-nums text-xs text-ink-muted">
           Up to{' '}
           {formatMoney(
             String(filters.maxPrice ?? Math.ceil(facets.maxPrice)),
@@ -150,7 +150,7 @@ export function FilterRail({
             aria-label="Maximum total journey time"
             className="w-full accent-[var(--color-chart)]"
           />
-          <p className="mt-1 font-mono text-xs text-ink-muted">
+          <p className="mt-1 tabular-nums text-xs text-ink-muted">
             Up to {formatDuration(filters.maxDurationMinutes ?? facets.maxDuration)}
           </p>
         </Group>
@@ -180,7 +180,7 @@ export function FilterRail({
                 />
                 <span className="truncate text-sm text-ink">{airline.name}</span>
               </span>
-              <span className="max-w-20 shrink-0 truncate font-mono text-xs text-ink-faint">
+              <span className="max-w-20 shrink-0 truncate tabular-nums text-xs text-ink-faint">
                 {formatMoney(String(airline.cheapest), facets.currency)}
               </span>
             </label>
@@ -217,7 +217,7 @@ function HourSelect({
       <select
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-1 w-full rounded-control border border-hairline-strong bg-surface px-2 py-1.5 font-mono text-sm text-ink"
+        className="mt-1 w-full rounded-control border border-hairline-strong bg-surface px-2 py-1.5 tabular-nums text-sm text-ink"
       >
         {Array.from({ length: 24 }, (_, hour) => (
           <option key={hour} value={hour}>

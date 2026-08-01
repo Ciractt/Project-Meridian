@@ -4,7 +4,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { getSiteContent } from '@/features/content/queries';
 import { AnnouncementBar } from '@/features/content/components/announcement-bar';
 import { NavPanel } from '@/components/nav-panel';
-import { display, mono, sans } from '@/lib/fonts';
+import { display, sans } from '@/lib/fonts';
 import { cn } from '@/lib/cn';
 import './globals.css';
 
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [user, content] = await Promise.all([getCurrentUser(), getSiteContent()]);
   return (
-    <html lang="en-GB" className={cn(display.variable, sans.variable, mono.variable)}>
+    <html lang="en-GB" className={cn(display.variable, sans.variable)}>
       <body className="min-h-dvh antialiased">
         <a
           href="#main"

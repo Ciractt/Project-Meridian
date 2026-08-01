@@ -1,4 +1,3 @@
-import { RouteLine } from '@/components/route-line';
 import { cn } from '@/lib/cn';
 import { dayOffset, formatDuration, formatLocalTime, formatMoney } from '@/lib/format';
 import type { Offer, Slice } from '../types';
@@ -56,7 +55,7 @@ export function OfferCard({
         </div>
 
         <div className="shrink-0 border-t border-hairline bg-paper/60 p-4 sm:p-5 md:w-56 md:border-t-0 md:border-l">
-          <p className="font-mono text-2xl leading-none font-semibold tracking-tight text-chart">
+          <p className="tabular-nums text-2xl leading-none font-semibold tracking-tight text-chart">
             {formatMoney(offer.totalAmount, offer.currency)}
           </p>
 
@@ -79,7 +78,7 @@ export function OfferCard({
             {travellers > 1 ? (
               <div className="flex justify-between gap-2">
                 <dt className="text-ink-faint">Per traveller</dt>
-                <dd className="font-mono text-ink-muted">
+                <dd className="tabular-nums text-ink-muted">
                   {formatMoney(perTraveller.toFixed(2), offer.currency)}
                 </dd>
               </div>
@@ -87,7 +86,7 @@ export function OfferCard({
             {base !== null ? (
               <div className="flex justify-between gap-2">
                 <dt className="text-ink-faint">Airline fare</dt>
-                <dd className="font-mono text-ink-muted">
+                <dd className="tabular-nums text-ink-muted">
                   {formatMoney(offer.baseAmount ?? '0', offer.currency)}
                 </dd>
               </div>
@@ -95,14 +94,14 @@ export function OfferCard({
             {tax !== null ? (
               <div className="flex justify-between gap-2">
                 <dt className="text-ink-faint">Taxes and charges</dt>
-                <dd className="font-mono text-ink-muted">
+                <dd className="tabular-nums text-ink-muted">
                   {formatMoney(offer.taxAmount ?? '0', offer.currency)}
                 </dd>
               </div>
             ) : null}
             <div className="flex justify-between gap-2">
               <dt className="text-ink-faint">Our fee</dt>
-              <dd className="font-mono text-ink-muted">
+              <dd className="tabular-nums text-ink-muted">
                 {formatMoney(offer.feeAmount, offer.currency)}
               </dd>
             </div>
@@ -164,18 +163,13 @@ function SliceRow({ slice }: { slice: Slice }) {
         {/* min-w-0 so it can shrink, plus nowrap on the values inside so they
             never break mid-figure. */}
         <div className="min-w-0 flex-1">
-          <p className="mb-1 text-center font-mono text-[11px] whitespace-nowrap text-ink-faint">
+          <p className="mb-1 text-center tabular-nums text-[11px] whitespace-nowrap text-ink-faint">
             {formatDuration(slice.durationMinutes)}
           </p>
-          <RouteLine
-            stops={stops}
-            label={`${slice.originCode} to ${slice.destinationCode}, ${
-              stops === 0 ? 'direct' : `${stops} stop${stops > 1 ? 's' : ''}`
-            }`}
-          />
+<span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
           <p
             className={cn(
-              'mt-1 truncate text-center font-mono text-[11px] whitespace-nowrap',
+              'mt-1 truncate text-center tabular-nums text-[11px] whitespace-nowrap',
               stops === 0 ? 'text-positive' : 'text-ink-faint',
             )}
           >
@@ -200,7 +194,7 @@ function SliceRow({ slice }: { slice: Slice }) {
           journey read as an unbroken run of flight numbers and aircraft with no
           way to tell which belonged to which — and a three-stop itinerary would
           have been unreadable. */}
-      <ul className="mt-2 space-y-0.5 pl-28 font-mono text-[11px] text-ink-faint">
+      <ul className="mt-2 space-y-0.5 pl-28 tabular-nums text-[11px] text-ink-faint">
         {slice.segments.map((segment) => (
           <li key={segment.id} className="flex flex-wrap items-baseline gap-x-2">
             <span className="text-ink-muted">
@@ -247,13 +241,13 @@ function Time({
 }) {
   return (
     <div className="shrink-0">
-      <p className="font-mono text-lg leading-none font-semibold tracking-tight">
+      <p className="tabular-nums text-lg leading-none font-semibold tracking-tight">
         {time}
         {offset > 0 ? (
           <sup className="ml-0.5 text-[10px] font-medium text-caution">+{offset}</sup>
         ) : null}
       </p>
-      <p className="mt-1 font-mono text-[11px] tracking-[0.1em] text-ink-faint">{code}</p>
+      <p className="mt-1 tabular-nums text-[11px] tracking-[0.1em] text-ink-faint">{code}</p>
     </div>
   );
 }

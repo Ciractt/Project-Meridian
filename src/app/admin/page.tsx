@@ -54,9 +54,9 @@ export default async function AdminPage() {
           Stats aren’t available.
         </h2>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">
-          Add <code className="font-mono">SUPABASE_SECRET_KEY</code> to{' '}
-          <code className="font-mono">.env.local</code> and run{' '}
-          <code className="font-mono">0002_search_cache.sql</code>. Until then the
+          Add <code className="tabular-nums">SUPABASE_SECRET_KEY</code> to{' '}
+          <code className="tabular-nums">.env.local</code> and run{' '}
+          <code className="tabular-nums">0002_search_cache.sql</code>. Until then the
           search cache is bypassed and every search goes to Duffel.
         </p>
       </div>
@@ -89,11 +89,11 @@ export default async function AdminPage() {
                 key={row.id}
                 className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-danger/20 pt-2 text-sm"
               >
-                <span className="font-mono">
+                <span className="tabular-nums">
                   {row.bookingReference ?? row.id.slice(0, 8)} · {row.origin} →{' '}
                   {row.destination}
                 </span>
-                <span className="font-mono text-xs">
+                <span className="tabular-nums text-xs">
                   {row.airlineRefund && row.currency
                     ? formatMoney(row.airlineRefund, row.currency)
                     : '—'}{' '}
@@ -127,8 +127,8 @@ export default async function AdminPage() {
                 key={row.token}
                 className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-hairline pt-2 text-sm"
               >
-                <span className="font-mono text-xs">{row.token}</span>
-                <span className="font-mono text-xs">
+                <span className="tabular-nums text-xs">{row.token}</span>
+                <span className="tabular-nums text-xs">
                   {row.chargeAmount && row.currency
                     ? formatMoney(row.chargeAmount, row.currency)
                     : '—'}
@@ -161,7 +161,7 @@ export default async function AdminPage() {
                 key={row.id}
                 className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-hairline pt-2 text-sm"
               >
-                <span className="font-mono">
+                <span className="tabular-nums">
                   {row.bookingReference ?? row.id.slice(0, 8)} · {row.origin} →{' '}
                   {row.destination}
                 </span>
@@ -207,11 +207,11 @@ export default async function AdminPage() {
                 key={change.id}
                 className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-caution/30 pt-2 text-sm"
               >
-                <span className="font-mono">
+                <span className="tabular-nums">
                   {change.bookingReference ?? change.id.slice(0, 8)} · {change.origin} →{' '}
                   {change.destination}
                 </span>
-                <span className="font-mono text-xs">{change.departureDate}</span>
+                <span className="tabular-nums text-xs">{change.departureDate}</span>
                 <span className="max-w-56 truncate text-xs text-ink-muted">
                   {change.contactEmail}
                 </span>
@@ -242,7 +242,7 @@ export default async function AdminPage() {
                 key={attempt.token}
                 className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-hairline pt-2 text-sm"
               >
-                <span className="font-mono text-xs">
+                <span className="tabular-nums text-xs">
                   {attempt.paymentIntentId ?? attempt.token}
                 </span>
                 <span
@@ -257,7 +257,7 @@ export default async function AdminPage() {
                     : 'Paid, not ticketed'}
                   {attempt.failureReason ? ` · ${attempt.failureReason}` : ''}
                 </span>
-                <span className="font-mono text-xs">
+                <span className="tabular-nums text-xs">
                   {attempt.chargeAmount && attempt.chargeCurrency
                     ? formatMoney(attempt.chargeAmount, attempt.chargeCurrency)
                     : '—'}
@@ -293,14 +293,14 @@ export default async function AdminPage() {
               <tbody>
                 {orders.map((order) => (
                   <tr key={order.id} className="border-b border-hairline last:border-0">
-                    <td className="px-4 py-3 font-mono">
+                    <td className="px-4 py-3 tabular-nums">
                       {order.bookingReference ?? '—'}
                     </td>
-                    <td className="px-4 py-3 font-mono">
+                    <td className="px-4 py-3 tabular-nums">
                       {order.origin} → {order.destination}
                     </td>
-                    <td className="px-4 py-3 font-mono">{order.departureDate}</td>
-                    <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    <td className="px-4 py-3 tabular-nums">{order.departureDate}</td>
+                    <td className="px-4 py-3 text-right tabular-nums tabular-nums">
                       {formatMoney(order.totalAmount, order.totalCurrency)}
                     </td>
                     <td className="max-w-48 truncate px-4 py-3 text-ink-muted">
@@ -372,13 +372,13 @@ export default async function AdminPage() {
                     key={`${route.origin}-${route.destination}`}
                     className="border-b border-hairline last:border-0"
                   >
-                    <td className="px-4 py-3 font-mono">
+                    <td className="px-4 py-3 tabular-nums">
                       {route.origin} → {route.destination}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    <td className="px-4 py-3 text-right tabular-nums tabular-nums">
                       {route.searches}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono tabular-nums text-positive">
+                    <td className="px-4 py-3 text-right tabular-nums tabular-nums text-positive">
                       {route.hits}
                     </td>
                   </tr>
@@ -424,7 +424,7 @@ function Stat({
     <div className={`rounded-card border p-5 ${styles}`}>
       <dt className="text-xs font-medium">{term}</dt>
       <dd>
-        <span className="mt-2 block font-mono text-2xl font-semibold tracking-tight text-ink">
+        <span className="mt-2 block tabular-nums text-2xl font-semibold tracking-tight text-ink">
           {value}
         </span>
         <span className="mt-1 block text-xs text-ink-muted">{note}</span>

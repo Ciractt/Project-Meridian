@@ -40,7 +40,7 @@ export function CheckoutSteps({
           <li key={step.key} className="flex items-center gap-2">
             <span
               className={cn(
-                'flex size-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px]',
+                'flex size-5 shrink-0 items-center justify-center rounded-full tabular-nums text-[10px]',
                 state === 'done' && 'bg-positive text-white',
                 state === 'current' && 'bg-chart text-white',
                 state === 'todo' && 'border border-hairline-strong text-ink-faint',

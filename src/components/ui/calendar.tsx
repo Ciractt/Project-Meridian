@@ -71,7 +71,7 @@ export function CalendarMonth({
                     index
                   ]
                 }
-                className="pb-2 font-mono text-[11px] font-normal text-ink-faint"
+                className="pb-2 tabular-nums text-[11px] font-normal text-ink-faint"
               >
                 {day}
               </th>
@@ -104,7 +104,7 @@ export function CalendarMonth({
                       onMouseEnter={() => onHover?.(date)}
                       onMouseLeave={() => onHover?.(undefined)}
                       className={cn(
-                        'relative flex h-10 w-full items-center justify-center font-mono text-sm transition-colors',
+                        'relative flex h-10 w-full items-center justify-center tabular-nums text-sm transition-colors',
                         disabled && 'cursor-not-allowed text-hairline-strong',
                         !disabled && !isStart && !isEnd && 'text-ink hover:bg-chart-wash',
                         inRange && 'bg-chart-wash',

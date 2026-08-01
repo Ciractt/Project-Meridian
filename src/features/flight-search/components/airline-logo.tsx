@@ -36,7 +36,7 @@ export function AirlineLogo({
     return (
       <span
         aria-label={name}
-        className={`flex shrink-0 items-center rounded bg-paper px-1.5 font-mono font-semibold text-ink-muted ${styles.text}`}
+        className={`flex shrink-0 items-center rounded bg-paper px-1.5 tabular-nums font-semibold text-ink-muted ${styles.text}`}
       >
         {code || '··'}
       </span>

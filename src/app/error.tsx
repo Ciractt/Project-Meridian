@@ -31,7 +31,7 @@ export default function ErrorBoundary({
       <p className="mt-4 text-sm leading-relaxed text-ink-muted">
         Nothing was booked and nothing was charged. Try again, and if it keeps
         happening quote reference{' '}
-        <span className="font-mono">{error.digest ?? 'unknown'}</span>.
+        <span className="tabular-nums">{error.digest ?? 'unknown'}</span>.
       </p>
       <div className="mt-8">
         <Button onClick={reset}>Try again</Button>

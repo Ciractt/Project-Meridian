@@ -209,7 +209,7 @@ export function PlaceField({
                   index === active ? 'bg-chart-wash' : 'bg-transparent',
                 )}
               >
-                <span className="w-9 shrink-0 font-mono text-sm font-semibold text-chart">
+                <span className="w-9 shrink-0 tabular-nums text-sm font-semibold text-chart">
                   {place.iataCode}
                 </span>
                 <span className="min-w-0 flex-1">

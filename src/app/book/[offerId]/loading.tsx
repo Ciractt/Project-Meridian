@@ -1,4 +1,3 @@
-import { RouteLine } from '@/components/route-line';
 
 /**
  * The availability check, made visible.
@@ -29,7 +28,7 @@ export default function ConfirmingAvailability() {
       </p>
 
       <div className="mt-8 w-full max-w-xs" aria-hidden="true">
-        <RouteLine />
+        <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
       </div>
 
       {/* A determinate-looking bar would be a lie — we don't know how long the

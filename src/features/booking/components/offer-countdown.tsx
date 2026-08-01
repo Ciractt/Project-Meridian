@@ -105,7 +105,7 @@ export function OfferCountdown({
               : 'Airline holds this fare for'}
         </span>
         {expired || unbookable ? null : (
-          <span className="font-mono font-semibold tabular-nums">
+          <span className="tabular-nums font-semibold tabular-nums">
             {formatRemaining(remaining)}
           </span>
         )}

@@ -108,7 +108,7 @@ export function PreTravelPanel({
               <>
                 {' '}
                 Use reference{' '}
-                <span className="font-mono font-semibold">{bookingReference}</span> on
+                <span className="tabular-nums font-semibold">{bookingReference}</span> on
                 their site.
               </>
             ) : null}
@@ -201,7 +201,7 @@ function Step({
     <li className="flex gap-4">
       <span
         aria-hidden="true"
-        className={`flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-xs ${
+        className={`flex size-7 shrink-0 items-center justify-center rounded-full tabular-nums text-xs ${
           tone === 'caution'
             ? 'bg-caution-wash text-caution'
             : 'bg-paper text-ink-muted'

@@ -83,14 +83,7 @@ export default async function HomePage({
           how the date picker silently stopped opening once before. The grid is
           inset-0 and the collage clips itself, so nothing needs containing. */}
       <section className="relative bg-paper">
-        <div
-          /* Decorative and full-bleed across the section, so it must not be in
-             the way of a tap that lands between two controls. */
-          className="chart-grid-light pointer-events-none absolute inset-0 opacity-50"
-          aria-hidden="true"
-        />
-
-        <div className="relative mx-auto max-w-6xl px-5 pt-12 pb-12 sm:pt-16">
+                <div className="relative mx-auto max-w-6xl px-5 pt-12 pb-12 sm:pt-16">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
             <div className="min-w-0">
               {content.hero.eyebrow ? (

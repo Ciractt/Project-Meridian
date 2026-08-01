@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { RouteLine } from '@/components/route-line';
 import { formatMoney } from '@/lib/format';
 import { routeSearchHref, type FeaturedRoute } from '../routes';
 import { destinationImage } from '../images';
@@ -47,13 +46,13 @@ export function RouteCard({
             </p>
 
             <div className="mt-2 flex items-center gap-3">
-              <span className="font-mono text-xs font-semibold tracking-[0.08em]">
+              <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
                 {route.from}
               </span>
               <span className="min-w-0 flex-1">
-                <RouteLine />
+                <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
               </span>
-              <span className="font-mono text-xs font-semibold tracking-[0.08em]">
+              <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
                 {route.to}
               </span>
             </div>
@@ -102,13 +101,13 @@ export function RouteCard({
         </div>
 
         <div className="mt-3 flex items-center gap-3">
-          <span className="font-mono text-xs font-semibold tracking-[0.08em]">
+          <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
             {route.from}
           </span>
           <span className="min-w-0 flex-1">
-            <RouteLine />
+            <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
           </span>
-          <span className="font-mono text-xs font-semibold tracking-[0.08em]">
+          <span className="tabular-nums text-xs font-semibold tracking-[0.08em]">
             {route.to}
           </span>
         </div>
@@ -128,7 +127,7 @@ export function RouteCard({
 function PriceTag({ price }: { price: RoutePrice }) {
   return (
     <span className="shrink-0 text-right">
-      <span className="block font-mono text-lg leading-none font-semibold text-chart">
+      <span className="block tabular-nums text-lg leading-none font-semibold text-chart">
         {formatMoney(price.amount, price.currency)}
       </span>
       <span className="mt-1 block text-[10px] text-ink-faint">

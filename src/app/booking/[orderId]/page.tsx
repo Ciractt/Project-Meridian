@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getConfirmation } from '@/features/booking/confirmation';
 import { getCurrentUser } from '@/features/auth/queries';
-import { RouteLine } from '@/components/route-line';
 import { formatMoney } from '@/lib/format';
 import { formatFull } from '@/lib/date';
 import { buildGuidance } from '@/features/booking/pre-travel';
@@ -60,7 +59,7 @@ export default async function BookingPage({
         {booking.bookingReference ? (
           <p className="mt-4 text-sm text-ink-muted">
             Airline reference{' '}
-            <span className="font-mono text-lg font-semibold text-ink">
+            <span className="tabular-nums text-lg font-semibold text-ink">
               {booking.bookingReference}
             </span>
           </p>
@@ -73,13 +72,13 @@ export default async function BookingPage({
 
       <section className="mt-6 rounded-card border border-hairline bg-surface p-6">
         <div className="flex items-center gap-4">
-          <span className="font-mono text-2xl font-semibold tracking-tight">
+          <span className="tabular-nums text-2xl font-semibold tracking-tight">
             {booking.origin}
           </span>
           <span className="min-w-0 flex-1">
-            <RouteLine label={`${booking.origin} to ${booking.destination}`} />
+            <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
           </span>
-          <span className="font-mono text-2xl font-semibold tracking-tight">
+          <span className="tabular-nums text-2xl font-semibold tracking-tight">
             {booking.destination}
           </span>
         </div>

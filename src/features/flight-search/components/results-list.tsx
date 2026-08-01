@@ -25,8 +25,8 @@ export async function ResultsList({ criteria }: { criteria: FlightSearchParams }
   if (result.status === 'unconfigured') {
     return (
       <Notice title="Flight search isn’t connected yet.">
-        Add <code className="font-mono">DUFFEL_API_TOKEN</code> to{' '}
-        <code className="font-mono">.env.local</code> and restart the dev server.
+        Add <code className="tabular-nums">DUFFEL_API_TOKEN</code> to{' '}
+        <code className="tabular-nums">.env.local</code> and restart the dev server.
       </Notice>
     );
   }

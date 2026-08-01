@@ -180,7 +180,7 @@ export function AddBags({
                       {option.kind === 'checked' ? 'Checked bag' : 'Cabin bag'}
                       {option.maximumWeightKg ? ` · up to ${option.maximumWeightKg}kg` : ''}
                     </span>
-                    <span className="block font-mono text-xs text-chart">
+                    <span className="block tabular-nums text-xs text-chart">
                       {formatMoney(option.price, option.currency)} each
                     </span>
                   </span>

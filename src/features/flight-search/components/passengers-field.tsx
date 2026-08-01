@@ -96,7 +96,7 @@ export function PassengersField({
                 disabled={value.adults <= 1}
                 onClick={() => onChange({ ...value, adults: value.adults - 1 })}
               />
-              <output className="w-5 text-center font-mono text-sm">
+              <output className="w-5 text-center tabular-nums text-sm">
                 {value.adults}
               </output>
               <Stepper
@@ -125,7 +125,7 @@ export function PassengersField({
                     onChange({ ...value, childAges: value.childAges.slice(0, -1) })
                   }
                 />
-                <output className="w-5 text-center font-mono text-sm">
+                <output className="w-5 text-center tabular-nums text-sm">
                   {value.childAges.length}
                 </output>
                 <Stepper

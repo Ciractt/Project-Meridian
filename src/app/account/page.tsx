@@ -51,17 +51,17 @@ export default async function AccountPage() {
                 </div>
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <p className="flex items-baseline gap-2">
-                  <span className="font-mono text-lg font-semibold tracking-tight">
+                  <span className="tabular-nums text-lg font-semibold tracking-tight">
                     {trip.origin}
                   </span>
                   <span aria-hidden="true" className="text-chart">
                     →
                   </span>
-                  <span className="font-mono text-lg font-semibold tracking-tight">
+                  <span className="tabular-nums text-lg font-semibold tracking-tight">
                     {trip.destination}
                   </span>
                 </p>
-                <p className="font-mono text-sm text-ink-muted">
+                <p className="tabular-nums text-sm text-ink-muted">
                   {formatMoney(trip.paidAmount, trip.currency)}
                 </p>
               </div>
@@ -79,7 +79,7 @@ export default async function AccountPage() {
                 {trip.bookingReference ? (
                   <span>
                     Airline reference{' '}
-                    <span className="font-mono text-ink-muted">
+                    <span className="tabular-nums text-ink-muted">
                       {trip.bookingReference}
                     </span>
                   </span>

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { RouteLine } from '@/components/route-line';
 import { AirlineLogo } from './airline-logo';
 import {
   BaggageSummary,
@@ -169,7 +168,7 @@ export function TripDetailsDialog({
               <Row term="Our fee" value={formatMoney(offer.feeAmount, offer.currency)} />
               <div className="flex justify-between gap-3 border-t border-hairline pt-1.5 font-medium text-ink">
                 <dt>Total for {travellers === 1 ? '1 traveller' : `${travellers} travellers`}</dt>
-                <dd className="font-mono">
+                <dd className="tabular-nums">
                   {formatMoney(offer.totalAmount, offer.currency)}
                 </dd>
               </div>
@@ -187,7 +186,7 @@ export function TripDetailsDialog({
                 {/* Only the figure is monospaced. A mono space is much wider
                     than the body one, so "169 kg" rendered with a visible gap
                     in the middle of a value. */}
-                <span className="font-mono">
+                <span className="tabular-nums">
                   {Math.round(Number(offer.emissionsKg))}
                 </span>{' '}
                 kg{' '}
@@ -198,7 +197,7 @@ export function TripDetailsDialog({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-hairline px-6 py-4">
-          <span className="font-mono text-xl font-semibold tracking-tight text-chart">
+          <span className="tabular-nums text-xl font-semibold tracking-tight text-chart">
             {formatMoney(offer.totalAmount, offer.currency)}
           </span>
           {/* Side by side these need roughly 340px and neither can shrink
@@ -236,7 +235,7 @@ function SliceDetail({ slice, label }: { slice: Slice; label: string }) {
         <h3 className="font-display text-sm font-bold tracking-tight">
           {label} · {slice.originName} to {slice.destinationName}
         </h3>
-        <p className="font-mono text-xs text-ink-faint">
+        <p className="tabular-nums text-xs text-ink-faint">
           {formatShort(first.departingAt.slice(0, 10))} ·{' '}
           {formatDuration(slice.durationMinutes)} ·{' '}
           {slice.stopCount === 0
@@ -261,24 +260,24 @@ function SliceDetail({ slice, label }: { slice: Slice; label: string }) {
               </div>
 
               <div className="shrink-0 text-right">
-                <p className="font-mono text-sm font-semibold">
+                <p className="tabular-nums text-sm font-semibold">
                   {formatLocalTime(segment.departingAt)}
                 </p>
-                <p className="font-mono text-[11px] text-ink-faint">
+                <p className="tabular-nums text-[11px] text-ink-faint">
                   {segment.originCode}
                   {segment.originTerminal ? ` T${segment.originTerminal}` : ''}
                 </p>
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="mb-1 text-center font-mono text-[11px] text-ink-faint">
+                <p className="mb-1 text-center tabular-nums text-[11px] text-ink-faint">
                   {formatDuration(segment.durationMinutes)}
                 </p>
-                <RouteLine stops={segment.technicalStops.length} />
+                <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
               </div>
 
               <div className="shrink-0">
-                <p className="font-mono text-sm font-semibold">
+                <p className="tabular-nums text-sm font-semibold">
                   {formatLocalTime(segment.arrivingAt)}
                   {dayOffset(segment.departingAt, segment.arrivingAt) > 0 ? (
                     <sup className="ml-0.5 text-[10px] text-caution">
@@ -286,14 +285,14 @@ function SliceDetail({ slice, label }: { slice: Slice; label: string }) {
                     </sup>
                   ) : null}
                 </p>
-                <p className="font-mono text-[11px] text-ink-faint">
+                <p className="tabular-nums text-[11px] text-ink-faint">
                   {segment.destinationCode}
                   {segment.destinationTerminal ? ` T${segment.destinationTerminal}` : ''}
                 </p>
               </div>
             </div>
 
-            <p className="mt-1 pl-17 font-mono text-[11px] text-ink-faint sm:pl-23">
+            <p className="mt-1 pl-17 tabular-nums text-[11px] text-ink-faint sm:pl-23">
               {segment.flightNumber}
               {segment.aircraft ? ` · ${segment.aircraft}` : ''}
               {segment.marketingCarrier !== segment.operatingCarrier
@@ -320,7 +319,7 @@ function Row({ term, value }: { term: string; value: string }) {
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-ink-faint">{term}</dt>
-      <dd className="font-mono text-ink-muted">{value}</dd>
+      <dd className="tabular-nums text-ink-muted">{value}</dd>
     </div>
   );
 }

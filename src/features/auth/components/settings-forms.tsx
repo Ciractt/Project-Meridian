@@ -85,7 +85,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string }) {
   return (
     <form action={action} className="space-y-4">
       <p className="text-sm leading-relaxed text-ink-muted">
-        Currently <span className="font-mono text-ink">{currentEmail}</span>. We’ll
+        Currently <span className="tabular-nums text-ink">{currentEmail}</span>. We’ll
         send a confirmation link to the new address — nothing changes until you click
         it, so a typo can’t lock you out.
       </p>

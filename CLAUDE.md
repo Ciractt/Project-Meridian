@@ -144,7 +144,7 @@ Shipped since this list was last accurate: confirmation emails, the
 reconciliation job, tests on `pricing.ts` and the compensation paths, loyalty
 accounts, self-service cancellation, post-booking bags, admin queues, editable
 site content, route landing pages, the Ulysse-derived visual direction, checkout
-account signup, search rate limiting, and error monitoring (ADR-042).
+account signup, search rate limiting, error monitoring, and the removal of the chart-derived devices (ADR-042, ADR-043).
 
 Before real money: terms and privacy reviewed by a solicitor, `lib/company.ts`
 filled in, live Duffel access with a funded balance, and **the ATOL question

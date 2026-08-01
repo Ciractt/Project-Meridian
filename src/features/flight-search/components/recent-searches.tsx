@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { RouteLine } from '@/components/route-line';
 import { formatShort } from '@/lib/date';
 import type { RecentSearch } from '../recent';
 
@@ -33,13 +32,13 @@ export function RecentSearches({ searches }: { searches: RecentSearch[] }) {
               className="block rounded-card border border-hairline bg-surface px-4 py-3 transition-colors hover:border-hairline-strong"
             >
               <span className="flex items-center gap-2">
-                <span className="font-mono text-sm font-semibold text-ink">
+                <span className="tabular-nums text-sm font-semibold text-ink">
                   {search.origin}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <RouteLine className="text-chart" />
+                  <span aria-hidden="true" className="block h-px w-full bg-hairline-strong" />
                 </span>
-                <span className="font-mono text-sm font-semibold text-ink">
+                <span className="tabular-nums text-sm font-semibold text-ink">
                   {search.destination}
                 </span>
               </span>

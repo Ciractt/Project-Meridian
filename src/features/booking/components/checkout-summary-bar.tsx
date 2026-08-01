@@ -50,14 +50,14 @@ export function CheckoutSummaryBar({
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-3">
         <div className="min-w-0">
-          <p className="flex items-baseline gap-1.5 font-mono text-sm font-semibold">
+          <p className="flex items-baseline gap-1.5 tabular-nums text-sm font-semibold">
             {originCode}
             <span aria-hidden="true" className="text-chart">
               →
             </span>
             {destinationCode}
           </p>
-          <p className="mt-0.5 truncate font-mono text-[11px] text-ink-faint">
+          <p className="mt-0.5 truncate tabular-nums text-[11px] text-ink-faint">
             {formatShort(departureDate)}
             {returnDate ? ` – ${formatShort(returnDate)}` : ''} ·{' '}
             {travellers === 1 ? '1 traveller' : `${travellers} travellers`}
@@ -65,7 +65,7 @@ export function CheckoutSummaryBar({
         </div>
 
         <div className="shrink-0 text-right">
-          <p className="font-mono text-lg leading-none font-semibold tracking-tight text-chart">
+          <p className="tabular-nums text-lg leading-none font-semibold tracking-tight text-chart">
             {formatMoney(amount, currency)}
           </p>
           <p className="mt-1 text-[11px] text-ink-faint">{caption}</p>
