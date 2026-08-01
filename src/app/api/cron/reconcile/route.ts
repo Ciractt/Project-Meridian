@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { runReconciliation } from '@/features/booking/reconciliation';
+import { runChangeReconciliation } from '@/features/booking/change-reconciliation';
 
 /**
  * Scheduled reconciliation.
@@ -30,7 +31,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'unauthorised' }, { status: 401 });
   }
 
+  /* Sequential, not parallel. Both talk to Duffel and the second is the smaller
+     job; running them together buys a second or two and doubles the burst
+     against an API we are also rate-limiting ourselves against. */
   const reports = await runReconciliation();
+  const changeReports = await runChangeReconciliation();
 
   // Summarised, not itemised: this response ends up in deployment logs, and
   // booking tokens don't belong there.
@@ -39,5 +44,18 @@ export async function GET(request: Request) {
     return counts;
   }, {});
 
-  return NextResponse.json({ examined: reports.length, outcomes: summary });
+  const changeSummary = changeReports.reduce<Record<string, number>>(
+    (counts, report) => {
+      counts[report.outcome.status] = (counts[report.outcome.status] ?? 0) + 1;
+      return counts;
+    },
+    {},
+  );
+
+  return NextResponse.json({
+    examined: reports.length,
+    outcomes: summary,
+    changesExamined: changeReports.length,
+    changeOutcomes: changeSummary,
+  });
 }

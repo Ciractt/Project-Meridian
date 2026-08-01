@@ -167,10 +167,13 @@ the price difference, confirm.
 **Done:** the service layer, quote-and-price, the token table and the money
 model (ADR-044). One slice, date only; origin and destination stay as booked.
 
-**Still to build:** the interface, the payment step that settles a change owing
-money, and the reconciliation pass for `paid_not_changed` — a change that took
-payment and did not confirm leaves someone holding a ticket for a flight they
-believe they are no longer on, which is worse than any other stuck state here.
+**Also done:** the reconciliation pass. It is deliberately narrower than the
+booking one — see ADR-045. A change that took payment and did not confirm leaves
+someone holding a ticket for a flight they believe they are no longer on, and
+the automated response to that is to stop and fetch a human rather than guess.
+
+**Still to build:** the interface, and the payment step that settles a change
+owing money.
 
 ### 4.6 Order cancellations with a refund quote
 

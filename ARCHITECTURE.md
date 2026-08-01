@@ -1366,3 +1366,46 @@ change is a modification of a sale already made and already marked up.
 and on a small one the fee is proportionally larger — a £15 fee on a £20 change
 is 75%. That second case is the one to watch, and the answer if it bites is a
 lower fee or a floor below which we charge nothing, not a switch to a rate.
+
+---
+
+## ADR-045 — A stuck change is escalated, not resolved
+
+**Decision.** Reconciliation for order changes confirms what can still be
+confirmed and closes what was never paid for. Anything else — payment taken,
+change not applied — is flagged for a person. It is never refunded
+automatically and never retried.
+
+**Why this differs from booking reconciliation.** The booking pass refunds when
+it finds no order, and that is right: no order means the traveller has no ticket
+and is owed their money. The states line up.
+
+A change does not work that way. When a change fails to apply, the *original
+booking is still live and still correct*. The traveller has a valid ticket for a
+flight they believe they are no longer on. A silent refund lands in their
+account and reads as confirmation that we dealt with it — so they do not turn
+up, and nobody discovers the problem until the gate closes. A retry is worse in
+the other direction: it could move a flight someone has stopped expecting to
+move, hours or days later.
+
+Both automated options are worse than stopping. So the automation's job here is
+to establish the facts — did the money move, did the change apply, is the
+original booking intact — and then hand a person a screen with all three on it.
+The failure mode of doing nothing is a support ticket. The failure mode of
+guessing is somebody missing a flight.
+
+**Payment status is three-valued.** Duffel reports `succeeded` before
+`net_amount` populates, so an unreadable or pending intent is `unknown`, not
+`no`. Reading unknown as unpaid would abandon a change somebody paid for —
+the same mistake `coversFare` exists to prevent on the booking side, and the
+tests assert it explicitly.
+
+**Refunds are a button, not a rule.** `refundStuckChange` exists and is reachable
+only from admin. Someone has to have looked at the booking, decided the change
+is not happening, and told the traveller — this is what they press afterwards.
+Separating the decision from the mechanism is the entire point.
+
+**Trade-off accepted.** Stuck changes need human attention where stuck bookings
+mostly do not, so this scales worse with volume. That is the correct way round:
+the volume is low, the stakes are high, and a queue that occasionally needs a
+person is cheaper than a policy that occasionally strands one.
