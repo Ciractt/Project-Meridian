@@ -21,6 +21,17 @@ export interface Filters {
   /** Inclusive hour window for the outbound departure. */
   departFromHour: number;
   departToHour: number;
+  /**
+   * Fare must include at least one cabin bag / one checked bag.
+   *
+   * These exclude `unknown` as well as zero, because a filter cannot honestly
+   * keep a fare we have no allowance for under a heading that says the bag is
+   * included. That makes them the only filters here that hide results on the
+   * strength of something we do not know, so the UI states how many and why —
+   * see FilterPills. Silently dropping them would be a lie inside a filter.
+   */
+  carryOnIncluded: boolean;
+  checkedBagIncluded: boolean;
   sort: SortKey;
 }
 
@@ -31,6 +42,8 @@ export const defaultFilters: Filters = {
   maxDurationMinutes: null,
   departFromHour: 0,
   departToHour: 23,
+  carryOnIncluded: false,
+  checkedBagIncluded: false,
   sort: 'best',
 };
 
@@ -43,6 +56,13 @@ export interface Facets {
   minDuration: number;
   maxDuration: number;
   currency: string;
+  /** How many fares state an included allowance, and how many say nothing. */
+  bags: {
+    carryOnIncluded: number;
+    carryOnUnknown: number;
+    checkedIncluded: number;
+    checkedUnknown: number;
+  };
 }
 
 /**
@@ -58,6 +78,12 @@ export function deriveFacets(offers: Offer[]): Facets {
   let maxPrice = 0;
   let minDuration = Infinity;
   let maxDuration = 0;
+  const bags = {
+    carryOnIncluded: 0,
+    carryOnUnknown: 0,
+    checkedIncluded: 0,
+    checkedUnknown: 0,
+  };
 
   for (const offer of offers) {
     const price = offer.totalAmountValue;
@@ -65,6 +91,11 @@ export function deriveFacets(offers: Offer[]): Facets {
     maxPrice = Math.max(maxPrice, price);
     minDuration = Math.min(minDuration, offer.totalDurationMinutes);
     maxDuration = Math.max(maxDuration, offer.totalDurationMinutes);
+
+    if (offer.baggage.carryOn === 'unknown') bags.carryOnUnknown += 1;
+    else if (offer.baggage.carryOn > 0) bags.carryOnIncluded += 1;
+    if (offer.baggage.checked === 'unknown') bags.checkedUnknown += 1;
+    else if (offer.baggage.checked > 0) bags.checkedIncluded += 1;
 
     const stopEntry = stopMap.get(offer.maxStops);
     if (!stopEntry) stopMap.set(offer.maxStops, { cheapest: price, count: 1 });
@@ -98,7 +129,14 @@ export function deriveFacets(offers: Offer[]): Facets {
     minDuration: minDuration === Infinity ? 0 : minDuration,
     maxDuration,
     currency: offers[0]?.currency ?? 'GBP',
+    bags,
   };
+}
+
+/** `unknown` is not zero, and it is not one either — it fails an "included"
+ *  test because we cannot say it passed. */
+function includesBag(allowance: number | 'unknown'): boolean {
+  return allowance !== 'unknown' && allowance > 0;
 }
 
 export function applyFilters(offers: Offer[], filters: Filters): Offer[] {
@@ -124,6 +162,8 @@ export function applyFilters(offers: Offer[], filters: Filters): Offer[] {
     ) {
       return false;
     }
+    if (filters.carryOnIncluded && !includesBag(offer.baggage.carryOn)) return false;
+    if (filters.checkedBagIncluded && !includesBag(offer.baggage.checked)) return false;
     return true;
   });
 }
@@ -222,5 +262,7 @@ export function countActiveFilters(filters: Filters, facets: Facets): number {
     count += 1;
   }
   if (filters.departFromHour !== 0 || filters.departToHour !== 23) count += 1;
+  if (filters.carryOnIncluded) count += 1;
+  if (filters.checkedBagIncluded) count += 1;
   return count;
 }

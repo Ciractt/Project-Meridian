@@ -17,6 +17,7 @@ import { OfferCard } from './offer-card';
 import { FeatureOfferCard } from './feature-offer-card';
 import { FilterRail } from './filter-rail';
 import { FilterSheet } from './filter-sheet';
+import { FilterPills } from './filter-pills';
 import { SortSelect } from './sort-select';
 
 /**
@@ -90,6 +91,15 @@ export function ResultsPanel({
 
   return (
     <div className="space-y-8">
+      {/* Above the picks, because they filter the picks too — a selection drawn
+          from results the traveller has excluded would be the worst kind of
+          recommendation. */}
+      <FilterPills
+        facets={facets}
+        filters={filters}
+        onChange={(patch) => setFilters((current) => ({ ...current, ...patch }))}
+      />
+
       {picks.length > 0 ? (
         <section aria-labelledby="picks-heading">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
