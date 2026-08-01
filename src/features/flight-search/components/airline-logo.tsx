@@ -16,16 +16,7 @@
  */
 const SIZES = {
   sm: { image: 'h-4 w-auto max-w-14 object-contain object-left', text: 'h-4 text-[10px]' },
-  /* The cap narrows at `xl`, where the result row puts two legs side by side
-     and 96px of wordmark per leg is more than the row can spare. It belongs
-     here rather than on the container: the image carries `shrink-0` and its own
-     max-width, so narrowing the box around it does not narrow the artwork — it
-     just lets a British Airways lockup hang 40px into the departure time,
-     which is exactly what happened. */
-  md: {
-    image: 'h-6 w-auto max-w-24 object-contain object-left xl:h-5 xl:max-w-14',
-    text: 'h-6 text-[11px] xl:h-5',
-  },
+  md: { image: 'h-6 w-auto max-w-24 object-contain object-left', text: 'h-6 text-[11px]' },
 } as const;
 
 export function AirlineLogo({

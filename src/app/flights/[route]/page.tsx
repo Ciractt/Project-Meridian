@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { SearchForm } from '@/features/flight-search/components/search-form';
 import { carriersMissingFrom } from '@/features/flight-search/unavailable-carriers';
 import { MissingCarriersNotice } from '@/features/flight-search/components/missing-carriers-notice';
-import { getRouteInsight, getRoutesWithPages } from '@/features/routes/queries';
+import { getRouteInsight } from '@/features/routes/queries';
 import { resolveRouteSlug } from '@/features/routes/slug';
 import { formatDuration, formatMoney } from '@/lib/format';
 import { countryName } from '@/features/booking/pre-travel';
@@ -27,13 +27,30 @@ import { countryName } from '@/features/booking/pre-travel';
  * something true, which is the only kind worth having.
  */
 
-export const revalidate = 3600;
-export const dynamicParams = true;
+/**
+ * Rendered per request, not cached.
+ *
+ * These pages were `revalidate = 3600`, which asks Next to render them without
+ * a request. The root layout reads the session, that goes through `cookies()`,
+ * and `cookies()` in a route being statically rendered throws
+ * DYNAMIC_SERVER_USAGE — which is the error filling the console. It surfaces at
+ * revalidation rather than at build, which is why the build stayed green.
+ *
+ * Nothing about SEO changes: a crawler gets the same server-rendered HTML
+ * either way. What is lost is the hourly cache, and the cost of losing it is
+ * two Supabase reads per request — `getRouteInsight` and the layout's own
+ * queries. No Duffel call happens here, so this is not a search-to-book ratio
+ * problem.
+ *
+ * The alternative is to stop personalising the layout on the server and read
+ * the session in the browser instead, which would let every page in the
+ * product be cached again. That is the better answer and a bigger change; this
+ * one stops the bleeding without pretending the pages are static when the
+ * layout guarantees they cannot be.
+ */
+export const dynamic = 'force-dynamic';
 
-export async function generateStaticParams() {
-  const routes = await getRoutesWithPages();
-  return routes.map((route) => ({ route: route.slug }));
-}
+
 
 export async function generateMetadata({
   params,

@@ -40,32 +40,18 @@ export function OfferCard({
       ) : null}
 
       <div className="flex flex-col md:flex-row">
-        {/* Outbound and return read better beside each other than stacked —
-            you compare the two halves of the trip in one movement rather than
-            two. Only from `xl`, because each leg needs roughly 380px before the
-            route line collapses to nothing, and below that the list column has
-            about 800px to share with a filter rail. */}
-        <div
-          className={cn(
-            'grid min-w-0 flex-1 gap-5 p-4 sm:p-5',
-            offer.slices.length > 1 && 'xl:grid-cols-2 xl:gap-6',
-          )}
-        >
-          {offer.slices.map((slice, index) => (
-            /* The rule belongs to the second leg rather than to the grid:
-               `divide-x` hangs it off the trailing edge of the first column, so
-               the gap lands entirely on one side of it. Owning it here gives it
-               the same air either side. */
-            <div
-              key={slice.id}
-              className={cn(
-                'min-w-0',
-                index > 0 &&
-                  'xl:border-l xl:border-dashed xl:border-hairline-strong xl:pl-6',
-              )}
-            >
-              <SliceRow slice={slice} />
-            </div>
+        {/* Legs stack. They were briefly side by side from `xl`, copying the
+            reference, and the arithmetic does not work in this layout: the page
+            container caps at max-w-6xl (1152px), the filter rail and gap take
+            288, card padding 40, and the price panel 224 — leaving about 600px
+            for two legs. Each leg needs a logo, two times that cannot shrink,
+            and a duration column, which is roughly 316px. Two of those is 632.
+            No viewport is wide enough to fix that, because the container stops
+            growing at 1152. The reference gets away with it by having no rail
+            and a much smaller price block. */}
+        <div className="min-w-0 flex-1 space-y-5 p-4 sm:p-5">
+          {offer.slices.map((slice) => (
+            <SliceRow key={slice.id} slice={slice} />
           ))}
         </div>
 
@@ -164,9 +150,7 @@ function SliceRow({ slice }: { slice: Slice }) {
   return (
     <div>
       <div className="flex items-center gap-4">
-      {/* Width comes from the artwork's own cap, which narrows at `xl`. The box
-          follows it rather than leading — see AirlineLogo. */}
-      <div className="w-24 shrink-0 xl:w-14">
+      <div className="w-24 shrink-0">
         <AirlineLogo
           src={first.marketingCarrierLockupUrl ?? first.marketingCarrierLogoUrl}
           name={first.marketingCarrier}
@@ -177,11 +161,9 @@ function SliceRow({ slice }: { slice: Slice }) {
       <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
         <Time code={slice.originCode} time={formatLocalTime(first.departingAt)} />
 
-        {/* `min-w-0 flex-1` alone let this collapse to nothing once the legs
-            went side by side: the duration wrapped to two lines and butted up
-            against the arrival time. A floor stops the squeeze, and nowrap
-            means it cannot break mid-value even if one day it does. */}
-        <div className="min-w-20 flex-1">
+        {/* min-w-0 so it can shrink, plus nowrap on the values inside so they
+            never break mid-figure. */}
+        <div className="min-w-0 flex-1">
           <p className="mb-1 text-center font-mono text-[11px] whitespace-nowrap text-ink-faint">
             {formatDuration(slice.durationMinutes)}
           </p>
