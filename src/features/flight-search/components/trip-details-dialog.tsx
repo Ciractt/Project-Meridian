@@ -1,8 +1,8 @@
-import { RouteArrow } from '@/components/route-arrow';
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { RouteArrow } from '@/components/route-arrow';
 import { AirlineLogo } from './airline-logo';
 import {
   BaggageSummary,
