@@ -1451,3 +1451,46 @@ read. The only thing it lacks is a session, which is precisely the point.
 **Trade-off accepted.** Pages that genuinely depend on who is asking —
 `/account`, `/book`, `/admin` — are still dynamic, and should be. The cost is
 now paid by the pages that need it rather than levied on all of them.
+
+---
+
+## ADR-047 — Saved travellers hold names, never documents
+
+**Decision.** An account holder can save the people they book for: title, name,
+date of birth, gender, and an optional label. **No passport or ID numbers.**
+Those are still typed per booking and passed straight through to Duffel.
+
+**Why this stops where it does.** ADR-018 keeps identity documents out of the
+database because a breach that exposes names and routes is survivable and one
+that exposes travel documents is not. Nothing about a convenience feature
+changes that calculation — if anything it sharpens it, since a table of saved
+passports would be a family's worth of documents per row rather than one
+booking's.
+
+It would also work badly. Passports expire and get replaced, so a stored number
+is a number that is silently wrong at exactly the moment it matters: the airline
+rejects it, and the traveller finds out at the airport rather than at checkout.
+Typing it per booking means it is read off the document actually being carried.
+
+**A saved traveller pre-fills; it never locks.** Selecting one fills the fields
+and gets out of the way. The name that reaches the airline is whatever is in the
+boxes at submit, which is the same rule as the profile name (ADR-018's
+editable-name argument) and matters for the same reasons — people marry,
+transition, and correct their own records.
+
+**Whose data this is.** Mostly not the account holder's. Somebody saving their
+partner and children is entering personal data about people who never agreed to
+anything here. That is lawful and normal for making a booking, and it is the
+reason the list is minimal, deletion is immediate and total, and the section
+says on the screen where the data is typed what is kept and what is not — rather
+than in a privacy page nobody opens. A parent entering a child's date of birth
+is entitled to know where it stops, at the moment they type it.
+
+**A table, not jsonb.** `loyalty_accounts` is jsonb because it is read and
+written whole. These are edited and deleted individually, which through jsonb is
+a read-modify-write and a lost update when two tabs disagree. `on delete
+cascade` from `auth.users` means closing an account takes the family with it.
+
+**No admin read path.** Row-level security is own-rows-only in all four
+directions, with no support policy. Support has no reason to browse a family's
+dates of birth, and a policy that exists is a policy that eventually gets used.

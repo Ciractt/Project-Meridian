@@ -6,7 +6,11 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { formatMoney } from '@/lib/format';
 import { completeBooking, startBooking } from '../actions';
-import { PassengerFields, type PassengerDraft } from './passenger-fields';
+import {
+  PassengerFields,
+  type PassengerDraft,
+  type SavedTraveller,
+} from './passenger-fields';
 import { PaymentStep } from './payment-step';
 import { OfferCountdown } from './offer-countdown';
 import { CheckoutSteps, type CheckoutStep } from './checkout-steps';
@@ -48,6 +52,7 @@ export function BookingForm({
   hasExtras,
   extrasMarkupRate,
   signedIn,
+  savedTravellers,
   trip,
 }: {
   offerId: string;
@@ -63,6 +68,8 @@ export function BookingForm({
   needsDocuments: boolean;
   /** Whether a session exists. Someone signed in is never offered an account. */
   signedIn: boolean;
+  /** Saved travellers. Empty for guests. */
+  savedTravellers: SavedTraveller[];
   /** Route, dates and money for the sticky bar. Calendar dates, not instants. */
   trip: {
     originCode: string;
@@ -356,6 +363,7 @@ export function BookingForm({
           passenger={passenger}
           errors={errors}
           needsDocuments={needsDocuments}
+          saved={savedTravellers}
           onChange={(patch) =>
             setPassengers((current) =>
               current.map((entry, i) => (i === index ? { ...entry, ...patch } : entry)),

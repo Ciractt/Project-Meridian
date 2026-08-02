@@ -19,6 +19,7 @@ import { FinancialProtectionNotice } from '@/components/financial-protection-not
 import { LoyaltyStep } from '@/features/booking/components/loyalty-step';
 import { getSavedLoyaltyAccounts } from '@/features/booking/loyalty';
 import { getCurrentUser, getProfileNames } from '@/features/auth/queries';
+import { getTravellerProfiles } from '@/features/auth/travellers';
 import { AirlineLogo } from '@/features/flight-search/components/airline-logo';
 import {
   BaggageSummary,
@@ -162,10 +163,11 @@ export default async function BookPage({
 
   /* Both empty when signed out, which is the common case — the loyalty step
      still works, it just doesn't pre-fill. */
-  const [viewer, savedLoyalty, profileNames] = await Promise.all([
+  const [viewer, savedLoyalty, profileNames, savedTravellers] = await Promise.all([
     getCurrentUser(),
     getSavedLoyaltyAccounts(),
     getProfileNames(),
+    getTravellerProfiles(),
   ]);
 
   const drafts: PassengerDraft[] = offer.passengers.map((passenger) => ({
@@ -254,6 +256,7 @@ export default async function BookPage({
             hasExtras={hasExtras}
             extrasMarkupRate={extrasMarginRate()}
             signedIn={viewer !== null}
+            savedTravellers={savedTravellers}
             trip={{
               originCode: firstSlice?.originCode ?? '',
               destinationCode: firstSlice?.destinationCode ?? '',

@@ -17,6 +17,17 @@ const TYPE_LABELS: Record<string, string> = {
   infant_without_seat: 'Infant',
 };
 
+/** Only what pre-fills a form. No documents — see ADR-047. */
+export interface SavedTraveller {
+  id: string;
+  title: string;
+  givenName: string;
+  familyName: string;
+  bornOn: string;
+  gender: string;
+  nickname: string | null;
+}
+
 export interface PassengerDraft {
   id: string;
   type: 'adult' | 'child' | 'infant_without_seat';
@@ -36,6 +47,7 @@ export function PassengerFields({
   errors,
   onChange,
   needsDocuments,
+  saved,
 }: {
   index: number;
   passenger: PassengerDraft;
@@ -43,6 +55,8 @@ export function PassengerFields({
   onChange: (patch: Partial<PassengerDraft>) => void;
   /** From the offer. False for most short-haul fares. */
   needsDocuments: boolean;
+  /** Saved travellers, if signed in. Empty for guests. */
+  saved?: SavedTraveller[];
 }) {
   const prefix = `passengers.${index}`;
   const error = (field: string) => errors[`${prefix}.${field}`];
@@ -52,6 +66,39 @@ export function PassengerFields({
       <legend className="px-2 text-xs font-medium text-ink-faint">
         {TYPE_LABELS[passenger.type] ?? 'Traveller'} {index + 1}
       </legend>
+
+      {/* Fills the fields and then gets out of the way. It does not lock
+          them: a saved name is a starting point, and the one that reaches the
+          airline is whatever is in the boxes when the form is submitted. Which
+          is also why a saved traveller carries no passport details — those are
+          typed per booking against the document being carried. */}
+      {saved && saved.length > 0 ? (
+        <label className="mb-4 flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-ink-faint">Use someone you’ve saved</span>
+          <select
+            value=""
+            onChange={(event) => {
+              const match = saved.find((person) => person.id === event.target.value);
+              if (!match) return;
+              onChange({
+                title: match.title,
+                givenName: match.givenName,
+                familyName: match.familyName,
+                bornOn: match.bornOn,
+                gender: match.gender,
+              });
+            }}
+            className="rounded-control border border-hairline-strong bg-surface px-3 py-1.5 text-sm"
+          >
+            <option value="">Choose…</option>
+            {saved.map((person) => (
+              <option key={person.id} value={person.id}>
+                {person.nickname ?? `${person.givenName} ${person.familyName}`}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
 
       <p className="mb-4 text-xs text-ink-muted">
         Enter names exactly as printed on the passport or ID being used to

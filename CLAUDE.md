@@ -126,11 +126,9 @@ Not defects, but each has a cost attached and none is visible from the UI:
 
 In order, from `DUFFEL-GAP-ANALYSIS.md` and the open items in `ARCHITECTURE.md`:
 
-1. Traveller profiles — saved passengers picked from a dropdown. A real reason to
-   book direct, same argument as loyalty numbers.
-2. Special assistance requests (gap 3.4). An accessibility obligation as much as
+1. Special assistance requests (gap 3.4). An accessibility obligation as much as
    a feature: today someone needing assistance has to ring the airline.
-3. `npm run format` rewrites 69 files on a clean checkout. The
+2. `npm run format` rewrites 69 files on a clean checkout. The
    `prettier-plugin-tailwindcss` config needs `tailwindStylesheet` pointing at
    `globals.css` so it can see the `@theme` tokens; that closes most of it but
    not all. Fix it as its own commit, before it lands on top of a feature diff.

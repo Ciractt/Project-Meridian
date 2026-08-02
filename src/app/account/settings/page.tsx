@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { requireUser } from '@/features/auth/queries';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { getTravellerProfiles } from '@/features/auth/travellers';
+import { TravellerProfiles } from '@/features/auth/components/traveller-profiles';
 import {
   AddressForm,
   EmailForm,
@@ -21,6 +23,8 @@ export default async function AccountSettingsPage() {
     )
     .eq('id', user.id)
     .maybeSingle();
+
+  const travellers = await getTravellerProfiles();
 
   const profile = {
     passportGivenName: String(data?.passport_given_name ?? ''),
@@ -47,6 +51,10 @@ export default async function AccountSettingsPage() {
       <div className="mt-8 space-y-10">
         <Section title="Traveller name">
           <TravellerNameForm profile={profile} />
+        </Section>
+
+        <Section title="Who you book for">
+          <TravellerProfiles travellers={travellers} />
         </Section>
 
         <Section title="Email">
