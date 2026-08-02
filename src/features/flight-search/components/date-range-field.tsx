@@ -160,7 +160,7 @@ export function DateRangeField({
         }}
         className={cn(
           'h-full w-full px-4 py-3 text-left transition-colors hover:bg-paper',
-          error && 'bg-chart-wash',
+          error && 'bg-accent-wash',
         )}
       >
         <span className="block text-xs font-medium text-ink-faint">When?</span>
@@ -254,7 +254,7 @@ export function DateRangeField({
                 onChange({ departureDate: '', returnDate: '' });
                 setPicking('departure');
               }}
-              className="text-xs text-airway underline underline-offset-2 hover:no-underline"
+              className="text-xs text-link underline underline-offset-2 hover:no-underline"
             >
               Clear dates
             </button>

@@ -98,7 +98,7 @@ export default async function RoutePage({
   return (
     <div className="mx-auto max-w-4xl px-5 py-12">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm text-ink-faint">
-        <Link href="/" className="text-airway underline underline-offset-2">
+        <Link href="/" className="text-link underline underline-offset-2">
           Home
         </Link>
         <span className="mx-2" aria-hidden="true">
@@ -242,7 +242,7 @@ function Stat({ term, value }: { term: string; value: string }) {
       <dt className="text-xs font-medium text-ink-faint">
         {term}
       </dt>
-      <dd className="mt-1.5 tabular-nums text-lg font-semibold text-chart">{value}</dd>
+      <dd className="mt-1.5 tabular-nums text-lg font-semibold text-accent">{value}</dd>
     </div>
   );
 }

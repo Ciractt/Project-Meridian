@@ -22,7 +22,7 @@ export default async function SearchPage({
   if (!parsed.success) {
     return (
       <div className="mx-auto max-w-xl px-5 py-24">
-        <p className="text-sm font-medium text-chart">
+        <p className="text-sm font-medium text-accent">
           Search
         </p>
         <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight">
@@ -34,7 +34,7 @@ export default async function SearchPage({
         </p>
         <Link
           href="/"
-          className="mt-8 inline-block rounded-control bg-chart px-5 py-3 text-sm font-medium text-white"
+          className="mt-8 inline-block rounded-control bg-accent px-5 py-3 text-sm font-medium text-white"
         >
           New search
         </Link>
@@ -69,7 +69,7 @@ export default async function SearchPage({
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3">
           <p className="flex items-baseline gap-2 text-sm text-white">
             <span className="tabular-nums text-base font-semibold">{criteria.origin}</span>
-            <span aria-hidden="true" className="text-chart">
+            <span aria-hidden="true" className="text-accent">
               →
             </span>
             <span className="tabular-nums text-base font-semibold">

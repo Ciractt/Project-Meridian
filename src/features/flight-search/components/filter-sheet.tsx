@@ -77,7 +77,7 @@ export function FilterSheet({
         <span className="flex items-center gap-2">
           Filters
           {activeCount > 0 ? (
-            <span className="flex size-5 items-center justify-center rounded-full bg-chart tabular-nums text-[10px] text-white">
+            <span className="flex size-5 items-center justify-center rounded-full bg-accent tabular-nums text-[10px] text-white">
               {activeCount}
             </span>
           ) : null}

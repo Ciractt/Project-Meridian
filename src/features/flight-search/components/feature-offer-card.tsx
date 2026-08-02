@@ -53,11 +53,11 @@ export function FeatureOfferCard({
 
       <div className="flex h-32 flex-col justify-between border-t border-hairline p-4">
         <div className="flex items-baseline justify-between gap-3">
-          <p className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-chart">
+          <p className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-accent">
             <Icon aria-hidden="true" size={15} strokeWidth={1.75} className="shrink-0" />
             <span className="truncate">{labels.join(' · ')}</span>
           </p>
-          <p className="shrink-0 tabular-nums text-xl leading-none font-semibold tracking-tight text-chart">
+          <p className="shrink-0 tabular-nums text-xl leading-none font-semibold tracking-tight text-accent">
             {formatMoney(offer.totalAmount, offer.currency)}
           </p>
         </div>

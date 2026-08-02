@@ -114,7 +114,7 @@ function Pill({
       className={cn(
         'rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
         active
-          ? 'border-chart bg-chart text-white'
+          ? 'border-accent bg-accent text-white'
           : 'border-hairline-strong bg-surface text-ink hover:border-ink',
       )}
     >

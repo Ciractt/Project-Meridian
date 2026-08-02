@@ -101,7 +101,7 @@ export function NavPanel({
             {user?.firstName ? (
               <>
                 ,<br />
-                <span className="text-chart">{user.firstName}.</span>
+                <span className="text-accent">{user.firstName}.</span>
               </>
             ) : (
               '.'
@@ -123,7 +123,7 @@ export function NavPanel({
               <Link
                 href="/sign-in"
                 onClick={() => setOpen(false)}
-                className="block rounded-control bg-chart px-4 py-3 text-center text-sm font-medium text-white"
+                className="block rounded-control bg-accent px-4 py-3 text-center text-sm font-medium text-white"
               >
                 Sign in
               </Link>
@@ -132,7 +132,7 @@ export function NavPanel({
                 <Link
                   href="/sign-up"
                   onClick={() => setOpen(false)}
-                  className="text-airway underline underline-offset-2"
+                  className="text-link underline underline-offset-2"
                 >
                   Create one
                 </Link>
@@ -186,7 +186,7 @@ export function NavPanel({
             <form action={signOut} className="mt-8 border-t border-hairline pt-6">
               <button
                 type="submit"
-                className="text-sm text-airway underline underline-offset-2 hover:no-underline"
+                className="text-sm text-link underline underline-offset-2 hover:no-underline"
               >
                 Sign out
               </button>

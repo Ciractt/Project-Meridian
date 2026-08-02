@@ -23,7 +23,7 @@ export default async function SignUpPage() {
 
       <p className="mt-6 text-sm text-ink-muted">
         Already registered?{' '}
-        <Link href="/sign-in" className="text-airway underline underline-offset-2">
+        <Link href="/sign-in" className="text-link underline underline-offset-2">
           Sign in
         </Link>
       </p>

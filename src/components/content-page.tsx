@@ -24,13 +24,13 @@ export function ContentPage({
   return (
     <div className="mx-auto max-w-3xl px-5 py-14">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm">
-        <Link href="/" className="text-airway underline underline-offset-2">
+        <Link href="/" className="text-link underline underline-offset-2">
           Home
         </Link>
       </nav>
 
       {eyebrow ? (
-        <p className="text-sm font-medium text-chart">
+        <p className="text-sm font-medium text-accent">
           {eyebrow}
         </p>
       ) : null}
@@ -54,7 +54,7 @@ export function ContentPage({
         </p>
       ) : null}
 
-      <div className="mt-8 max-w-prose space-y-5 text-sm leading-relaxed text-ink-muted [&_h2]:mt-10 [&_h2]:font-display [&_h2]:text-lg [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-ink [&_a]:text-airway [&_a]:underline [&_a]:underline-offset-2 [&_li]:mb-1.5 [&_strong]:text-ink [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">
+      <div className="mt-8 max-w-prose space-y-5 text-sm leading-relaxed text-ink-muted [&_h2]:mt-10 [&_h2]:font-display [&_h2]:text-lg [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-ink [&_a]:text-link [&_a]:underline [&_a]:underline-offset-2 [&_li]:mb-1.5 [&_strong]:text-ink [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">
         {children}
       </div>
     </div>

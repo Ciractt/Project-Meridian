@@ -75,7 +75,7 @@ export default async function AdminPage() {
       {/* The worst state in the system: the airline has cancelled AND we still
           hold their money. Above every other queue. */}
       {strandedRefunds.length > 0 ? (
-        <section className="rounded-card border-2 border-danger bg-chart-wash p-5">
+        <section className="rounded-card border-2 border-danger bg-accent-wash p-5">
           <h2 className="font-display text-base font-bold tracking-tight text-danger">
             {strandedRefunds.length} cancelled booking
             {strandedRefunds.length === 1 ? '' : 's'} not refunded
@@ -376,7 +376,7 @@ export default async function AdminPage() {
             term="Live searches"
             value={stats.cachedSearches.toLocaleString('en-GB')}
             note="Billable offer requests to Duffel"
-            tone="chart"
+            tone="accent"
           />
           <Stat
             term="Served from cache"
@@ -388,7 +388,7 @@ export default async function AdminPage() {
             term="Distinct routes"
             value={stats.distinctRoutes.toLocaleString('en-GB')}
             note="Origin and destination pairs"
-            tone="airway"
+            tone="link"
           />
         </dl>
         <p className="mt-3 max-w-2xl text-xs text-ink-faint">
@@ -465,12 +465,12 @@ function Stat({
   term: string;
   value: string;
   note: string;
-  tone: 'chart' | 'positive' | 'airway';
+  tone: 'accent' | 'positive' | 'link';
 }) {
   const styles = {
-    chart: 'bg-chart-wash border-chart/15 text-chart',
+    accent: 'bg-accent-wash border-accent/15 text-accent',
     positive: 'bg-positive-wash border-positive/15 text-positive',
-    airway: 'bg-airway-wash border-airway/15 text-airway',
+    link: 'bg-link-wash border-link/15 text-link',
   }[tone];
 
   return (

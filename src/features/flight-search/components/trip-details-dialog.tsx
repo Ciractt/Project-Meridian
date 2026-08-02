@@ -141,7 +141,7 @@ export function TripDetailsDialog({
                   href={offer.conditionsOfCarriageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-airway underline underline-offset-2"
+                  className="text-link underline underline-offset-2"
                 >
                   {offer.airline}’s conditions of carriage
                 </a>
@@ -198,7 +198,7 @@ export function TripDetailsDialog({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-hairline px-6 py-4">
-          <span className="tabular-nums text-xl font-semibold tracking-tight text-chart">
+          <span className="tabular-nums text-xl font-semibold tracking-tight text-accent">
             {formatMoney(offer.totalAmount, offer.currency)}
           </span>
           {/* Side by side these need roughly 340px and neither can shrink
@@ -214,7 +214,7 @@ export function TripDetailsDialog({
             </button>
             <Link
               href={`/book/${offer.id}`}
-              className="rounded-control bg-chart px-6 py-2.5 text-center text-sm font-medium text-white transition-colors hover:brightness-110"
+              className="rounded-control bg-accent px-6 py-2.5 text-center text-sm font-medium text-white transition-colors hover:brightness-110"
             >
               Continue with this flight
             </Link>

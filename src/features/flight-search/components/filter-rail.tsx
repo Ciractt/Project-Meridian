@@ -47,7 +47,7 @@ export function FilterRail({
             <button
               type="button"
               onClick={onReset}
-              className="text-xs text-airway underline underline-offset-2 hover:no-underline"
+              className="text-xs text-link underline underline-offset-2 hover:no-underline"
             >
               Clear {activeCount}
             </button>
@@ -78,7 +78,7 @@ export function FilterRail({
                   // never what someone means. Treat it as "back to all".
                   onChange({ stops: next.length === 0 ? [] : next });
                 }}
-                className="size-4 accent-[var(--color-chart)]"
+                className="size-4 accent-[var(--color-accent)]"
               />
               <span className="text-sm text-ink">
                 {STOP_LABELS[bucket.stops] ?? `${bucket.stops} stops`}
@@ -100,7 +100,7 @@ export function FilterRail({
           value={filters.maxPrice ?? Math.ceil(facets.maxPrice)}
           onChange={(event) => onChange({ maxPrice: Number(event.target.value) })}
           aria-label="Maximum total price"
-          className="w-full accent-[var(--color-chart)]"
+          className="w-full accent-[var(--color-accent)]"
         />
         <p className="mt-1 tabular-nums text-xs text-ink-muted">
           Up to{' '}
@@ -148,7 +148,7 @@ export function FilterRail({
               onChange({ maxDurationMinutes: Number(event.target.value) })
             }
             aria-label="Maximum total journey time"
-            className="w-full accent-[var(--color-chart)]"
+            className="w-full accent-[var(--color-accent)]"
           />
           <p className="mt-1 tabular-nums text-xs text-ink-muted">
             Up to {formatDuration(filters.maxDurationMinutes ?? facets.maxDuration)}
@@ -170,7 +170,7 @@ export function FilterRail({
                   onChange={() =>
                     onChange({ airlines: toggle(filters.airlines, airline.code) })
                   }
-                  className="size-4 shrink-0 accent-[var(--color-chart)]"
+                  className="size-4 shrink-0 accent-[var(--color-accent)]"
                 />
                 <AirlineLogo
                   src={logos[airline.code] ?? null}

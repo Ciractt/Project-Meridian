@@ -14,7 +14,7 @@
 export default function ConfirmingAvailability() {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-5 py-24 text-center">
-      <p className="text-sm font-medium text-chart">
+      <p className="text-sm font-medium text-accent">
         Almost there
       </p>
 
@@ -35,7 +35,7 @@ export default function ConfirmingAvailability() {
         aria-live="polite"
         className="mt-8 h-1 w-full max-w-xs overflow-hidden rounded-full bg-hairline"
       >
-        <div className="h-full w-1/3 animate-pulse rounded-full bg-chart" />
+        <div className="h-full w-1/3 animate-pulse rounded-full bg-accent" />
         <span className="sr-only">Confirming availability with the airline</span>
       </div>
     </div>

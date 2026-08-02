@@ -66,7 +66,7 @@ export function AnnouncementForm({ initial }: { initial: Announcement }) {
           name="active"
           checked={active}
           onChange={(event) => setActive(event.target.checked)}
-          className="size-4 accent-[var(--color-chart)]"
+          className="size-4 accent-[var(--color-accent)]"
         />
         Show this strip
       </label>
@@ -118,7 +118,7 @@ export function HeroForm({ initial }: { initial: HeroCopy }) {
 function Result({ state }: { state: ContentFormState }) {
   if (state.error) {
     return (
-      <p role="alert" className="rounded-control bg-chart-wash px-3 py-2 text-sm text-danger">
+      <p role="alert" className="rounded-control bg-accent-wash px-3 py-2 text-sm text-danger">
         {state.error}
       </p>
     );

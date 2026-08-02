@@ -30,11 +30,11 @@ export function OfferCard({
     <article
       className={cn(
         'overflow-hidden rounded-card border bg-surface transition-colors',
-        badge ? 'border-chart' : 'border-hairline hover:border-hairline-strong',
+        badge ? 'border-accent' : 'border-hairline hover:border-hairline-strong',
       )}
     >
       {badge ? (
-        <p className="bg-chart px-4 py-1.5 text-[10px] font-semibold tracking-[0.1em] text-white uppercase">
+        <p className="bg-accent px-4 py-1.5 text-[10px] font-semibold tracking-[0.1em] text-white uppercase">
           {badge}
         </p>
       ) : null}
@@ -56,7 +56,7 @@ export function OfferCard({
         </div>
 
         <div className="shrink-0 border-t border-hairline bg-paper/60 p-4 sm:p-5 md:w-56 md:border-t-0 md:border-l">
-          <p className="tabular-nums text-2xl leading-none font-semibold tracking-tight text-chart">
+          <p className="tabular-nums text-2xl leading-none font-semibold tracking-tight text-accent">
             {formatMoney(offer.totalAmount, offer.currency)}
           </p>
 
@@ -222,7 +222,7 @@ function SliceRow({ slice }: { slice: Slice }) {
             </Tag>
           ) : null}
           {operatedBy.slice(0, 2).map((carrier) => (
-            <Tag key={carrier} tone="airway">
+            <Tag key={carrier} tone="link">
               Operated by {carrier}
             </Tag>
           ))}
@@ -258,14 +258,14 @@ function Tag({
   tone,
   children,
 }: {
-  tone: 'caution' | 'airway';
+  tone: 'caution' | 'link';
   children: React.ReactNode;
 }) {
   return (
     <span
       className={cn(
         'rounded-full px-2.5 py-1 text-[11px]',
-        tone === 'caution' ? 'bg-caution-wash text-caution' : 'bg-airway-wash text-airway',
+        tone === 'caution' ? 'bg-caution-wash text-caution' : 'bg-link-wash text-link',
       )}
     >
       {children}

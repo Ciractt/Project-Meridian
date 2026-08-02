@@ -23,7 +23,7 @@ export function HeroCollage() {
         {[0, 1, 2, 3].map((index) => (
           <div
             key={index}
-            className={`overflow-hidden rounded-card border border-hairline bg-terrain ${
+            className={`overflow-hidden rounded-card border border-hairline bg-panel ${
               index % 3 === 0 ? 'h-40' : 'h-28'
             } ${index === 1 ? 'mt-6' : ''}`}
           />

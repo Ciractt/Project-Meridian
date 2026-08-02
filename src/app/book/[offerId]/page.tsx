@@ -187,7 +187,7 @@ export default async function BookPage({
     /* pb-28 clears the fixed CheckoutSummaryBar, which only exists below `lg`. */
     <div className="mx-auto max-w-5xl px-5 pt-10 pb-28 lg:pb-10">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm">
-        <Link href="/" className="text-airway underline underline-offset-2">
+        <Link href="/" className="text-link underline underline-offset-2">
           Search
         </Link>
         <span aria-hidden="true" className="mx-2 text-ink-faint">
@@ -333,7 +333,7 @@ export default async function BookPage({
                   href={offer.conditionsOfCarriageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-airway underline underline-offset-2"
+                  className="text-link underline underline-offset-2"
                 >
                   {offer.airline}’s conditions of carriage
                 </a>{' '}
@@ -450,7 +450,7 @@ function Row({ term, value }: { term: string; value: string }) {
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mx-auto max-w-xl px-5 py-20 text-center">
-      <p className="text-sm font-medium text-chart">
+      <p className="text-sm font-medium text-accent">
         Booking
       </p>
       <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight">
@@ -459,7 +459,7 @@ function Notice({ title, children }: { title: string; children: React.ReactNode 
       <p className="mt-4 text-sm leading-relaxed text-ink-muted">{children}</p>
       <Link
         href="/"
-        className="mt-8 inline-block rounded-control bg-chart px-5 py-3 text-sm font-medium text-white"
+        className="mt-8 inline-block rounded-control bg-accent px-5 py-3 text-sm font-medium text-white"
       >
         New search
       </Link>

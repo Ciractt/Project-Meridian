@@ -35,7 +35,7 @@ export default async function AccountSettingsPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm">
-        <Link href="/account" className="text-airway underline underline-offset-2">
+        <Link href="/account" className="text-link underline underline-offset-2">
           Your trips
         </Link>
       </nav>
@@ -69,7 +69,7 @@ export default async function AccountSettingsPage() {
             We never store passport or identity document numbers, and your card
             details never reach our servers. Traveller names and dates of birth are
             held by the airline against your booking rather than by us.{' '}
-            <Link href="/privacy" className="text-airway underline underline-offset-2">
+            <Link href="/privacy" className="text-link underline underline-offset-2">
               Our privacy policy
             </Link>{' '}
             sets out the rest.

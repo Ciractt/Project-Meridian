@@ -29,7 +29,7 @@ export function RunningTotal({
     base !== null && extrasMinor !== null && extrasCurrency === currency;
 
   return (
-    <p className="mt-3 tabular-nums text-3xl font-semibold tracking-tight text-chart">
+    <p className="mt-3 tabular-nums text-3xl font-semibold tracking-tight text-accent">
       {combinable
         ? formatMoney(fromMinorUnits(base + extrasMinor), currency)
         : formatMoney(baseAmount, currency)}

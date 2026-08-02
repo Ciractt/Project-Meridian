@@ -33,7 +33,7 @@ const QUESTIONS = [
         outside the ATOL scheme and no ATOL Certificate is issued. Where an airline
         holds its own ATOL licence or ABTA membership, that covers bookings made
         directly with them and does not extend to bookings made here.{' '}
-        <Link href="/financial-protection" className="text-airway underline underline-offset-2">
+        <Link href="/financial-protection" className="text-link underline underline-offset-2">
           What this means for you
         </Link>
       </>

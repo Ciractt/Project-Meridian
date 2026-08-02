@@ -116,7 +116,7 @@ export function PlaceField({
       <div
         className={cn(
           'h-full px-4 py-3 transition-colors',
-          error ? 'bg-chart-wash' : 'hover:bg-paper',
+          error ? 'bg-accent-wash' : 'hover:bg-paper',
         )}
       >
         <label
@@ -206,10 +206,10 @@ export function PlaceField({
                 onClick={() => select(place)}
                 className={cn(
                   'flex w-full items-baseline gap-3 px-4 py-2.5 text-left',
-                  index === active ? 'bg-chart-wash' : 'bg-transparent',
+                  index === active ? 'bg-accent-wash' : 'bg-transparent',
                 )}
               >
-                <span className="w-9 shrink-0 tabular-nums text-sm font-semibold text-chart">
+                <span className="w-9 shrink-0 tabular-nums text-sm font-semibold text-accent">
                   {place.iataCode}
                 </span>
                 <span className="min-w-0 flex-1">

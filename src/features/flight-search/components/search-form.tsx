@@ -225,7 +225,7 @@ export function SearchForm({
             type="checkbox"
             checked={direct}
             onChange={(event) => setDirect(event.target.checked)}
-            className="size-4 accent-[var(--color-chart)]"
+            className="size-4 accent-[var(--color-accent)]"
           />
           Direct flights only
         </label>

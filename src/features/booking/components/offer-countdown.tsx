@@ -91,7 +91,7 @@ export function OfferCountdown({
         className={cn(
           'flex items-baseline justify-between gap-2 rounded-control px-3 py-2 text-xs',
           expired || unbookable
-            ? 'bg-chart-wash text-danger'
+            ? 'bg-accent-wash text-danger'
             : urgent
               ? 'bg-caution-wash text-caution'
               : 'bg-paper text-ink-muted',

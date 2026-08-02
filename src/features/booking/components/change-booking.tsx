@@ -220,7 +220,7 @@ export function ChangeBooking({
                             : `${option.stops} stop${option.stops > 1 ? 's' : ''}`}
                         </span>
                       </span>
-                      <span className="tabular-nums text-base font-semibold text-chart">
+                      <span className="tabular-nums text-base font-semibold text-accent">
                         {option.refundAmount
                           ? `−${formatMoney(option.refundAmount, option.currency)}`
                           : formatMoney(option.chargeAmount, option.currency)}

@@ -54,7 +54,7 @@ export default async function AccountPage() {
                   <span className="tabular-nums text-lg font-semibold tracking-tight">
                     {trip.origin}
                   </span>
-                  <span aria-hidden="true" className="text-chart">
+                  <span aria-hidden="true" className="text-accent">
                     →
                   </span>
                   <span className="tabular-nums text-lg font-semibold tracking-tight">
@@ -84,7 +84,7 @@ export default async function AccountPage() {
                     </span>
                   </span>
                 ) : null}
-                <span className="text-airway">
+                <span className="text-link">
                   Manage this booking — bags, cancellation ›
                 </span>
               </p>

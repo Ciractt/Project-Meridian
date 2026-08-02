@@ -15,7 +15,7 @@ import { twMerge } from 'tailwind-merge';
  * is a bad property for a utility used everywhere, so the ~7kB is worth it.
  *
  * Note the limit: twMerge resolves the conflicts it recognises. Our custom theme
- * names (`bg-chart`, `rounded-card`) are outside its known scales, so it leaves
+ * names (`bg-accent`, `rounded-card`) are outside its known scales, so it leaves
  * those alone. Prefer a closed set of variant props over a `className` override
  * when a component's own styling is at stake — see AirlineLogo's `size`.
  */

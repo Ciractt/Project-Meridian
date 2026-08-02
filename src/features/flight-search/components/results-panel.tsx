@@ -148,7 +148,7 @@ export function ResultsPanel({
               <button
                 type="button"
                 onClick={() => setShowAll(true)}
-                className="rounded-control border border-hairline-strong bg-surface px-6 py-3 text-sm font-medium text-airway transition-colors hover:border-airway"
+                className="rounded-control border border-hairline-strong bg-surface px-6 py-3 text-sm font-medium text-link transition-colors hover:border-link"
               >
                 Show all {visible.length} flights
               </button>
@@ -220,7 +220,7 @@ export function ResultsPanel({
               <button
                 type="button"
                 onClick={() => setFilters(defaultFilters)}
-                className="text-airway underline underline-offset-2 hover:no-underline"
+                className="text-link underline underline-offset-2 hover:no-underline"
               >
                 Clear filters
               </button>
@@ -262,7 +262,7 @@ export function ResultsPanel({
                 ? 'These fares were found moments ago and may have moved since. '
                 : 'Fares can move between search and booking. '}
               We re-check the price before you pay.{' '}
-              <Link href="/" className="text-airway underline underline-offset-2">
+              <Link href="/" className="text-link underline underline-offset-2">
                 Start a new search
               </Link>
             </p>

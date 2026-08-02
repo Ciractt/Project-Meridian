@@ -19,7 +19,7 @@ export function TripStatusPill({
 }) {
   if (cancelled) {
     return (
-      <Pill className="border-danger/30 bg-chart-wash text-danger">Cancelled</Pill>
+      <Pill className="border-danger/30 bg-accent-wash text-danger">Cancelled</Pill>
     );
   }
 
@@ -29,13 +29,13 @@ export function TripStatusPill({
 
   if (daysUntilDeparture === 0) {
     return (
-      <Pill className="border-chart/30 bg-chart-wash text-chart">Today</Pill>
+      <Pill className="border-accent/30 bg-accent-wash text-accent">Today</Pill>
     );
   }
 
   if (daysUntilDeparture === 1) {
     return (
-      <Pill className="border-chart/30 bg-chart-wash text-chart">Tomorrow</Pill>
+      <Pill className="border-accent/30 bg-accent-wash text-accent">Tomorrow</Pill>
     );
   }
 

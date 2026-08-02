@@ -7,13 +7,13 @@
  * Direction: the reference is Ulysse — deep navy ink, a saturated blue for
  * action and price, cool near-white surfaces, and generous radii.
  *
- * **The names are unchanged and now under-describe what they hold.** `chart`
- * was chart magenta and is now the primary blue; `airway` was informational
- * blue and is now the link blue. Renaming them means rewriting ~800 utility
- * usages across 58 files, and `cn()` cannot help — tailwind-merge only resolves
- * scales it recognises, and none of these are among them. So the rename is a
- * separate mechanical commit that changes no pixels, and this one changes only
- * pixels. Either can be reverted without the other.
+ * **Named by role, not by hue.** `accent` is price, primary action and focus;
+ * `link` is anything that navigates. They were `chart` and `airway` when the
+ * palette came from sectional charts (ADR-040), and kept those names through
+ * the change so that commit could be reverted on its own — which meant every
+ * mention of them in the codebase was a small lie for a while. A colour named
+ * for what it does survives the next palette; one named for what it looks like
+ * does not.
  *
  * Every value below clears WCAG AA (4.5:1) against white, against `paper`, and
  * against its own wash. That is not automatic when matching another site's
@@ -29,8 +29,8 @@
   /* Paper and surfaces — cool, close to white, low contrast between them */
   --color-paper: #f1f3fa;
   --color-surface: #ffffff;
-  --color-terrain: #eceffb;
-  --color-terrain-line: #dbe0f2;
+  --color-panel: #eceffb;
+  --color-panel-line: #dbe0f2;
   --color-night: #2a3161; /* hero panel — the search bar's backdrop */
   --color-night-line: #3d4578;
   --color-hairline: #e4e8f4;
@@ -38,10 +38,10 @@
 
   /* Signal. Each wash still carries one meaning and no other — the meanings
      are unchanged, only the hues. */
-  --color-chart: #3350e0; /* price, primary action, focus */
-  --color-chart-wash: #eaeefe;
-  --color-airway: #2440b8; /* informational, links */
-  --color-airway-wash: #e8ecfd;
+  --color-accent: #3350e0; /* price, primary action, focus */
+  --color-accent-wash: #eaeefe;
+  --color-link: #2440b8; /* informational, links */
+  --color-link-wash: #e8ecfd;
   --color-positive: #0f7a48; /* fare drops, confirmations */
   --color-positive-wash: #e4f5ec;
   --color-caution: #8a5316; /* long layovers, overnight, tight connections */
@@ -108,7 +108,7 @@
   /* One focus treatment across the whole product. Visible, high contrast,
      never removed. */
   :focus-visible {
-    outline: 2px solid var(--color-chart);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
     border-radius: 4px;
   }

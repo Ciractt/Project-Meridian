@@ -71,7 +71,7 @@ export function RefundChangeButton({ token }: { token: string }) {
       <button
         type="button"
         onClick={() => setArmed(true)}
-        className="text-xs text-airway underline underline-offset-2 hover:no-underline"
+        className="text-xs text-link underline underline-offset-2 hover:no-underline"
       >
         Refund…
       </button>

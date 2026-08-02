@@ -225,7 +225,7 @@ function Anchor({ href, children }: { href: string; children: React.ReactNode })
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-airway underline underline-offset-2"
+      className="text-link underline underline-offset-2"
     >
       {children}
     </a>

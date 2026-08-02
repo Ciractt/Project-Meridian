@@ -87,7 +87,7 @@ export default async function HomePage({
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
             <div className="min-w-0">
               {content.hero.eyebrow ? (
-                <p className="text-sm font-medium text-chart">
+                <p className="text-sm font-medium text-accent">
                   {content.hero.eyebrow}
                 </p>
               ) : null}
@@ -183,7 +183,7 @@ export default async function HomePage({
                   <Link
                     key={slug}
                     href={`/flights/${slug}`}
-                    className="text-airway underline underline-offset-2"
+                    className="text-link underline underline-offset-2"
                   >
                     {route.fromCity} to {route.toCity}
                   </Link>
@@ -218,16 +218,16 @@ export default async function HomePage({
                 headline: 'Full-service and low-cost, side by side',
                 detail:
                   'Ranked by what the journey actually costs you, with the baggage each fare includes shown on the result. A cheap fare with no checked bag often isn’t the cheaper one.',
-                mark: 'text-airway',
-                rule: 'bg-airway',
+                mark: 'text-link',
+                rule: 'bg-link',
               },
               {
                 term: 'Whole price',
                 headline: 'Nothing appears at the last screen',
                 detail:
                   'Taxes, airline charges and card fees are inside every figure from the first result onwards. Bags and seats are priced before you pay, at the amount they add to your total.',
-                mark: 'text-chart',
-                rule: 'bg-chart',
+                mark: 'text-accent',
+                rule: 'bg-accent',
               },
               {
                 term: 'Real tickets',

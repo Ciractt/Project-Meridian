@@ -70,7 +70,7 @@ export async function ResultsList({ criteria }: { criteria: FlightSearchParams }
         {notice}
         <Notice title="No flights on this route for these dates.">
           Try nearby dates, a different airport, or allow connections.{' '}
-          <Link href="/" className="text-airway underline underline-offset-2">
+          <Link href="/" className="text-link underline underline-offset-2">
             Change search
           </Link>
         </Notice>

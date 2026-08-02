@@ -106,9 +106,9 @@ export function CalendarMonth({
                       className={cn(
                         'relative flex h-10 w-full items-center justify-center tabular-nums text-sm transition-colors',
                         disabled && 'cursor-not-allowed text-hairline-strong',
-                        !disabled && !isStart && !isEnd && 'text-ink hover:bg-chart-wash',
-                        inRange && 'bg-chart-wash',
-                        (isStart || isEnd) && 'bg-chart font-semibold text-white',
+                        !disabled && !isStart && !isEnd && 'text-ink hover:bg-accent-wash',
+                        inRange && 'bg-accent-wash',
+                        (isStart || isEnd) && 'bg-accent font-semibold text-white',
                         isStart && !!rangeEnd && 'rounded-l-full',
                         isEnd && 'rounded-r-full',
                         isStart && !rangeEnd && 'rounded-full',

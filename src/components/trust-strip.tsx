@@ -35,7 +35,7 @@ export function TrustStrip() {
       {CLAIMS.map((claim) => (
         <li key={claim.title}>
           <p className="flex items-baseline gap-2 text-sm font-medium text-ink">
-            <span aria-hidden="true" className="text-chart">
+            <span aria-hidden="true" className="text-accent">
               ✓
             </span>
             {claim.title}

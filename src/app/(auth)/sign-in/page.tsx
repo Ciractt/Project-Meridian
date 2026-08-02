@@ -25,7 +25,7 @@ export default async function SignInPage({
 
       <p className="mt-6 text-sm text-ink-muted">
         No account yet?{' '}
-        <Link href="/sign-up" className="text-airway underline underline-offset-2">
+        <Link href="/sign-up" className="text-link underline underline-offset-2">
           Create one
         </Link>
       </p>

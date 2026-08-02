@@ -35,7 +35,7 @@ export function PromotionForm() {
             name="isPaidPlacement"
             checked={isPaid}
             onChange={(event) => setIsPaid(event.target.checked)}
-            className="mt-0.5 size-4 accent-[var(--color-chart)]"
+            className="mt-0.5 size-4 accent-[var(--color-accent)]"
           />
           <span className="text-sm">
             <span className="block font-medium text-ink">
@@ -72,7 +72,7 @@ export function PromotionForm() {
       />
 
       {state.error ? (
-        <p role="alert" className="rounded-control bg-chart-wash px-3 py-2 text-sm text-danger">
+        <p role="alert" className="rounded-control bg-accent-wash px-3 py-2 text-sm text-danger">
           {state.error}
         </p>
       ) : null}

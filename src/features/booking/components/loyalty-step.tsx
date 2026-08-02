@@ -134,7 +134,7 @@ export function LoyaltyStep({
             type="checkbox"
             name="remember"
             defaultChecked
-            className="size-4 accent-[var(--color-chart)]"
+            className="size-4 accent-[var(--color-accent)]"
           />
           Remember this for next time
         </label>

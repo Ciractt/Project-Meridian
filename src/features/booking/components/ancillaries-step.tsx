@@ -89,7 +89,7 @@ export function AncillariesStep({
           },
           /* Duffel's component takes literal values, not CSS variables, so
              these are the one place the palette is duplicated. They have to be
-             changed by hand whenever --color-chart or --radius-control move, or
+             changed by hand whenever --color-accent or --radius-control move, or
              the seat map is the last magenta thing on a blue site. */
           styles: {
             accentColor: 'rgb(51, 80, 224)',
@@ -119,7 +119,7 @@ export function AncillariesStep({
           type="button"
           onClick={onSkip}
           disabled={busy}
-          className="text-sm text-airway underline underline-offset-2 hover:no-underline"
+          className="text-sm text-link underline underline-offset-2 hover:no-underline"
         >
           Continue without extras
         </button>

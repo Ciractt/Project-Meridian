@@ -42,7 +42,7 @@ export function CheckoutSteps({
               className={cn(
                 'flex size-5 shrink-0 items-center justify-center rounded-full tabular-nums text-[10px]',
                 state === 'done' && 'bg-positive text-white',
-                state === 'current' && 'bg-chart text-white',
+                state === 'current' && 'bg-accent text-white',
                 state === 'todo' && 'border border-hairline-strong text-ink-faint',
               )}
               aria-hidden="true"

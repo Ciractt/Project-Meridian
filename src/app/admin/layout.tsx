@@ -22,7 +22,7 @@ export default async function AdminLayout({
     <div className="mx-auto max-w-6xl px-5 py-10">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-hairline pb-4">
         <div>
-          <p className="text-sm font-medium text-chart">
+          <p className="text-sm font-medium text-accent">
             Internal
           </p>
           <h1 className="mt-1 font-display text-xl font-extrabold tracking-tight">
@@ -35,18 +35,18 @@ export default async function AdminLayout({
       </div>
 
       <nav aria-label="Admin sections" className="mb-8 flex gap-4 text-sm">
-        <Link href="/admin" className="text-airway underline underline-offset-2">
+        <Link href="/admin" className="text-link underline underline-offset-2">
           Overview
         </Link>
         <Link
           href="/admin/promotions"
-          className="text-airway underline underline-offset-2"
+          className="text-link underline underline-offset-2"
         >
           Promotions
         </Link>
         <Link
           href="/admin/content"
-          className="text-airway underline underline-offset-2"
+          className="text-link underline underline-offset-2"
         >
           Content
         </Link>

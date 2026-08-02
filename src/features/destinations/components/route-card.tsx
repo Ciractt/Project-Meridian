@@ -124,7 +124,7 @@ export function RouteCard({
 function PriceTag({ price }: { price: RoutePrice }) {
   return (
     <span className="shrink-0 text-right">
-      <span className="block tabular-nums text-lg leading-none font-semibold text-chart">
+      <span className="block tabular-nums text-lg leading-none font-semibold text-accent">
         {formatMoney(price.amount, price.currency)}
       </span>
       <span className="mt-1 block text-[10px] text-ink-faint">

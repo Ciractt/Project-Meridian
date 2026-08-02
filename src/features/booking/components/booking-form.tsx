@@ -413,14 +413,14 @@ export function BookingForm({
       {notice ? <Notice notice={notice} /> : null}
 
       {outOfTime ? (
-        <div className="rounded-card border border-chart/30 bg-chart-wash p-4">
+        <div className="rounded-card border border-accent/30 bg-accent-wash p-4">
           <p className="text-sm text-danger">
             The airline’s hold on this fare has run out, so we’ve stopped before
             taking any payment. Nothing has been charged.
           </p>
           <a
             href={searchHref}
-            className="mt-3 inline-block rounded-control bg-chart px-4 py-2 text-sm font-medium text-white"
+            className="mt-3 inline-block rounded-control bg-accent px-4 py-2 text-sm font-medium text-white"
           >
             See the current price
           </a>
@@ -457,7 +457,7 @@ function Notice({ notice }: { notice: { tone: 'warn' | 'error'; text: string } }
       className={cn(
         'rounded-card p-4 text-sm',
         notice.tone === 'error'
-          ? 'bg-chart-wash text-danger'
+          ? 'bg-accent-wash text-danger'
           : 'bg-caution-wash text-caution',
       )}
     >
@@ -550,7 +550,7 @@ function AccountOffer({
           type="checkbox"
           checked={checked}
           onChange={(event) => onToggle(event.target.checked)}
-          className="mt-0.5 size-4 shrink-0 accent-chart"
+          className="mt-0.5 size-4 shrink-0 accent-accent"
         />
         <span className="text-sm">
           <span className="font-medium text-ink">

@@ -35,7 +35,7 @@ export function RouteArrow({
   return (
     <span
       aria-hidden="true"
-      className={`flex min-w-0 items-center gap-1 text-chart ${className}`}
+      className={`flex min-w-0 items-center gap-1 text-accent ${className}`}
     >
       <span className="size-1.5 shrink-0 rounded-full bg-current" />
       <span className="flex min-w-0 flex-1 items-center gap-1">

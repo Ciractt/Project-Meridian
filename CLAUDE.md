@@ -136,9 +136,10 @@ In order, from `DUFFEL-GAP-ANALYSIS.md` and the open items in `ARCHITECTURE.md`:
    book direct, same argument as loyalty numbers.
 4. Special assistance requests (gap 3.4). An accessibility obligation as much as
    a feature: today someone needing assistance has to ring the airline.
-5. Rename the colour tokens. `chart` is no longer chart magenta and `airway` is
-   no longer an informational blue — ~800 usages across 58 files, with no help
-   from `cn()`, since tailwind-merge does not resolve custom scale names.
+5. `npm run format` rewrites 69 files on a clean checkout. The
+   `prettier-plugin-tailwindcss` config needs `tailwindStylesheet` pointing at
+   `globals.css` so it can see the `@theme` tokens; that closes most of it but
+   not all. Fix it as its own commit, before it lands on top of a feature diff.
 
 Shipped since this list was last accurate: confirmation emails, the
 reconciliation job, tests on `pricing.ts` and the compensation paths, loyalty

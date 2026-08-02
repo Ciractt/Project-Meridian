@@ -52,7 +52,7 @@ export function CheckoutSummaryBar({
         <div className="min-w-0">
           <p className="flex items-baseline gap-1.5 tabular-nums text-sm font-semibold">
             {originCode}
-            <span aria-hidden="true" className="text-chart">
+            <span aria-hidden="true" className="text-accent">
               →
             </span>
             {destinationCode}
@@ -65,7 +65,7 @@ export function CheckoutSummaryBar({
         </div>
 
         <div className="shrink-0 text-right">
-          <p className="tabular-nums text-lg leading-none font-semibold tracking-tight text-chart">
+          <p className="tabular-nums text-lg leading-none font-semibold tracking-tight text-accent">
             {formatMoney(amount, currency)}
           </p>
           <p className="mt-1 text-[11px] text-ink-faint">{caption}</p>

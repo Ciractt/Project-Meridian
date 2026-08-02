@@ -149,7 +149,7 @@ export function CancelBooking({
             ) : null}
 
             {confirmed ? (
-              <p role="alert" className="rounded-control bg-chart-wash p-3 text-sm text-danger">
+              <p role="alert" className="rounded-control bg-accent-wash p-3 text-sm text-danger">
                 {confirmed.status === 'stale'
                   ? 'That quote expired. Get a fresh one and the figures will be current.'
                   : confirmed.status === 'forbidden'

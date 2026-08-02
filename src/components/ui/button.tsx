@@ -18,7 +18,7 @@ const VARIANTS: Record<Variant, string> = {
   // The one place magenta becomes a solid fill: the action that starts a
   // search. Nothing else in the product competes with it.
   accent:
-    'bg-chart text-white hover:brightness-110 disabled:bg-ink-faint disabled:cursor-not-allowed',
+    'bg-accent text-white hover:brightness-110 disabled:bg-ink-faint disabled:cursor-not-allowed',
   secondary:
     'bg-surface text-ink border border-hairline-strong hover:border-ink disabled:text-ink-faint',
   ghost: 'text-ink-muted hover:text-ink hover:bg-hairline/40',

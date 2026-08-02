@@ -61,7 +61,7 @@ export function PassengersField({
         onClick={() => setOpen((wasOpen) => !wasOpen)}
         className={cn(
           'h-full w-full px-4 py-3 text-left transition-colors hover:bg-paper',
-          error && 'bg-chart-wash',
+          error && 'bg-accent-wash',
         )}
       >
         <span className="block text-xs font-medium text-ink-faint">

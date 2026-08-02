@@ -39,7 +39,7 @@ export function AuthForm({
       {state.error ? (
         <p
           role="alert"
-          className="rounded-control bg-chart-wash px-3 py-2 text-sm text-danger"
+          className="rounded-control bg-accent-wash px-3 py-2 text-sm text-danger"
         >
           {state.error}
         </p>
