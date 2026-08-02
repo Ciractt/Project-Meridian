@@ -124,11 +124,29 @@ removes one of the main reasons to bypass you.
 advertise "Book Now, Pay Later" prominently. Requires the `payment.created` webhook
 and expiry handling.
 
-### 3.4 Post-booking ancillaries and special service requests
+### 3.4 Post-booking ancillaries and special service requests — partly closed, and not the way this was written
 
-Meals, wheelchair assistance and similar can be added after booking. Both a revenue
-line and an accessibility obligation — a traveller needing assistance currently has
-to go to the airline.
+The premise was wrong. **Duffel cannot carry an assistance request at all.** Their
+available-services endpoint supports baggage and nothing else — their own guide
+says so, and says the same flow will apply "once we support more ancillary
+services". The order-management marketing page implies otherwise; the API
+reference is what counts.
+
+So this was never a revenue line and never an integration. It is an obligation:
+EC 1107/2006 Art. 6, retained in UK law, requires carriers, their agents and
+tour operators to receive assistance notifications at every point of sale
+including the internet, and to transmit them onward.
+
+**Done:** we receive the request, show it on the booking, and queue it for a
+human to pass to the airline — sorted by departure date, because the 48-hour
+notice window is the deadline that matters. ADR-048.
+
+**Still open:** whether Meridian is an "agent" for Article 6 purposes. One for
+the solicitor already reviewing terms and ATOL. The feature is right either way;
+the answer only changes whether it is required.
+
+**Still missing:** meals and other true ancillaries, which are a revenue line
+and genuinely blocked on Duffel supporting more service types.
 
 ---
 

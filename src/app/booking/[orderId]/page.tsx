@@ -9,6 +9,8 @@ import { buildGuidance } from '@/features/booking/pre-travel';
 import { PreTravelPanel } from '@/features/booking/components/pre-travel-panel';
 import { CancelBooking } from '@/features/booking/components/cancel-booking';
 import { ChangeBooking } from '@/features/booking/components/change-booking';
+import { AssistanceRequestForm } from '@/features/booking/components/assistance-request-form';
+import { getAssistanceRequests } from '@/features/booking/assistance';
 import { CheckoutSteps } from '@/features/booking/components/checkout-steps';
 import { AddBags } from '@/features/booking/components/add-bags';
 import { FinancialProtectionNotice } from '@/components/financial-protection-notice';
@@ -31,6 +33,7 @@ export default async function BookingPage({
   const { orderId } = await params;
   const user = await getCurrentUser();
   const booking = await getConfirmation(orderId, user?.id ?? null);
+  const assistance = booking ? await getAssistanceRequests(booking.id) : [];
 
   if (!booking) notFound();
 
@@ -123,6 +126,16 @@ export default async function BookingPage({
       ) : (
         <>
           <AddBags orderId={booking.id} isOwner={booking.ownedByViewer} />
+          {/* First, above the commercial options. Someone who needs a
+              wheelchair needs it more than they need to add a bag, and a legal
+              obligation to receive the request (EC 1107/2006 Art. 6) should not
+              be three disclosures down the page. */}
+          <AssistanceRequestForm
+            orderId={booking.id}
+            isOwner={booking.ownedByViewer}
+            existing={assistance}
+          />
+
           {/* Change before cancel. Someone whose plans moved usually wants a
               different flight rather than no flight, and the destructive
               option should not be the first one they meet. */}

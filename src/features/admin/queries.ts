@@ -434,3 +434,83 @@ export async function getStuckChanges(): Promise<StuckChange[]> {
     };
   });
 }
+
+
+export interface PendingAssistance {
+  id: string;
+  orderId: string;
+  bookingReference: string | null;
+  airlineName: string | null;
+  origin: string | null;
+  destination: string | null;
+  departureDate: string | null;
+  passengerLabel: string;
+  codes: string[];
+  notes: string | null;
+  createdAt: string;
+}
+
+/**
+ * Assistance requests we have received and not yet passed on.
+ *
+ * The only queue here with a legal deadline attached: EC 1107/2006 gives the
+ * airport an obligation when notice reached the carrier 48 hours before
+ * departure, so a request sitting here past that mark has cost the traveller a
+ * guarantee rather than merely annoyed them.
+ *
+ * Sorted by departure rather than by age for that reason — the request made
+ * yesterday for a flight tomorrow is more urgent than the one made last week
+ * for next month, and sorting by created_at gets that backwards.
+ */
+export async function getPendingAssistance(): Promise<PendingAssistance[]> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('assistance_requests')
+    .select(
+      'id, order_id, passenger_label, codes, notes, created_at, orders (booking_reference, airline_name, origin, destination, departure_date)',
+    )
+    .in('status', ['received', 'failed'])
+    .limit(100);
+
+  if (error) {
+    console.error('Could not load assistance requests:', error.message);
+    return [];
+  }
+
+  const rows = (data ?? []).map((row) => {
+    const joined = row.orders as unknown;
+    const order = (Array.isArray(joined) ? joined[0] : joined) as
+      | {
+          booking_reference: string | null;
+          airline_name: string | null;
+          origin: string | null;
+          destination: string | null;
+          departure_date: string | null;
+        }
+      | undefined;
+
+    return {
+      id: String(row.id),
+      orderId: String(row.order_id),
+      bookingReference: order?.booking_reference ?? null,
+      airlineName: order?.airline_name ?? null,
+      origin: order?.origin ?? null,
+      destination: order?.destination ?? null,
+      departureDate: order?.departure_date ?? null,
+      passengerLabel: String(row.passenger_label),
+      codes: Array.isArray(row.codes) ? row.codes.map(String) : [],
+      notes: row.notes ? String(row.notes) : null,
+      createdAt: String(row.created_at),
+    };
+  });
+
+  /* Soonest departure first. Requests with no date sort last rather than
+     first — a missing date is unknown urgency, not maximum urgency. */
+  return rows.sort((a, b) => {
+    if (!a.departureDate) return 1;
+    if (!b.departureDate) return -1;
+    return a.departureDate.localeCompare(b.departureDate);
+  });
+}

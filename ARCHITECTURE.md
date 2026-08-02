@@ -1494,3 +1494,55 @@ cascade` from `auth.users` means closing an account takes the family with it.
 **No admin read path.** Row-level security is own-rows-only in all four
 directions, with no support policy. Support has no reason to browse a family's
 dates of birth, and a policy that exists is a policy that eventually gets used.
+
+---
+
+## ADR-048 — Assistance requests are received and forwarded by hand, and never confirmed
+
+**Decision.** Travellers can request airport assistance against a booking. We
+store it, show it, and queue it for a person to pass to the airline. We never
+tell them assistance is arranged.
+
+**Why it cannot be an integration.** Duffel's available-services endpoint
+supports baggage and nothing else — their guide says so directly, and adds that
+the same flow will apply once more service types are supported. Their
+order-management marketing page says bookings can be customised with "wheelchair
+accessibility and more without contacting the airline"; that is not true of the
+API today. The reference is what we build against.
+
+**Why we take the request anyway.** Regulation (EC) 1107/2006 Article 6,
+retained in UK law, requires air carriers, their agents and tour operators to
+take all measures necessary for the receipt of assistance notifications at every
+point of sale including the internet, and to transmit them onward within 36
+hours. A ticket seller with no way to say "I need a wheelchair" is precisely the
+gap that regulation closes. Whether Meridian is an "agent" for Article 6
+purposes belongs with the solicitor already reviewing terms and ATOL — the
+feature is right either way, and the answer only changes whether it is required.
+
+**The distinction the copy protects.** "We have your request" and "we have sent
+it" are both true and both sayable. "Assistance is booked" is neither: the
+airport managing body provides it, the airline arranges it, and neither reports
+back to us. Blurring that means somebody arrives at a terminal expecting a
+wheelchair nobody ordered, which is worse than never having offered. So the
+confirmation also gives them the airline's own channel — belt and braces on an
+accessibility need is not clutter when we are the party that cannot confirm.
+
+**Free text is a first-class request.** Six SSR codes do not describe every
+need. A form that rejects a request because it does not match a checkbox is the
+failure this exists to prevent, so notes alone are valid.
+
+**The queue sorts by departure, not by age.** The 48-hour window is the
+deadline, so a request made yesterday for a flight tomorrow outranks one made
+last week for next month. Sorting by created_at gets that exactly backwards, and
+this is the one queue where being late removes a legal guarantee rather than
+merely irritating someone.
+
+**Forwarding is recorded by hand, with a channel.** There is no API call to
+observe — somebody emailed support or rang the airline — so the only honest
+source is the person who did it. "Forwarded" with no channel is unauditable six
+months later.
+
+**Trade-off accepted.** This does not scale: every request needs a human. That
+is a property of the supplier rather than a design choice, and the alternative
+is not offering it, which for an accessibility need is not an alternative. If
+Duffel add SSR support the queue becomes the fallback rather than the mechanism.

@@ -8,6 +8,7 @@ import {
   runReconciliation,
 } from '@/features/booking/reconciliation';
 import { refundStuckChange } from '@/features/booking/change-reconciliation';
+import { markAssistanceForwarded } from '@/features/booking/assistance';
 
 /**
  * Resend a confirmation that failed.
@@ -121,4 +122,28 @@ export async function refundChange(
     default:
       return `Refund failed: ${result.message}`;
   }
+}
+
+
+/**
+ * Record that an assistance request reached the airline.
+ *
+ * There is no API call to observe — Duffel cannot carry these, so somebody
+ * emailed support or rang the airline. The only honest source is the person who
+ * did it saying so, and `via` records how, so the trail survives them leaving.
+ */
+export async function forwardAssistance(
+  _previous: string | null,
+  formData: FormData,
+): Promise<string> {
+  await requireRole('support', '/admin');
+
+  const id = String(formData.get('id') ?? '');
+  const via = String(formData.get('via') ?? '').trim();
+  if (!id) return 'No request selected.';
+  if (!via) return 'Say how you passed it on.';
+
+  const result = await markAssistanceForwarded(id, via);
+  revalidatePath('/admin');
+  return result.ok ? 'Marked as sent.' : 'Could not update that.';
 }

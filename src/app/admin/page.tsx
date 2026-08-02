@@ -2,6 +2,7 @@ import {
   getAttentionAttempts,
   getFailedConfirmations,
   getPendingAirlineChanges,
+  getPendingAssistance,
   getStrandedRefunds,
   getStuckChanges,
   getUndeliveredBags,
@@ -12,6 +13,7 @@ import {
 import { formatMoney } from '@/lib/format';
 import { resendConfirmation } from '@/features/admin/actions';
 import {
+  ForwardAssistanceButton,
   ReconcileAllButton,
   RefundChangeButton,
   ResolveAttemptButton,
@@ -39,6 +41,7 @@ export default async function AdminPage() {
     strandedRefunds,
     undeliveredBags,
     stuckChanges,
+    pendingAssistance,
   ] = await Promise.all([
     getSearchStats(),
     getTopRoutes(),
@@ -49,6 +52,7 @@ export default async function AdminPage() {
     getStrandedRefunds(),
     getUndeliveredBags(),
     getStuckChanges(),
+    getPendingAssistance(),
   ]);
 
   if (!stats) {
@@ -109,6 +113,49 @@ export default async function AdminPage() {
                 <span className="max-w-64 truncate text-xs text-danger">
                   {row.error ?? 'unknown error'}
                 </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {/* First. The only queue with a legal deadline on it: EC 1107/2006 binds
+          the airport when notice reached the carrier 48 hours before departure,
+          so a request still sitting here past that mark has cost someone a
+          guarantee rather than merely annoyed them. */}
+      {pendingAssistance.length > 0 ? (
+        <section className="rounded-card border-2 border-caution bg-surface p-5">
+          <h2 className="font-display text-base font-bold tracking-tight text-caution">
+            {pendingAssistance.length} assistance request
+            {pendingAssistance.length === 1 ? '' : 's'} to pass on
+          </h2>
+          <p className="mt-1 mb-4 max-w-2xl text-sm text-ink-muted">
+            Duffel can’t carry these, so someone has to tell the airline. Soonest
+            departure first. Aim to send each one at least 48 hours before the
+            flight — after that the airport only has to make reasonable efforts.
+          </p>
+          <ul className="space-y-3">
+            {pendingAssistance.map((row) => (
+              <li key={row.id} className="border-t border-hairline pt-3 text-sm">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                  <span className="min-w-0">
+                    <span className="font-semibold">{row.passengerLabel}</span>{' '}
+                    <span className="tabular-nums text-xs text-ink-muted">
+                      {row.bookingReference ?? '—'} · {row.origin} → {row.destination}
+                      {row.airlineName ? ` · ${row.airlineName}` : ''}
+                    </span>
+                  </span>
+                  <span className="tabular-nums text-xs font-semibold text-caution">
+                    {row.departureDate ?? 'no date'}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-ink-muted">
+                  {row.codes.join(', ') || 'no codes'}
+                  {row.notes ? ` — ${row.notes}` : ''}
+                </p>
+                <div className="mt-2">
+                  <ForwardAssistanceButton id={row.id} />
+                </div>
               </li>
             ))}
           </ul>
