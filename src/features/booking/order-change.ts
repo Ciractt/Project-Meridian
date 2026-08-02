@@ -8,7 +8,11 @@ import {
   createOrderChange,
   requestOrderChange,
 } from '@/services/duffel/order-changes';
-import { createPaymentIntent } from '@/services/duffel/payments';
+import {
+  confirmPaymentIntent,
+  createPaymentIntent,
+  getPaymentIntent,
+} from '@/services/duffel/payments';
 import { calculateChangeCharge } from './pricing';
 import type { DuffelOrderChangeOffer } from '@/services/duffel/api-types';
 
@@ -240,6 +244,13 @@ export async function beginOrderChange(input: {
   orderId: string;
   auth: ChangeAuth;
   offerId: string;
+  /* Recorded rather than inferred. When a change gets stuck, the admin queue
+     has to say what the traveller was trying to do — "wanted 12 Sep" is the
+     difference between a row someone can act on and a token with a price. */
+  sliceId: string;
+  origin: string;
+  destination: string;
+  departureDate: string;
   /** Client-generated, so a double-click cannot buy two changes. */
   token: string;
 }): Promise<ChangeConfirmResult> {
@@ -263,6 +274,10 @@ export async function beginOrderChange(input: {
       token: input.token,
       order_id: input.orderId,
       duffel_order_change_offer_id: input.offerId,
+      removed_slice_id: input.sliceId,
+      new_origin: input.origin,
+      new_destination: input.destination,
+      new_departure_date: input.departureDate,
       status: 'awaiting_payment',
     });
 
@@ -354,4 +369,130 @@ export async function beginOrderChange(input: {
 /** A fresh token for a change attempt. */
 export function newChangeToken(): string {
   return randomUUID();
+}
+
+
+export type ChangeCompletionResult =
+  | { status: 'changed'; charged: string; currency: string }
+  | { status: 'already_done' }
+  | { status: 'not_paid'; message: string }
+  /** Charged, not applied, and a person now owns it. See ADR-045. */
+  | { status: 'needs_attention' }
+  | { status: 'unavailable'; message: string };
+
+/**
+ * Settle a paid change with the airline.
+ *
+ * Called after the card step. The card money is in our balance by now; this
+ * pays the airline out of it and applies the change.
+ *
+ * **There is no refund path here, and that is the whole difference from
+ * `completeBagPurchase`.** A bag the airline rejects gets refunded on the spot,
+ * because a failed bag leaves the booking intact and the traveller no worse
+ * off. A failed change leaves them holding a valid ticket for a flight they
+ * believe they are no longer on — and a refund landing on its own reads as
+ * "your change went through". So this marks `paid_not_changed` and stops.
+ * ADR-045 has the argument; the admin queue is where it goes.
+ */
+export async function completeOrderChange(
+  token: string,
+): Promise<ChangeCompletionResult> {
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) {
+    return { status: 'unavailable', message: 'Booking storage isn’t configured.' };
+  }
+
+  const { data: change } = await supabase
+    .from('order_changes')
+    .select(
+      'token, order_id, status, duffel_order_change_id, payment_intent_id, airline_amount, charge_amount, currency',
+    )
+    .eq('token', token)
+    .maybeSingle<{
+      token: string;
+      order_id: string;
+      status: string;
+      duffel_order_change_id: string | null;
+      payment_intent_id: string | null;
+      airline_amount: string | null;
+      charge_amount: string | null;
+      currency: string | null;
+    }>();
+
+  if (!change) {
+    return { status: 'unavailable', message: 'We’ve lost track of that change.' };
+  }
+  if (change.status === 'completed') return { status: 'already_done' };
+  if (!change.duffel_order_change_id) {
+    return { status: 'not_paid', message: 'That change was never quoted.' };
+  }
+  if (!change.payment_intent_id) {
+    return { status: 'not_paid', message: 'No payment was started.' };
+  }
+
+  let intent = await getPaymentIntent(change.payment_intent_id);
+  if (intent.status !== 'succeeded') {
+    try {
+      intent = await confirmPaymentIntent(change.payment_intent_id);
+    } catch {
+      return { status: 'not_paid', message: 'The payment didn’t complete.' };
+    }
+  }
+  if (intent.status !== 'succeeded') {
+    return { status: 'not_paid', message: 'The payment didn’t complete.' };
+  }
+
+  /* Mark paid BEFORE calling the airline. If this process dies between the two,
+     reconciliation finds a row that says money moved and can act on it; the
+     other order leaves a paid change looking abandoned. */
+  await supabase
+    .from('order_changes')
+    .update({ status: 'paid_not_changed', updated_at: new Date().toISOString() })
+    .eq('token', token);
+
+  try {
+    await confirmOrderChange({
+      orderChangeId: change.duffel_order_change_id,
+      payment:
+        Number(change.airline_amount ?? '0') > 0
+          ? {
+              type: 'balance',
+              amount: Number(change.airline_amount).toFixed(2),
+              currency: change.currency ?? intent.currency,
+            }
+          : undefined,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await supabase
+      .from('order_changes')
+      .update({
+        failure_reason: `confirm_failed: ${message}`.slice(0, 500),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('token', token);
+
+    console.error(
+      'CHANGE PAID BUT NOT APPLIED — manual action required: %s (order %s): %s',
+      token,
+      change.order_id,
+      message,
+    );
+    return { status: 'needs_attention' };
+  }
+
+  await supabase
+    .from('order_changes')
+    .update({
+      status: 'completed',
+      completed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('token', token);
+
+  return {
+    status: 'changed',
+    charged: change.charge_amount ?? '0.00',
+    currency: change.currency ?? intent.currency,
+  };
 }

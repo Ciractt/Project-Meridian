@@ -172,8 +172,12 @@ booking one — see ADR-045. A change that took payment and did not confirm leav
 someone holding a ticket for a flight they believe they are no longer on, and
 the automated response to that is to stop and fetch a human rather than guess.
 
-**Still to build:** the interface, and the payment step that settles a change
-owing money.
+**Also done:** the payment step. `completeOrderChange` settles the airline out
+of the balance after the card clears, and deliberately has no refund path — see
+ADR-045.
+
+**Still to build:** the interface. Nothing in the product reaches any of this
+yet.
 
 ### 4.6 Order cancellations with a refund quote
 
