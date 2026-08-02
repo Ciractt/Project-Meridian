@@ -3,7 +3,8 @@
 import { useActionState, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { requestAssistance } from '../assistance-actions';
-import { ASSISTANCE_OPTIONS, type AssistanceRequest, type AssistanceResult } from '../assistance';
+import { ASSISTANCE_OPTIONS } from '../assistance-options';
+import type { AssistanceRequest, AssistanceResult } from '../assistance';
 
 /**
  * Asking for help at the airport.

@@ -505,6 +505,13 @@ export async function completeBooking(raw: unknown): Promise<CompleteOutcome> {
     await createAccountForBooking(input.contact.email, input.createAccount.password);
   }
 
+  /* Assistance requests, if any were made at checkout. After the order exists
+     because they hang off it, and after ticketing because nothing here may
+     interfere with issuing a ticket — an assistance request that fails to save
+     is a support ticket, and a booking that fails because of one is a disaster.
+     Article 6 says receive and transmit; this is the receive. */
+  await recordCheckoutAssistance(orderRow.id, input.passengers);
+
   return {
     status: 'booked',
     orderId: orderRow.id,
@@ -513,6 +520,49 @@ export async function completeBooking(raw: unknown): Promise<CompleteOutcome> {
 }
 
 /* ---- helpers ---- */
+
+/**
+ * Save any assistance requests made during checkout.
+ *
+ * Never throws. A failure here logs and moves on: the traveller has a ticket,
+ * and the request being lost is recoverable — they can make it again from the
+ * booking page, and the confirmation tells them to ring the airline anyway.
+ * Losing the booking over it would not be recoverable.
+ *
+ * The passenger label is the name they typed, which is the only identifier we
+ * have: passenger names are not stored on the order (ADR-018), so without this
+ * a request would say "someone on this booking needs a wheelchair".
+ */
+async function recordCheckoutAssistance(
+  orderId: string,
+  passengers: Array<{
+    givenName: string;
+    familyName: string;
+    assistance?: { codes: string[]; notes?: string };
+  }>,
+) {
+  for (const passenger of passengers) {
+    const request = passenger.assistance;
+    if (!request) continue;
+    if (request.codes.length === 0 && !request.notes?.trim()) continue;
+
+    try {
+      const supabase = getSupabaseServiceClient();
+      if (!supabase) return;
+      const { error } = await supabase.from('assistance_requests').insert({
+        order_id: orderId,
+        passenger_label: `${passenger.givenName} ${passenger.familyName}`.trim(),
+        codes: request.codes,
+        notes: request.notes?.trim() || null,
+      });
+      if (error) {
+        console.error('Could not save assistance request at checkout:', error.message);
+      }
+    } catch (cause) {
+      console.error('Could not save assistance request at checkout:', cause);
+    }
+  }
+}
 
 /**
  * Open an account off the back of a booking.

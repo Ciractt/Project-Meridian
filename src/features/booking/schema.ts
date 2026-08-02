@@ -69,6 +69,19 @@ export const passengerSchema = z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter the expiry date.')
       .optional(),
+    /**
+     * Airport assistance, if this traveller asked for it.
+     *
+     * Optional and never validated into a failure: a malformed assistance
+     * request must not stop a booking. It is recorded after the order exists
+     * and passed to the airline by hand — Duffel cannot carry it (ADR-048).
+     */
+    assistance: z
+      .object({
+        codes: z.array(z.string().max(8)).max(6).default([]),
+        notes: z.string().trim().max(1000).optional(),
+      })
+      .optional(),
   })
   .check((ctx) => {
     const value = ctx.value;

@@ -1,6 +1,7 @@
 import 'server-only';
 import { getSupabaseServiceClient } from '@/lib/supabase/service';
 import { getCurrentUser } from '@/features/auth/queries';
+import { ASSISTANCE_OPTIONS } from './assistance-options';
 
 /**
  * Assistance at the airport: wheelchairs, guiding, help with steps.
@@ -29,30 +30,7 @@ import { getCurrentUser } from '@/features/auth/queries';
  * arrives expecting help that nobody arranged.
  */
 
-/** IATA SSR codes, with what they actually mean to a traveller. */
-export const ASSISTANCE_OPTIONS = [
-  {
-    code: 'WCHR',
-    label: 'Wheelchair to the aircraft door',
-    detail: 'You can manage steps and walk to your seat, but not long distances.',
-  },
-  {
-    code: 'WCHS',
-    label: 'Wheelchair, and help with steps',
-    detail: 'You can walk to your seat but cannot manage stairs.',
-  },
-  {
-    code: 'WCHC',
-    label: 'Wheelchair all the way to the seat',
-    detail: 'You cannot walk any distance and need help boarding.',
-  },
-  { code: 'BLND', label: 'Help for a blind or partially sighted traveller' },
-  { code: 'DEAF', label: 'Help for a deaf or hard-of-hearing traveller' },
-  {
-    code: 'DPNA',
-    label: 'Help for a traveller with a learning or cognitive disability',
-  },
-] as const;
+export { ASSISTANCE_OPTIONS } from './assistance-options';
 
 const VALID_CODES = new Set(ASSISTANCE_OPTIONS.map((option) => option.code));
 

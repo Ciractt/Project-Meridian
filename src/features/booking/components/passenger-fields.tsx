@@ -2,6 +2,7 @@
 
 import { useId } from 'react';
 import { cn } from '@/lib/cn';
+import { ASSISTANCE_OPTIONS } from '../assistance-options';
 
 const TITLES = [
   { value: 'mr', label: 'Mr' },
@@ -39,6 +40,8 @@ export interface PassengerDraft {
   passportNumber?: string;
   passportCountry?: string;
   passportExpiry?: string;
+  /** Airport assistance, if this traveller asked for it. */
+  assistance?: { codes: string[]; notes: string };
 }
 
 export function PassengerFields({
@@ -182,6 +185,68 @@ export function PassengerFields({
           </div>
         </div>
       ) : null}
+
+      {/* Asked here rather than only after booking, because this is the point
+          of sale — the phrase EC 1107/2006 Art. 6 uses — and because it is
+          earlier, which matters when the guarantee depends on 48 hours' notice.
+          Collapsed by default: a checkout that asks everyone about disability
+          is worse than one that makes it easy to find. */}
+      <details className="mt-5 border-t border-hairline pt-4">
+        <summary className="cursor-pointer text-xs font-medium text-ink">
+          Need assistance at the airport?
+        </summary>
+        <div className="mt-3 space-y-3">
+          <p className="text-xs leading-relaxed text-ink-muted">
+            We’ll pass this to the airline, who arrange it with the airport.
+            It’s always free. Ask at least 48 hours before departure if you can —
+            that’s when the airport is obliged to provide it.
+          </p>
+
+          {ASSISTANCE_OPTIONS.map((option) => (
+            <label key={option.code} className="flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={passenger.assistance?.codes.includes(option.code) ?? false}
+                onChange={(event) => {
+                  const current = passenger.assistance ?? { codes: [], notes: '' };
+                  const codes = event.target.checked
+                    ? [...current.codes, option.code]
+                    : current.codes.filter((code) => code !== option.code);
+                  onChange({ assistance: { ...current, codes } });
+                }}
+                className="mt-0.5 size-4 shrink-0 accent-accent"
+              />
+              <span>
+                <span className="text-ink">{option.label}</span>
+                {'detail' in option && option.detail ? (
+                  <span className="block text-xs text-ink-faint">{option.detail}</span>
+                ) : null}
+              </span>
+            </label>
+          ))}
+
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-ink-faint">
+              Anything else we should pass on
+            </span>
+            <textarea
+              rows={2}
+              value={passenger.assistance?.notes ?? ''}
+              onChange={(event) => {
+                const current = passenger.assistance ?? { codes: [], notes: '' };
+                onChange({ assistance: { ...current, notes: event.target.value } });
+              }}
+              placeholder="Assistance dog, own wheelchair, anything the list doesn’t cover…"
+              className="w-full rounded-control border border-hairline-strong bg-surface px-3 py-2 text-sm"
+            />
+            {/* Six codes do not describe every need. Saying so stops someone
+                concluding their requirement is not catered for. */}
+            <span className="mt-1 block text-xs text-ink-faint">
+              Describing it in your own words is enough on its own.
+            </span>
+          </label>
+        </div>
+      </details>
     </fieldset>
   );
 }

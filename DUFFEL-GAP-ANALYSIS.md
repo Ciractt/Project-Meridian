@@ -137,9 +137,9 @@ EC 1107/2006 Art. 6, retained in UK law, requires carriers, their agents and
 tour operators to receive assistance notifications at every point of sale
 including the internet, and to transmit them onward.
 
-**Done:** we receive the request, show it on the booking, and queue it for a
-human to pass to the airline — sorted by departure date, because the 48-hour
-notice window is the deadline that matters. ADR-048.
+**Done:** we receive the request at checkout and after booking, show it on the
+booking, and queue it for a human to pass to the airline — sorted by departure
+date, because the 48-hour notice window is the deadline that matters. ADR-048.
 
 **Still open:** whether Meridian is an "agent" for Article 6 purposes. One for
 the solicitor already reviewing terms and ATOL. The feature is right either way;

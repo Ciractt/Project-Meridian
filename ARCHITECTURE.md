@@ -1542,6 +1542,17 @@ observe — somebody emailed support or rang the airline — so the only honest
 source is the person who did it. "Forwarded" with no channel is unauditable six
 months later.
 
+**Asked at checkout as well as after booking.** Article 6 says *points of sale*,
+and checkout is the point of sale — it is also earlier, which is what matters
+when the guarantee depends on 48 hours' notice. Collapsed by default: a checkout
+that asks every traveller about disability is worse than one that makes it easy
+to find.
+
+Recorded after the order exists and after ticketing, and it cannot fail a
+booking. A lost assistance request is recoverable — they can make it again from
+the booking page, and the confirmation tells them to ring the airline anyway. A
+booking lost to a failed insert is not.
+
 **Trade-off accepted.** This does not scale: every request needs a human. That
 is a property of the supplier rather than a design choice, and the alternative
 is not offering it, which for an accessibility need is not an alternative. If
