@@ -176,8 +176,13 @@ the automated response to that is to stop and fetch a human rather than guess.
 of the balance after the card clears, and deliberately has no refund path — see
 ADR-045.
 
-**Still to build:** the interface. Nothing in the product reaches any of this
-yet.
+**Also done:** the interface, on the booking page above cancellation.
+
+**Known limits:** the date field is a plain picker with no price calendar, so
+finding the cheapest day to move to means trying days one at a time — each of
+which is a live offer request against the search-to-book ratio. Worth watching
+before it is worth optimising. Origin and destination are fixed; changing where
+you fly is still a conversation.
 
 ### 4.6 Order cancellations with a refund quote
 

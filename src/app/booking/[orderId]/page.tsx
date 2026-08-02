@@ -8,6 +8,7 @@ import { formatFull } from '@/lib/date';
 import { buildGuidance } from '@/features/booking/pre-travel';
 import { PreTravelPanel } from '@/features/booking/components/pre-travel-panel';
 import { CancelBooking } from '@/features/booking/components/cancel-booking';
+import { ChangeBooking } from '@/features/booking/components/change-booking';
 import { CheckoutSteps } from '@/features/booking/components/checkout-steps';
 import { AddBags } from '@/features/booking/components/add-bags';
 import { FinancialProtectionNotice } from '@/components/financial-protection-notice';
@@ -122,6 +123,19 @@ export default async function BookingPage({
       ) : (
         <>
           <AddBags orderId={booking.id} isOwner={booking.ownedByViewer} />
+          {/* Change before cancel. Someone whose plans moved usually wants a
+              different flight rather than no flight, and the destructive
+              option should not be the first one they meet. */}
+          <ChangeBooking
+            orderId={booking.id}
+            isOwner={booking.ownedByViewer}
+            legs={(booking.slices ?? []).map((slice) => ({
+              id: slice.id,
+              originCode: slice.originCode,
+              destinationCode: slice.destinationCode,
+              departureDate: slice.segments[0]?.departingAt.slice(0, 10) ?? '',
+            }))}
+          />
           <CancelBooking orderId={booking.id} isOwner={booking.ownedByViewer} />
         </>
       )}
