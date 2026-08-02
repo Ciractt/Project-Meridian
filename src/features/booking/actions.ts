@@ -63,15 +63,59 @@ export async function startBooking(raw: unknown): Promise<StartOutcome> {
   if (claimError) {
     const { data: existing } = await supabase
       .from('booking_attempts')
-      .select('status, order_id')
+      .select('status, order_id, payment_intent_id')
       .eq('token', input.attemptToken)
-      .maybeSingle<{ status: string; order_id: string | null }>();
+      .maybeSingle<{
+        status: string;
+        order_id: string | null;
+        payment_intent_id: string | null;
+      }>();
 
     if (existing?.order_id) return { status: 'duplicate', orderId: existing.order_id };
-    return {
-      status: 'unavailable',
-      message: 'This booking is already in progress. Give it a moment.',
-    };
+
+    /* A failed attempt is not an in-progress one, and telling someone to wait
+       for something that has already stopped is a dead end: the token lives as
+       long as the form is mounted, so every retry hits this branch and gets the
+       same useless answer. They are stuck on the payment step with no way
+       forward but a page reload nobody thinks to try.
+
+       When the failure happened before a payment intent existed, nothing was
+       charged and nothing is orphaned, so the attempt can simply be reopened
+       and retried on the same token. That is the ordinary case — a Duffel
+       timeout, a transient error — and it is the one that was unrecoverable. */
+    if (existing?.status === 'failed' && !existing.payment_intent_id) {
+      const { error: reopenError } = await supabase
+        .from('booking_attempts')
+        .update({
+          status: 'awaiting_payment',
+          failure_reason: null,
+          completed_at: null,
+        })
+        .eq('token', input.attemptToken)
+        .is('payment_intent_id', null);
+
+      if (reopenError) {
+        return {
+          status: 'unavailable',
+          message: 'That didn’t work. Start the booking again — nothing has been charged.',
+        };
+      }
+      /* Fall through and try again. */
+    } else if (existing?.status === 'failed') {
+      /* An intent exists but never got bound to this attempt. Retrying could
+         leave a second one, so this one stops here and says so plainly rather
+         than inviting a retry that would compound it. */
+      return {
+        status: 'unavailable',
+        message:
+          'We stopped this booking before charging you. Please start again from the search results — nothing has been taken.',
+      };
+    } else {
+      return {
+        status: 'unavailable',
+        message: 'This booking is already in progress. Give it a moment.',
+      };
+    }
   }
 
   const repriced = await repriceOffer(input.offerId);
@@ -179,11 +223,20 @@ export async function startBooking(raw: unknown): Promise<StartOutcome> {
       currency: charge.currency,
     };
   } catch (error) {
+    /* Logged, because the traveller's message is deliberately vague and ours
+       must not be. In live mode this is where "Duffel Payments isn't enabled"
+       and "your balance is empty" arrive, and swallowing them leaves nothing to
+       debug from but a timestamp. */
+    console.error(
+      'Could not start payment for attempt %s:',
+      input.attemptToken,
+      error instanceof Error ? error.message : error,
+    );
     await closeAttempt(input.attemptToken, 'failed', 'payment_intent_failed');
     const message =
       error instanceof DuffelUnavailableError
         ? error.message
-        : 'We couldn’t start the payment.';
+        : 'We couldn’t start the payment. Nothing has been charged — try again.';
     return { status: 'unavailable', message };
   }
 }

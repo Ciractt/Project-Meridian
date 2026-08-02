@@ -87,14 +87,19 @@ export function AncillariesStep({
             bags: { rate: markupRate, amount: 0 },
             seats: { rate: markupRate, amount: 0 },
           },
-          /* Duffel's component takes literal values, not CSS variables, so
-             these are the one place the palette is duplicated. They have to be
-             changed by hand whenever --color-accent or --radius-control move, or
-             the seat map is the last magenta thing on a blue site. */
-          styles: {
-            accentColor: 'rgb(51, 80, 224)',
-            buttonCornerRadius: '12px',
-          },
+          /* No `styles`. We passed an accentColor and a corner radius to keep
+             this component on-palette, and the confirm button in both the bag
+             modal and the seat map rendered blank — a bordered box with no
+             visible label. Two different modals, one shared cause.
+             Duffel derive several of their own text colours from the accent
+             they are handed, so an accent they do not expect produces a label
+             the same colour as the surface behind it.
+
+             Their defaults are legible, and a button that cannot be read is
+             worse than a button in the wrong blue by a distance that is not
+             close. If it is worth re-theming later it wants their supported
+             tokens rather than a guess, and it wants testing against every
+             modal rather than the one that happened to be open. */
           onPayloadReady: (
             data: { services?: SelectedService[] },
             metadata: AncillariesMetadata | undefined,
