@@ -126,17 +126,11 @@ Not defects, but each has a cost attached and none is visible from the UI:
 
 In order, from `DUFFEL-GAP-ANALYSIS.md` and the open items in `ARCHITECTURE.md`:
 
-1. **Order changes.** The last real feature gap, comparable in size to checkout.
-2. **Move the session read out of the root layout.** It calls `cookies()`, which
-   forces every route dynamic and is why the route landing pages had to drop ISR
-   (see the `force-dynamic` note in `flights/[route]`). Reading it in the browser
-   makes the whole product cacheable again, at the cost of a flash of
-   signed-out state in the header.
-3. Traveller profiles — saved passengers picked from a dropdown. A real reason to
+1. Traveller profiles — saved passengers picked from a dropdown. A real reason to
    book direct, same argument as loyalty numbers.
-4. Special assistance requests (gap 3.4). An accessibility obligation as much as
+2. Special assistance requests (gap 3.4). An accessibility obligation as much as
    a feature: today someone needing assistance has to ring the airline.
-5. `npm run format` rewrites 69 files on a clean checkout. The
+3. `npm run format` rewrites 69 files on a clean checkout. The
    `prettier-plugin-tailwindcss` config needs `tailwindStylesheet` pointing at
    `globals.css` so it can see the `@theme` tokens; that closes most of it but
    not all. Fix it as its own commit, before it lands on top of a feature diff.

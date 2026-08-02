@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { getCurrentUser } from '@/features/auth/queries';
 import { SiteFooter } from '@/components/site-footer';
 import { getSiteContent } from '@/features/content/queries';
 import { AnnouncementBar } from '@/features/content/components/announcement-bar';
@@ -19,7 +18,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [user, content] = await Promise.all([getCurrentUser(), getSiteContent()]);
+  /* No session read here. `cookies()` anywhere in this render marks every
+     route dynamic, and the header's greeting is not worth that — NavPanel
+     fetches its own. getSiteContent is cookie-free (supabasePublic). */
+  const content = await getSiteContent();
   return (
     <html lang="en-GB" className={cn(display.variable, sans.variable)}>
       <body className="min-h-dvh antialiased">
@@ -46,16 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </span>
               {/* Admin and Account moved into the panel. The header was gaining
                   a link every time something was added. */}
-              <NavPanel
-                user={
-                  user
-                    ? {
-                        firstName: user.fullName?.trim().split(/\s+/)[0] ?? null,
-                        role: user.role,
-                      }
-                    : null
-                }
-              />
+              <NavPanel />
             </nav>
           </div>
         </header>

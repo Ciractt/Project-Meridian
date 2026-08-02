@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { signOut } from '@/features/auth/actions';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { AppRole } from '@/features/auth/types';
 
 /**
@@ -36,14 +37,10 @@ import type { AppRole } from '@/features/auth/types';
  * Escape, inert background and the top layer come out correct without writing
  * any of it.
  */
-export function NavPanel({
-  user,
-}: {
-  /** Only what gets rendered. The id and anything else stay on the server. */
-  user: { firstName: string | null; role: AppRole } | null;
-}) {
+export function NavPanel() {
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
+  const user = useViewer();
 
   useEffect(() => {
     const dialog = ref.current;
@@ -233,4 +230,87 @@ function Tile({
       <span>{children}</span>
     </Link>
   );
+}
+
+
+interface Viewer {
+  firstName: string | null;
+  role: AppRole;
+}
+
+/**
+ * Who is signed in, read in the browser.
+ *
+ * This used to come from the root layout, which meant the layout called
+ * `cookies()` — and one `cookies()` call anywhere in a render marks the entire
+ * route dynamic. A single session lookup in the header was opting every page in
+ * the product out of static rendering, which is what forced the route landing
+ * pages off ISR and into a per-request Supabase read.
+ *
+ * Reading it here costs a flash: the header renders signed-out and fills in a
+ * moment later. That is a real regression for one element, paid so every page
+ * can be cached again. The trade works because the thing that flashes is a
+ * greeting rather than anything load-bearing — no content appears or
+ * disappears, and nothing here gates access. Authorisation still happens on the
+ * server, where it always did; `requireRole` guards /admin regardless of what
+ * this hook believes. A tile that should not be there is a wrong link, not an
+ * open door.
+ *
+ * The role comes from `user_roles`, which has a select-own policy, so the anon
+ * key reads exactly one row and only the signed-in user's. It is not in
+ * `user_metadata` on purpose: metadata is user-writable in Supabase, and a
+ * self-assigned `role: admin` would be a privilege escalation.
+ *
+ * `onAuthStateChange` rather than a one-shot read, so signing out in another
+ * tab updates this one instead of leaving a stale name in the header.
+ */
+function useViewer(): Viewer | null {
+  const [viewer, setViewer] = useState<Viewer | null>(null);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    let cancelled = false;
+
+    async function load(userId: string | undefined) {
+      if (!userId) {
+        if (!cancelled) setViewer(null);
+        return;
+      }
+
+      /* Two reads, both scoped to this user by RLS. Failure of either degrades
+         rather than throws: no name is a worse greeting, not a broken header. */
+      const [{ data: profile }, { data: roleRow }] = await Promise.all([
+        supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle(),
+        supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle(),
+      ]);
+
+      if (cancelled) return;
+      const fullName =
+        typeof profile?.full_name === 'string' ? profile.full_name : null;
+      setViewer({
+        firstName: fullName?.trim().split(/\s+/)[0] ?? null,
+        role: ((roleRow?.role as AppRole | undefined) ?? 'customer') as AppRole,
+      });
+    }
+
+    supabase.auth
+      .getUser()
+      .then(({ data }) => load(data.user?.id))
+      .catch(() => {
+        /* Signed out, offline, or Supabase unreachable. The header shows "Sign
+           in", which under-claims rather than showing a name to somebody who is
+           not signed in. */
+      });
+
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      void load(session?.user?.id);
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.subscription.unsubscribe();
+    };
+  }, []);
+
+  return viewer;
 }

@@ -1,5 +1,5 @@
 import 'server-only';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabasePublic } from '@/lib/supabase/public';
 import { getSupabaseServiceClient } from '@/lib/supabase/service';
 import { routeSlug } from './slug';
 
@@ -36,7 +36,7 @@ export async function getRouteInsight(
   origin: string,
   destination: string,
 ): Promise<RouteInsight> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = supabasePublic;
 
   const { data } = await supabase
     .from('route_prices')

@@ -1,5 +1,5 @@
 import 'server-only';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabasePublic } from '@/lib/supabase/public';
 import { getSupabaseServiceClient } from '@/lib/supabase/service';
 
 /**
@@ -63,7 +63,7 @@ function merge<T>(fallback: T, stored: any): T {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export async function getSiteContent(): Promise<SiteContent> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = supabasePublic;
 
   const { data, error } = await supabase.from('site_content').select('key, value');
 

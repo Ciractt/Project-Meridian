@@ -1,5 +1,5 @@
 import 'server-only';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabasePublic } from '@/lib/supabase/public';
 import { getSupabaseServiceClient } from '@/lib/supabase/service';
 import type { Offer } from '@/features/flight-search/types';
 
@@ -17,7 +17,7 @@ export interface RoutePrice {
  * WHERE clause we might forget. Also means the home page needs no secret key.
  */
 export async function getRoutePrices(): Promise<Map<string, RoutePrice>> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = supabasePublic;
 
   const { data, error } = await supabase
     .from('route_prices')

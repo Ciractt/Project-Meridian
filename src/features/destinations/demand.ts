@@ -1,5 +1,5 @@
 import 'server-only';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabasePublic } from '@/lib/supabase/public';
 import { findPlace } from '@/features/flight-search/airports';
 import { countryName } from '@/features/booking/pre-travel';
 import { hasDestinationImage } from './images';
@@ -24,7 +24,7 @@ export interface DemandRoute extends FeaturedRoute {
  * ago is more likely to still be there than one from Tuesday.
  */
 export async function getDemandRoutes(limit = 6): Promise<DemandRoute[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = supabasePublic;
 
   const { data, error } = await supabase
     .from('route_prices')

@@ -1,5 +1,5 @@
 import 'server-only';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { supabasePublic } from '@/lib/supabase/public';
 import { getSupabaseServiceClient } from '@/lib/supabase/service';
 
 export interface Promotion {
@@ -64,7 +64,7 @@ function toPromotion(row: any): Promotion {
  * rather than a display preference.
  */
 export async function getLivePromotions(): Promise<Promotion[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = supabasePublic;
 
   const { data, error } = await supabase
     .from('promotions')

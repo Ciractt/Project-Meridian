@@ -1409,3 +1409,45 @@ Separating the decision from the mechanism is the entire point.
 mostly do not, so this scales worse with volume. That is the correct way round:
 the volume is low, the stakes are high, and a queue that occasionally needs a
 person is cheaper than a policy that occasionally strands one.
+
+---
+
+## ADR-046 — The header reads its own session, so pages can be cached
+
+**Decision.** The root layout does not read the session. `NavPanel` fetches it
+in the browser, and public content — site copy, promotions, route insights,
+destination prices — is read through a cookie-free Supabase client.
+
+**Why.** One `cookies()` call anywhere in a render marks the whole route
+dynamic. The layout's session lookup was therefore opting *every page in the
+product* out of static rendering: a greeting in the header was the reason the
+route landing pages could not be cached, and the reason nine static content
+pages were being rendered per request.
+
+Nine pages moved from per-request to static, and `/flights/[route]` went back to
+hourly ISR with its params pre-rendered. That is the whole return on this
+change, and it is larger than the problem it was raised to fix.
+
+**What it costs.** A flash. The header renders signed-out and fills in a moment
+later. That is a real regression for one element, and it is acceptable only
+because the thing that flashes is a name in a button — no content appears or
+disappears, nothing shifts, and nothing here gates access.
+
+**Authorisation did not move.** `requireRole` still guards /admin on the server,
+as it always did. The panel deciding whether to show an Admin tile is a link
+being right or wrong, not a door being open or shut. Worth being explicit,
+because "we moved auth to the client" would be a serious thing to have done and
+this is not that.
+
+**The role is read from `user_roles`, not from user metadata.** Metadata is
+user-writable in Supabase, so a self-assigned `role: admin` would be a
+privilege escalation. The table has a select-own policy, so the anon key reads
+one row and only the signed-in user's.
+
+**The public client is not a privilege escalation.** Same anon key, same
+row-level security — it can read exactly what an unauthenticated visitor can
+read. The only thing it lacks is a session, which is precisely the point.
+
+**Trade-off accepted.** Pages that genuinely depend on who is asking —
+`/account`, `/book`, `/admin` — are still dynamic, and should be. The cost is
+now paid by the pages that need it rather than levied on all of them.
